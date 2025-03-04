@@ -1,7 +1,7 @@
 # Chatta med TNM094
 Kandidatprojekt som ingår i kursen TNM094 på Linköpings universitet.
 
-## Getting Started
+## Komma igång
 ### Köra frontend lokalt
 För att köra frontend lokalt behöver du ha [Node.js](https://nodejs.org/en/) och [npm](https://www.npmjs.com/) installerat. 
 Börja med att navigera till frontend-mappen:
@@ -61,19 +61,25 @@ deactivate
 > Läs gärna mer om virtuella miljöer i kombination med FastAPI här:
 > [FastAPI - Virtual Environments](https://fastapi.tiangolo.com/virtual-environments/)
 
+### Rekommenderade VS Code Extensions
+- Prettier - Code formatter
+- ESLint
+- Tailwind CSS IntelliSense
+- ES7+ React/Redux/GraphQL/React-Native snippets
+- Python (Microsoft)
 
 ## Dokumentation
 ### Frontend mappstruktur
 ```
 frontend/
-├── app/ # Huvudmappen för frontend
-│   ├── components/ # Återanvändbara komponenter
+├── app/                # Huvudmappen för frontend
+│   ├── components/     # Återanvändbara komponenter
 │   
-├── eslint-config.mjs # ESLint-konfiguration
-├── next.config.js # Next.js-konfiguration
-├── package.json # NPM-paket
-├── README.md # Dokumentation
-├── tsconfig.json # TypeScript-konfiguration
+├── eslint-config.mjs   # ESLint-konfiguration
+├── next.config.js      # Next.js-konfiguration
+├── package.json        # NPM-paket
+├── README.md           # Dokumentation
+├── tsconfig.json       # TypeScript-konfiguration
 ```
 
 ### Backend mappstruktur
@@ -87,7 +93,7 @@ backend/
 │   ├── services.py     # Tjänster / Business logic
 │   ├── config.py       # Konfigurationsinställningar
 │   ├── database.py     # DB-anslutning
-├── tests/              # 
+├── tests/              # Tester
 ├── requirements.txt    # pip-beroenden
 ├── README.md           # Dokumentation
 ```
