@@ -1,2 +1,5 @@
 fastapi[standard]
 pydantic
+pydantic_settings
+langchain-core
+langchain[openai]
