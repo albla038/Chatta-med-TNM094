@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .llm import handle_question
+from .services import handle_question
 from .models import QuestionReqBody
 
 app = FastAPI()
