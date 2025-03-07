@@ -6,7 +6,7 @@ from .config import env
 llm = ChatOpenAI(
   model="gpt-4o-mini",
   api_key=env.OPENAI_API_KEY
-  # temprature=0
+  # temperature=0
   # max_tokens=None
   # timeout=None
 )

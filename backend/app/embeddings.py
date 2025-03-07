@@ -10,5 +10,5 @@ embedding = OpenAIEmbeddings(
   # dimensions=1536
 )
 
-async def create_Embedding(input: str):
+async def create_embedding(input: str):
   return await embedding.aembed_query(input)
