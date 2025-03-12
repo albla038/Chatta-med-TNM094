@@ -1,8 +1,10 @@
 from .models import QuestionReqBody
 from .llm import call_model
+from .vector_db import vector_db, ingest_documents
 from fastapi import HTTPException, UploadFile
-from langchain_community.document_loaders import PyPDFLoader 
 import os
+from langchain_community.document_loaders import PyPDFLoader 
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Define file directory and create it if it doesn't exist
 # This directory will be used to store uploaded PDF files
@@ -11,8 +13,22 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 async def handle_question(req_body: QuestionReqBody): 
   # Retrive relevant text/inputs from vector database...
-  model_reponse = await call_model(req_body.query, req_body.context)
+  found_documents = await vector_db.asimilarity_search(req_body.query, k=10)
+  docs_content = "\n".join(doc.page_content for doc in found_documents)
+
+  promt_template = """
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings Universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat.
+  Kontext:
+  {context}
+
+
+  """
+
+  context = promt_template.format(context=docs_content)
+
+  model_reponse = await call_model(req_body.query, context)
   return {
+    "query": req_body.query,
     "content": model_reponse.content,
     "metadata": model_reponse.response_metadata
   }
@@ -32,4 +48,9 @@ async def handle_upload_pdf(file: UploadFile):
   loader = PyPDFLoader(file_path)
   pages = await loader.aload()
 
-  return pages
+  text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000, chunk_overlap=200, add_start_index=True
+  )
+
+  all_splits = text_splitter.split_documents(pages)
+  await ingest_documents(all_splits)

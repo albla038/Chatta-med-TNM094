@@ -6,4 +6,3 @@ langchain[openai]
 langchain-pinecone
 langchain-community
 python-multipart
-pypdf

@@ -3,6 +3,9 @@ from langchain_pinecone import PineconeVectorStore
 from .config import env
 from .embeddings import embedding
 from fastapi import HTTPException
+from langchain_core.documents import Document
+from uuid import uuid4
+
 
 pc = Pinecone(api_key=env.PINECONE_API_KEY)
 index_name = "tnm094"
@@ -20,6 +23,10 @@ retriever = vector_db.as_retriever(
 async def find_vectors_with_query(query: str, k: int, threshold: float):
   result = await vector_db.asimilarity_search_with_relevance_scores(query, k=k, score_threshold=threshold)
   if len(result) == 0:
-    raise HTTPException(status_code=404, detail={"message": "No vectors found"})
+    raise HTTPException(status_code=404, detail={"error": "Not found", "message": "No vectors found"})
   else:
     return result
+  
+async def ingest_documents(documents: list[Document]):
+  ids = [str(uuid4()) for _ in range(len(documents))]
+  await vector_db.aadd_documents(documents, ids=ids)

@@ -17,6 +17,7 @@ async def root():
 async def ask(req_body: QuestionReqBody):
   response = await handle_question(req_body)
   return response
+  
 
 @app.post("/vector", status_code=status.HTTP_201_CREATED)
 async def create_vector(query: str):
@@ -39,12 +40,15 @@ async def find_similar_vectors(query: str):
 
 @app.post("/upload/pdf")
 async def upload_pdf(file: UploadFile):
-  data = await handle_upload_pdf(file)
+  await handle_upload_pdf(file)
 
   return {
     "status": "ok",
     "message": "File uploaded successfully",
     "filename": file.filename,
     "content_type": file.content_type,
-    "data": data
   }
+
+@app.post("/upload/pdfs")
+async def upload_pdfs(files: list[UploadFile]):
+  pass
