@@ -4,3 +4,6 @@ pydantic_settings
 langchain-core
 langchain[openai]
 langchain-pinecone
+langchain-community
+python-multipart
+pypdf
