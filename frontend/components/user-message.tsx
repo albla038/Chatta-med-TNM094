@@ -6,11 +6,11 @@ type UserMessageProps = {
 
 export function UserMessage({ children }: UserMessageProps) {
   return (
-    <div className="p-5">
-      <div className="bg-liu-primary/20 rounded-[6vw] py-2 px-5 w-fit break-keep">
-        {children}
-      </div>
+    // <div className="p-5">
+    // <div className="bg-liu-primary/20 rounded-[6vw] py-2 px-5 w-fit break-keep">
+    <div className="bg-liu-primary/20 rounded-3xl py-3 px-5 w-fit break-keep">
+      {children}
     </div>
+    // </div>
   );
 }
-
