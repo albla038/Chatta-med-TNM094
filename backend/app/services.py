@@ -5,6 +5,7 @@ from fastapi import HTTPException, UploadFile
 import os
 from langchain_community.document_loaders import PyPDFLoader 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from .utils import filter_document_metadata
 
 # Define file directory and create it if it doesn't exist
 # This directory will be used to store uploaded PDF files
@@ -53,4 +54,8 @@ async def handle_upload_pdf(file: UploadFile):
   )
 
   all_splits = text_splitter.split_documents(pages)
+  
+  allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
+  all_splits = filter_document_metadata(all_splits, allowed_keys)
+
   await ingest_documents(all_splits)
