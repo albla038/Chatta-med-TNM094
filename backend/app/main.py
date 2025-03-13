@@ -1,8 +1,7 @@
 from fastapi import FastAPI, status, UploadFile
-from .services import handle_question, handle_upload_pdf
+from .services import handle_question, handle_upload_pdf, handle_upload_webpage
 from .models import QuestionReqBody
 from .vector_db import vector_db
-from .vector_db import retriever
 from .vector_db import find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
@@ -52,3 +51,13 @@ async def upload_pdf(file: UploadFile):
 @app.post("/upload/pdfs")
 async def upload_pdfs(files: list[UploadFile]):
   pass
+
+@app.post("/upload/url")
+async def upload_url(page_url: str):
+  await handle_upload_webpage(page_url)
+
+  return {
+    "status": "ok",
+    "message": "Webpage uploaded successfully",
+    "url": page_url
+  }

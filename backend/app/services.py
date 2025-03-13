@@ -3,7 +3,7 @@ from .llm import call_model
 from .vector_db import vector_db, ingest_documents
 from fastapi import HTTPException, UploadFile
 import os
-from langchain_community.document_loaders import PyPDFLoader 
+from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Define file directory and create it if it doesn't exist
@@ -53,4 +53,18 @@ async def handle_upload_pdf(file: UploadFile):
   )
 
   all_splits = text_splitter.split_documents(pages)
+  await ingest_documents(all_splits)
+
+  
+async def handle_upload_webpage(page_url: str):
+  loader = WebBaseLoader(web_paths=[page_url])
+  page_content = []
+  async for doc in loader.alazy_load():
+      page_content.append(doc)
+
+  text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000, chunk_overlap=200, add_start_index=True
+  )
+
+  all_splits = text_splitter.split_documents(page_content)
   await ingest_documents(all_splits)
