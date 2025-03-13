@@ -6,10 +6,8 @@ type ClientMessageProps = {
 
 export function ClientMessage({ children }: ClientMessageProps) {
   return (
-    <div className="p-5">
-      <div className="break-keep">
-        {children}
-      </div>
+    <div className="w-full p-5">
+      <div className="w-full break-keep">{children}</div>
     </div>
   );
 }

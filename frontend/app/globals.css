@@ -6,6 +6,7 @@
 
 :root {
   --liu-primary: #80dcf3;
+  --hover-card: #434343;
   --background: oklch(1 0 0);
   --foreground: oklch(0.13 0.028 261.692);
   --card: oklch(1 0 0);
@@ -78,6 +79,7 @@
 
 @theme inline {
   --color-liu-primary: var(--liu-primary);
+  --color-hover-card: var(--hover-card);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
