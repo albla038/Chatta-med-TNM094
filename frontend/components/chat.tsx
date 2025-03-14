@@ -4,19 +4,24 @@ import { ChatInput } from "./chat-input";
 import { UserMessage } from "./user-message";
 import { ClientMessage } from "./client-message";
 
+// TODO Edit
+type ResponseData = {
+  query: string;
+  content: string;
+  metadata: any;
+};
+
+type ConversationData = {
+  role: string;
+  content: string;
+}[];
+
 export default function Chat() {
   const [input, setInput] = useState("");
-  const [humanMessage, setHumanMessage] = useState<string | null>(null);
-  const [aiMessage, setAiMessage] = useState<string | null>(null);
-
-  type ResponseData = {
-    query: string;
-    content: string;
-    metadata: any;
-  };
+  const [conversationHistory, setConversationHistory] =
+    useState<ConversationData>([]);
 
   async function sendMessage() {
-    setHumanMessage(input);
     const trimmedInput = input.trim();
     setInput("");
 
@@ -24,14 +29,17 @@ export default function Chat() {
       return;
     }
 
+    const newConversationHistory = [
+      ...conversationHistory,
+      { role: "user", content: input },
+    ];
+    setConversationHistory(newConversationHistory);
+
     try {
-      const response = await fetch("http://127.0.0.1:8000/ask", {
+      const response = await fetch("http://127.0.0.1:8000/llm/conversation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: trimmedInput,
-          context: "",
-        }),
+        body: JSON.stringify(newConversationHistory),
       });
 
       if (!response.ok) {
@@ -42,19 +50,31 @@ export default function Chat() {
       }
 
       const data = (await response.json()) as ResponseData;
-      setAiMessage(data.content);
+      setConversationHistory((prev) => [
+        ...prev,
+        { role: "assistant", content: input },
+      ]);
+
       console.log(data);
     } catch (error) {
+      // TODO FIX
       console.error(error.message);
     }
   }
 
   return (
     <main className="w-full grow flex flex-col justify-end p-8 pb-16 max-w-4xl">
-      <div className="w-full flex flex-col grow items-end">
-        {humanMessage ? <UserMessage>{humanMessage}</UserMessage> : ""}
-        {aiMessage ? <ClientMessage>{aiMessage}</ClientMessage> : ""}
-      </div>
+      <ul className="w-full flex flex-col grow items-end gap-4">
+        {conversationHistory.map((message, id) => (
+          <li key={id}>
+            {message.role === "user" ? (
+              <UserMessage>{message.content}</UserMessage>
+            ) : (
+              <ClientMessage>{message.content}</ClientMessage>
+            )}
+          </li>
+        ))}
+      </ul>
       <ChatInput
         input={input}
         setInput={setInput}
