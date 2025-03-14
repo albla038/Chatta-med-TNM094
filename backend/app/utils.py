@@ -1,6 +1,6 @@
 from langchain_core.documents import Document
 
-def filter_document_metadata_(documents: list[Document], allowed_keys: dict) -> list[Document]:
+def filter_document_metadata(documents: list[Document], allowed_keys: dict) -> list[Document]:
   """
   Filter documents based on allowed keys
   """
