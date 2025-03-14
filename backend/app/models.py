@@ -8,6 +8,3 @@ class QuestionReqBody(BaseModel):
 class ConversationData(BaseModel):
   role: str
   content: str
-
-class ConversationReqBody(BaseModel):
-  data: list[ConversationData]

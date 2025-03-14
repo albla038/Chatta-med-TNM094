@@ -52,7 +52,7 @@ export default function Chat() {
       const data = (await response.json()) as ResponseData;
       setConversationHistory((prev) => [
         ...prev,
-        { role: "assistant", content: input },
+        { role: "assistant", content: data.content },
       ]);
 
       console.log(data);

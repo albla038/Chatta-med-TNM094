@@ -6,6 +6,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from .utils import filter_document_metadata
 from .models import ConversationData
+from typing import List
 
 # Define file directory and create it if it doesn't exist
 # This directory will be used to store uploaded PDF files
@@ -14,11 +15,11 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 async def handle_question(question: str): 
   # Retrive relevant text/inputs from vector database...
-  found_documents = await vector_db.asimilarity_search(question, k=10)
+  found_documents = await vector_db.asimilarity_search(question, k=10) 
   docs_content = "\n".join(doc.page_content for doc in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat.
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat, om inte använderen ber om mer information. Svara tydligt och koncist.
   Kontext:
   {context}
 
@@ -34,7 +35,7 @@ async def handle_question(question: str):
     "metadata": model_reponse.response_metadata
   }
 
-async def handle_conversation(conversation: list[ConversationData]): 
+async def handle_conversation(conversation: List[ConversationData]): 
   last_question = conversation[-1].content
 
   # Retrive relevant text/inputs from vector database...
@@ -42,7 +43,7 @@ async def handle_conversation(conversation: list[ConversationData]):
   docs_content = "\n".join(doc.page_content for doc in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara tydligt och koncist.
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat, om inte använderen ber om mer information. Svara tydligt och koncist.
   Kontext:
   {context}
 

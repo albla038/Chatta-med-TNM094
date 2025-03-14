@@ -1,12 +1,14 @@
 from fastapi import FastAPI, status, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from .services import handle_question, handle_conversation, handle_upload_pdf
-from .models import QuestionReqBody, ConversationReqBody
+from .models import QuestionReqBody, ConversationData
 from .vector_db import vector_db
 from .vector_db import retriever
 from .vector_db import find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
+from typing import List
+
 
 app = FastAPI()
 
@@ -17,7 +19,7 @@ origins = [
 
 app.add_middleware(
   CORSMiddleware,
-  allow_origins=origins,
+  allow_origins=["*"],      # TODO change this in production
   allow_credentials=True,
   allow_methods=["*"],
   allow_headers=["*"],
@@ -33,8 +35,8 @@ async def llm_query(req_body: QuestionReqBody):
   return response
 
 @app.post("/llm/conversation")
-async def llm_conversation(req_body: ConversationReqBody):
-  response = await handle_conversation(req_body.data)
+async def llm_conversation(req_body: List[ConversationData]):
+  response = await handle_conversation(req_body)
   return response
 
 @app.post("/vector", status_code=status.HTTP_201_CREATED)
