@@ -72,28 +72,20 @@ deactivate
 ### Frontend mappstruktur
 ```
 frontend/
-├── app/                # Huvudmappen för frontend
-│   ├── components/     # Återanvändbara komponenter
+├── app/                # Källkod
+│   ├── globals.css     # Globala CSS-regler
+│   ├── layout.tsx      # Huvudlayout / Huvudkomponent
+│   ├── page.tsx        # Sidkomponent för "/"-vägen
+│   └── components/     # Återanvändbara komponenter
+│       └── ui/         # ShadCN UI-komponenter
 │   
+├── hooks/              # React Hooks
+├── lib/                 
+│   └── utils/          # Hjälpfunktioner
+│
 ├── eslint-config.mjs   # ESLint-konfiguration
 ├── next.config.js      # Next.js-konfiguration
 ├── package.json        # NPM-paket
 ├── README.md           # Dokumentation
-├── tsconfig.json       # TypeScript-konfiguration
-```
-
-### Backend mappstruktur
-```
-backend/
-├── app/
-│   ├── __init__.py
-│   ├── main.py         # Huvudfil
-│   ├── routes.py       # Routes/API endpoints
-│   ├── models.py       # Pydantic models
-│   ├── services.py     # Tjänster / Business logic
-│   ├── config.py       # Konfigurationsinställningar
-│   ├── database.py     # DB-anslutning
-├── tests/              # Tester
-├── requirements.txt    # pip-beroenden
-├── README.md           # Dokumentation
+└── tsconfig.json       # TypeScript-konfiguration
 ```
