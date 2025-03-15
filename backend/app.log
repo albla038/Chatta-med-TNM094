@@ -1,0 +1,82 @@
+2025-03-15 14:54:10,588 - Started server process [8016]
+2025-03-15 14:54:10,592 - Waiting for application startup.
+2025-03-15 14:54:10,594 - Application startup complete.
+2025-03-15 14:54:55,611 - Shutting down
+2025-03-15 14:54:55,728 - Waiting for application shutdown.
+2025-03-15 14:54:55,731 - Application shutdown complete.
+2025-03-15 14:54:55,735 - Finished server process [8016]
+2025-03-15 14:55:04,618 - Started server process [8952]
+2025-03-15 14:55:04,624 - Waiting for application startup.
+2025-03-15 14:55:04,626 - Application startup complete.
+2025-03-15 14:55:04,810 - Traceback (most recent call last):
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 686, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 699, in lifespan
+    await receive()
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\asyncio\queues.py", line 158, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2025-03-15 14:55:13,065 - Started server process [14372]
+2025-03-15 14:55:13,069 - Waiting for application startup.
+2025-03-15 14:55:13,071 - Application startup complete.
+2025-03-15 14:55:13,076 - Traceback (most recent call last):
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 686, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 699, in lifespan
+    await receive()
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\asyncio\queues.py", line 158, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2025-03-15 14:55:21,606 - Started server process [11072]
+2025-03-15 14:55:21,611 - Waiting for application startup.
+2025-03-15 14:55:21,613 - Application startup complete.
+2025-03-15 14:55:55,982 - Shutting down
+2025-03-15 14:55:56,094 - Waiting for application shutdown.
+2025-03-15 14:55:56,098 - Application shutdown complete.
+2025-03-15 14:55:56,101 - Finished server process [11072]
