@@ -393,3 +393,34 @@ AttributeError: 'tuple' object has no attribute 'page_content'
 2025-03-15 15:27:17,269 - Application shutdown complete.
 2025-03-15 15:27:17,272 - Finished server process [6460]
 2025-03-15 15:27:18,077 - Stopping reloader process [10516]
+2025-03-15 15:58:22,008 - Started server process [22168]
+2025-03-15 15:58:22,012 - Waiting for application startup.
+2025-03-15 15:58:22,014 - Application startup complete.
+2025-03-15 16:13:43,679 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-03-15 16:13:45,430 - No relevant docs were retrieved using the relevance score threshold 0.75
+2025-03-15 16:13:46,534 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-15 16:13:46,560 - Conversation: [ConversationData(role='user', content='test'), ConversationData(role='user', content='hej')]
+2025-03-15 16:13:46,561 - Number of Found Documents: 0
+2025-03-15 16:13:46,561 - Found Documents: []
+2025-03-15 16:13:46,561 - Model Response Object: content='Hej! Hur kan jag hjälpa dig idag?' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 10, 'prompt_tokens': 118, 'total_tokens': 128, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_06737a9306', 'finish_reason': 'stop', 'logprobs': None} id='run-6f770f06-301a-4d62-a41f-386bf87eb3a9-0' usage_metadata={'input_tokens': 118, 'output_tokens': 10, 'total_tokens': 128, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+2025-03-15 16:14:07,421 - Shutting down
+2025-03-15 16:14:07,529 - Waiting for application shutdown.
+2025-03-15 16:14:07,532 - Application shutdown complete.
+2025-03-15 16:14:07,533 - Finished server process [22168]
+2025-03-16 18:18:29,561 - Will watch for changes in these directories: ['C:\\Users\\korpo\\Documents\\DesktopFiles\\LiU\\Årskurs 3\\Chatta med TNM094\\Chatta-med-TNM094\\backend']
+2025-03-16 18:18:29,564 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-03-16 18:18:29,568 - Started reloader process [9952] using WatchFiles
+2025-03-16 18:18:35,267 - Started server process [23684]
+2025-03-16 18:18:35,271 - Waiting for application startup.
+2025-03-16 18:18:35,274 - Application startup complete.
+2025-03-16 18:19:15,194 - Shutting down
+2025-03-16 18:19:15,302 - Waiting for application shutdown.
+2025-03-16 18:19:15,305 - Application shutdown complete.
+2025-03-16 18:19:15,307 - Finished server process [23684]
+2025-03-16 18:19:15,622 - Stopping reloader process [9952]
+2025-03-16 18:19:37,427 - Will watch for changes in these directories: ['C:\\Users\\korpo\\Documents\\DesktopFiles\\LiU\\Årskurs 3\\Chatta med TNM094\\Chatta-med-TNM094\\backend']
+2025-03-16 18:19:37,430 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-03-16 18:19:37,431 - Started reloader process [24096] using WatchFiles
+2025-03-16 18:19:43,950 - Started server process [24744]
+2025-03-16 18:19:43,953 - Waiting for application startup.
+2025-03-16 18:19:43,955 - Application startup complete.

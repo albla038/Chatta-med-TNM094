@@ -36,9 +36,8 @@ async def llm_query(req_body: QuestionReqBody):
 
 @app.post("/llm/conversation")
 async def llm_conversation(req_body: List[ConversationData]):
-  response = await handle_conversation(req_body)
-  return response
-
+  return await handle_conversation(req_body)
+   
 @app.post("/vector", status_code=status.HTTP_201_CREATED)
 async def create_vector(query: str):
   document = Document(

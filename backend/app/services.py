@@ -56,19 +56,15 @@ async def handle_conversation(conversation: List[ConversationData]):
 
   context = promt_template.format(context=docs_content)
 
-  model_reponse = await call_model_with_conversation(conversation, context)
+  model_response = await call_model_with_conversation(conversation, context)
 
   # Log the results
   logging.info(f"Conversation: {conversation}")
   logging.info(f"Number of Found Documents: {len(found_documents)}")
   logging.info(f"Found Documents: {found_documents}")
-  logging.info(f"Model Response Object: {model_reponse}")
+  logging.info(f"Model Response Object: {model_response}")
 
-  return {
-    "query": conversation,
-    "content": model_reponse.content,
-    "metadata": model_reponse.response_metadata
-  }
+  return model_response.content
 
 async def handle_upload_pdf(file: UploadFile):
   if not file.filename.endswith(".pdf"):
