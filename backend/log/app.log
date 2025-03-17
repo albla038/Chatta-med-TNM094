@@ -424,3 +424,115 @@ AttributeError: 'tuple' object has no attribute 'page_content'
 2025-03-16 18:19:43,950 - Started server process [24744]
 2025-03-16 18:19:43,953 - Waiting for application startup.
 2025-03-16 18:19:43,955 - Application startup complete.
+2025-03-17 08:29:56,614 - Will watch for changes in these directories: ['C:\\Users\\korpo\\Documents\\DesktopFiles\\LiU\\Årskurs 3\\Chatta med TNM094\\Chatta-med-TNM094\\backend']
+2025-03-17 08:29:56,616 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-03-17 08:29:56,617 - Started reloader process [5740] using WatchFiles
+2025-03-17 08:30:01,768 - Started server process [26244]
+2025-03-17 08:30:01,771 - Waiting for application startup.
+2025-03-17 08:30:01,772 - Application startup complete.
+2025-03-17 08:30:37,003 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-03-17 08:30:38,057 - No relevant docs were retrieved using the relevance score threshold 0.75
+2025-03-17 08:30:38,977 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-17 08:30:39,006 - Conversation: [ConversationData(role='user', content='Hej')]
+2025-03-17 08:30:39,006 - Number of Found Documents: 0
+2025-03-17 08:30:39,006 - Found Documents: []
+2025-03-17 08:30:39,006 - Model Response Object: content='Hej! Hur kan jag hjälpa dig idag?' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 10, 'prompt_tokens': 113, 'total_tokens': 123, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_06737a9306', 'finish_reason': 'stop', 'logprobs': None} id='run-b336e1d9-80f0-4c59-b4aa-6c4bb7e3ae18-0' usage_metadata={'input_tokens': 113, 'output_tokens': 10, 'total_tokens': 123, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+2025-03-17 08:36:35,687 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-03-17 08:36:36,820 - No relevant docs were retrieved using the relevance score threshold 0.75
+2025-03-17 08:36:37,488 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-17 08:36:37,492 - Conversation: [ConversationData(role='user', content='Hej')]
+2025-03-17 08:36:37,492 - Number of Found Documents: 0
+2025-03-17 08:36:37,492 - Found Documents: []
+2025-03-17 08:36:37,493 - Model Response Object: content='Hej! Hur kan jag hjälpa dig idag?' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 10, 'prompt_tokens': 113, 'total_tokens': 123, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_06737a9306', 'finish_reason': 'stop', 'logprobs': None} id='run-df7995dd-b081-49ba-b6a5-52e73dcd37a6-0' usage_metadata={'input_tokens': 113, 'output_tokens': 10, 'total_tokens': 123, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+2025-03-17 08:39:19,446 - 1 change detected
+2025-03-17 08:39:19,447 - WatchFiles detected changes in 'app\services.py'. Reloading...
+2025-03-17 08:39:19,546 - Shutting down
+2025-03-17 08:39:19,654 - Waiting for application shutdown.
+2025-03-17 08:39:19,655 - Application shutdown complete.
+2025-03-17 08:39:19,656 - Finished server process [26244]
+2025-03-17 08:39:20,260 - 1 change detected
+2025-03-17 08:39:21,115 - 5 changes detected
+2025-03-17 08:39:25,701 - 1 change detected
+2025-03-17 08:39:25,702 - WatchFiles detected changes in 'app\services.py'. Reloading...
+2025-03-17 08:39:27,414 - Started server process [16432]
+2025-03-17 08:39:27,417 - Waiting for application startup.
+2025-03-17 08:39:27,417 - Application startup complete.
+2025-03-17 08:39:27,457 - Traceback (most recent call last):
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 686, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\korpo\Documents\DesktopFiles\LiU\Årskurs 3\Chatta med TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 699, in lifespan
+    await receive()
+  File "C:\Users\korpo\Documents\DesktopFiles\LiU\Årskurs 3\Chatta med TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\queues.py", line 158, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2025-03-17 08:39:28,031 - 1 change detected
+2025-03-17 08:39:28,535 - 5 changes detected
+2025-03-17 08:39:33,201 - 1 change detected
+2025-03-17 08:39:33,201 - WatchFiles detected changes in 'app\services.py'. Reloading...
+2025-03-17 08:39:33,700 - Started server process [23716]
+2025-03-17 08:39:33,705 - Waiting for application startup.
+2025-03-17 08:39:33,706 - Application startup complete.
+2025-03-17 08:39:33,709 - Traceback (most recent call last):
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 686, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\korpo\Documents\DesktopFiles\LiU\Årskurs 3\Chatta med TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 699, in lifespan
+    await receive()
+  File "C:\Users\korpo\Documents\DesktopFiles\LiU\Årskurs 3\Chatta med TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\queues.py", line 158, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2025-03-17 08:39:34,297 - 1 change detected
+2025-03-17 08:39:34,749 - 5 changes detected
+2025-03-17 08:39:39,658 - Started server process [23760]
+2025-03-17 08:39:39,661 - Waiting for application startup.
+2025-03-17 08:39:39,662 - Application startup complete.
+2025-03-17 08:39:51,371 - Shutting down
+2025-03-17 08:39:51,479 - Waiting for application shutdown.
+2025-03-17 08:39:51,480 - Application shutdown complete.
+2025-03-17 08:39:51,482 - Finished server process [23760]
+2025-03-17 08:39:51,684 - Stopping reloader process [5740]

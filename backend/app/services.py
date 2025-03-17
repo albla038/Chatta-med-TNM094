@@ -64,7 +64,7 @@ async def handle_conversation(conversation: List[ConversationData]):
   logging.info(f"Found Documents: {found_documents}")
   logging.info(f"Model Response Object: {model_response}")
 
-  return model_response.content
+  return {"content": model_response.content}
 
 async def handle_upload_pdf(file: UploadFile):
   if not file.filename.endswith(".pdf"):

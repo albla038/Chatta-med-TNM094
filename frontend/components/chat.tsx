@@ -72,7 +72,7 @@ export default function Chat() {
         { role: "assistant", content: data.content },
       ]);
 
-      console.log(data);
+      console.log(data.content);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -86,7 +86,10 @@ export default function Chat() {
     <main className="w-full grow flex flex-col justify-end p-8 pb-16 max-w-4xl">
       <ul className="w-full flex flex-col grow items-end gap-4">
         {conversationHistory.map((message, id) => (
-          <li key={id}>
+          <li
+            key={id}
+            className={message.role === "assistant" ? "self-start" : ""}
+          >
             {message.role === "user" ? (
               <UserMessage>{message.content}</UserMessage>
             ) : (
