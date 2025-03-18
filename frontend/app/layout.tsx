@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 export const metadata: Metadata = {
   title: "Chatta med TNM094",
@@ -13,7 +15,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased min-h-svh flex flex-col`}>{children}</body>
+      <body>
+        <SidebarProvider>
+          <AppSidebar />
+          <div className={`antialiased min-h-svh flex flex-col w-full`}>
+            <header>
+              <SidebarTrigger />
+            </header>
+            {children}
+          </div>
+        </SidebarProvider>
+      </body>
     </html>
   );
 }
+
+// return (
+//   <SidebarProvider>
+//     <AppSidebar />
+//     <main>
+//       <SidebarTrigger />
+//       {children}
+//     </main>
+//   </SidebarProvider>
+// )
