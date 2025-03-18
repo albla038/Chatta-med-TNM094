@@ -1,9 +1,8 @@
-from fastapi import FastAPI, status, UploadFile
+from fastapi import FastAPI, HTTPException, status, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from .services import handle_question, handle_upload_pdf
+from .services import handle_question, handle_upload_pdf, handle_upload_webpage
 from .models import QuestionReqBody
 from .vector_db import vector_db
-from .vector_db import retriever
 from .vector_db import find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
@@ -66,3 +65,17 @@ async def upload_pdf(file: UploadFile):
 @app.post("/upload/pdfs")
 async def upload_pdfs(files: list[UploadFile]):
   pass
+
+@app.post("/upload/url")
+async def upload_url(page_url: str):
+  try:
+    result = await handle_upload_webpage(page_url)
+
+  except Exception as e:
+    # Return 400 Bad Request
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail={"error": type(e).__name__, "message": str(e)}
+    )
+
+  return result
