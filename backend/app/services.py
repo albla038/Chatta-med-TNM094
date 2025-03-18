@@ -5,6 +5,7 @@ from fastapi import HTTPException, UploadFile
 import os
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from .utils import filter_document_metadata
 import re
 
 # Define file directory and create it if it doesn't exist
@@ -52,10 +53,12 @@ async def handle_upload_pdf(file: UploadFile):
   text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=1000, chunk_overlap=200, add_start_index=True
   )
-
   all_splits = text_splitter.split_documents(pages)
+  
+  allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
+  all_splits = filter_document_metadata(all_splits, allowed_keys)
+  
   await ingest_documents(all_splits)
-
   
 async def handle_upload_webpage(page_url: str):
   try:
@@ -72,8 +75,11 @@ async def handle_upload_webpage(page_url: str):
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000, chunk_overlap=200, add_start_index=True
     )
-
     all_splits = text_splitter.split_documents(page_content)
+    
+    allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
+    all_splits = filter_document_metadata(all_splits, allowed_keys)
+    
     await ingest_documents(all_splits)
     
     return {"status": "ok", "message": "Webpage uploaded successfully", "url": page_url, "all splits": all_splits}
@@ -81,4 +87,3 @@ async def handle_upload_webpage(page_url: str):
   except Exception as e:
     # Return error
     raise
-
