@@ -2,12 +2,14 @@ from .llm import call_model, call_model_with_conversation
 from .vector_db import vector_db, ingest_documents
 from fastapi import HTTPException, UploadFile
 import os
-from langchain_community.document_loaders import PyPDFLoader 
+from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from .utils import filter_document_metadata
 from .models import ConversationData
 from typing import List
 import logging
+import re
+
 
 # Define file directory and create it if it doesn't exist
 # This directory will be used to store uploaded PDF files
@@ -84,10 +86,37 @@ async def handle_upload_pdf(file: UploadFile):
   text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=1000, chunk_overlap=200, add_start_index=True
   )
-
   all_splits = text_splitter.split_documents(pages)
   
   allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
   all_splits = filter_document_metadata(all_splits, allowed_keys)
-
+  
   await ingest_documents(all_splits)
+  
+async def handle_upload_webpage(page_url: str):
+  try:
+    loader = WebBaseLoader(web_paths=[page_url])
+    page_content = []
+
+    async for doc in loader.alazy_load():
+      # Remove all (\r) 
+      doc.page_content = re.sub(r"\r+", "", doc.page_content)
+      # Normalize excessive newlines (replace 3+ newlines with 2)
+      doc.page_content = re.sub(r'\n{3,}', '\n\n', doc.page_content)
+      page_content.append(doc)
+
+    text_splitter = RecursiveCharacterTextSplitter(
+      chunk_size=1000, chunk_overlap=200, add_start_index=True
+    )
+    all_splits = text_splitter.split_documents(page_content)
+    
+    allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
+    all_splits = filter_document_metadata(all_splits, allowed_keys)
+    
+    await ingest_documents(all_splits)
+    
+    return {"status": "ok", "message": "Webpage uploaded successfully", "url": page_url, "all splits": all_splits}
+
+  except Exception as e:
+    # Return error
+    raise
