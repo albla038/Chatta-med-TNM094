@@ -74,8 +74,8 @@ async def upload_url(page_url: str):
   except Exception as e:
     # Return 400 Bad Request
     raise HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        detail={"error": type(e).__name__, "message": str(e)}
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail={"error": type(e).__name__, "message": str(e)}
     )
 
   return result

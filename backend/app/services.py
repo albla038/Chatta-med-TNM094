@@ -66,14 +66,14 @@ async def handle_upload_webpage(page_url: str):
     page_content = []
 
     async for doc in loader.alazy_load():
-        # Remove all (\r) 
-        doc.page_content = re.sub(r"\r+", "", doc.page_content)
-        # Normalize excessive newlines (replace 3+ newlines with 2)
-        doc.page_content = re.sub(r'\n{3,}', '\n\n', doc.page_content)
-        page_content.append(doc)
+      # Remove all (\r) 
+      doc.page_content = re.sub(r"\r+", "", doc.page_content)
+      # Normalize excessive newlines (replace 3+ newlines with 2)
+      doc.page_content = re.sub(r'\n{3,}', '\n\n', doc.page_content)
+      page_content.append(doc)
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, chunk_overlap=200, add_start_index=True
+      chunk_size=1000, chunk_overlap=200, add_start_index=True
     )
     all_splits = text_splitter.split_documents(page_content)
     
