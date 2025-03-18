@@ -5,6 +5,7 @@ from fastapi import HTTPException, UploadFile
 import os
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+import re
 
 # Define file directory and create it if it doesn't exist
 # This directory will be used to store uploaded PDF files
@@ -17,7 +18,7 @@ async def handle_question(req_body: QuestionReqBody):
   docs_content = "\n".join(doc.page_content for doc in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings Universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat.
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings Universitet.
   Kontext:
   {context}
 
@@ -57,14 +58,27 @@ async def handle_upload_pdf(file: UploadFile):
 
   
 async def handle_upload_webpage(page_url: str):
-  loader = WebBaseLoader(web_paths=[page_url])
-  page_content = []
-  async for doc in loader.alazy_load():
-      page_content.append(doc)
+  try:
+    loader = WebBaseLoader(web_paths=[page_url])
+    page_content = []
 
-  text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000, chunk_overlap=200, add_start_index=True
-  )
+    async for doc in loader.alazy_load():
+        # Remove all (\r) 
+        doc.page_content = re.sub(r"\r+", "", doc.page_content)
+        # Normalize excessive newlines (replace 3+ newlines with 2)
+        doc.page_content = re.sub(r'\n{3,}', '\n\n', doc.page_content)
+        page_content.append(doc)
 
-  all_splits = text_splitter.split_documents(page_content)
-  await ingest_documents(all_splits)
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000, chunk_overlap=200, add_start_index=True
+    )
+
+    all_splits = text_splitter.split_documents(page_content)
+    await ingest_documents(all_splits)
+    
+    return {"status": "ok", "message": "Webpage uploaded successfully", "url": page_url, "page content": page_content}
+
+  except Exception as e:
+    # Return error
+    raise
+

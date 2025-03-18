@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, UploadFile
+from fastapi import FastAPI, HTTPException, status, UploadFile
 from .services import handle_question, handle_upload_pdf, handle_upload_webpage
 from .models import QuestionReqBody
 from .vector_db import vector_db
@@ -54,10 +54,14 @@ async def upload_pdfs(files: list[UploadFile]):
 
 @app.post("/upload/url")
 async def upload_url(page_url: str):
-  await handle_upload_webpage(page_url)
-
-  return {
-    "status": "ok",
-    "message": "Webpage uploaded successfully",
-    "url": page_url
-  }
+    try:
+      result = await handle_upload_webpage(page_url)
+    
+    except Exception as e:
+        # Return 400 Bad Request
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": type(e).__name__, "message": str(e)}
+        )
+    
+    return result
