@@ -76,7 +76,7 @@ async def handle_upload_webpage(page_url: str):
     all_splits = text_splitter.split_documents(page_content)
     await ingest_documents(all_splits)
     
-    return {"status": "ok", "message": "Webpage uploaded successfully", "url": page_url, "page content": page_content}
+    return {"status": "ok", "message": "Webpage uploaded successfully", "url": page_url, "all splits": all_splits}
 
   except Exception as e:
     # Return error
