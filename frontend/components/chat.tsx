@@ -1,31 +1,47 @@
 "use client";
 import { useState } from "react";
 import { ChatInput } from "./chat-input";
-import { UserMessage } from "./user-message";
-import { ClientMessage } from "./client-message";
+import UserMessage from "./user-message";
+import AssistantMessage from "./assistant-message";
+import useLocalStorage from "@/hooks/use-local-storage";
+
+type ResponseData = {
+  content: string;
+};
+
+type ConversationItem = {
+  role: string;
+  content: string;
+};
 
 export default function Chat() {
+  // State
   const [input, setInput] = useState("");
-  const [humanMessage, setHumanMessage] = useState<string | null>(null);
-  const [aiMessage, setAiMessage] = useState<string | null>(null);
+  const [conversationHistory, setConversationHistory] = useLocalStorage<
+    ConversationItem[]
+  >("conversation-history", []);
 
-  type ResponseData = {
-    query: string;
-    content: string;
-    metadata: any;
-  };
-
+  // Send message to the backend and update the conversation history
   async function sendMessage() {
-    setHumanMessage(input);
+    const trimmedInput = input.trim();
+    setInput("");
+    if (trimmedInput.length === 0) {
+      return;
+    }
+
+    const newConversationHistory = [
+      ...conversationHistory,
+      { role: "user", content: input },
+    ];
+    setConversationHistory(newConversationHistory);
+
+    const url = "http://127.0.0.1:8000"; // TODO Change in production
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/ask", {
+      const response = await fetch(`${url}/llm/conversation`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: input,
-          context: "",
-        }),
+        body: JSON.stringify(newConversationHistory),
       });
 
       if (!response.ok) {
@@ -36,26 +52,36 @@ export default function Chat() {
       }
 
       const data = (await response.json()) as ResponseData;
-      setAiMessage(data.content);
-      console.log(data);
+      setConversationHistory((prev) => [
+        ...prev,
+        { role: "assistant", content: data.content },
+      ]);
     } catch (error) {
-      console.error(error.message);
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Unknown error!");
+      }
     }
-
-    setInput("");
   }
 
   return (
     <main className="w-full grow flex flex-col justify-end p-8 pb-16 max-w-4xl">
-      <div className="w-full flex flex-col grow items-end">
-        {humanMessage ? <UserMessage>{humanMessage}</UserMessage> : ""}
-        {aiMessage ? <ClientMessage>{aiMessage}</ClientMessage> : ""}
-      </div>
-      <ChatInput
-        input={input}
-        setInput={setInput}
-        handleClick={sendMessage}
-      ></ChatInput>
+      <ul className="w-full flex flex-col grow items-end gap-4">
+        {conversationHistory.map((message, id) => (
+          <li
+            key={id}
+            className={message.role === "assistant" ? "self-start" : ""}
+          >
+            {message.role === "user" ? (
+              <UserMessage>{message.content}</UserMessage>
+            ) : (
+              <AssistantMessage>{message.content}</AssistantMessage>
+            )}
+          </li>
+        ))}
+      </ul>
+      <ChatInput input={input} setInput={setInput} handleClick={sendMessage} />
     </main>
   );
 }

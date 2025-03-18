@@ -1,25 +1,31 @@
-from .models import QuestionReqBody
-from .llm import call_model
+from .llm import call_model, call_model_with_conversation
 from .vector_db import vector_db, ingest_documents
 from fastapi import HTTPException, UploadFile
 import os
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from .utils import filter_document_metadata
+from .models import ConversationData
+from typing import List
+import logging
 import re
+
 
 # Define file directory and create it if it doesn't exist
 # This directory will be used to store uploaded PDF files
 UPLOAD_DIR = "uploads/pdf"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-async def handle_question(req_body: QuestionReqBody): 
+# Configure logging
+logging.basicConfig(filename="log/app.log", level=logging.INFO, format='%(asctime)s - %(message)s')
+
+async def handle_question(question: str): 
   # Retrive relevant text/inputs from vector database...
-  found_documents = await vector_db.asimilarity_search(req_body.query, k=10)
+  found_documents = await vector_db.asimilarity_search_with_relevance_scores(question, k=10, score_threshold=0.65)
   docs_content = "\n".join(doc.page_content for doc in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings Universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat.
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat, om inte användaren ber om mer information. Svara tydligt och koncist.
   Kontext:
   {context}
 
@@ -28,12 +34,39 @@ async def handle_question(req_body: QuestionReqBody):
 
   context = promt_template.format(context=docs_content)
 
-  model_reponse = await call_model(req_body.query, context)
+  model_reponse = await call_model(question, context)
   return {
-    "query": req_body.query,
+    "query": question,
     "content": model_reponse.content,
     "metadata": model_reponse.response_metadata
   }
+
+async def handle_conversation(conversation: List[ConversationData]): 
+  last_question = conversation[-1].content
+
+  # Retrive relevant text/inputs from vector database...
+  found_documents = await vector_db.asimilarity_search_with_relevance_scores(last_question, k=10, score_threshold=0.75)
+  docs_content = "\n".join(doc.page_content for doc, score in found_documents)
+
+  promt_template = """
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat, om inte användaren ber om mer information. Svara tydligt och koncist.
+  Kontext:
+  {context}
+
+
+  """
+
+  context = promt_template.format(context=docs_content)
+
+  model_response = await call_model_with_conversation(conversation, context)
+
+  # Log the results
+  logging.info(f"Conversation: {conversation}")
+  logging.info(f"Number of Found Documents: {len(found_documents)}")
+  logging.info(f"Found Documents: {found_documents}")
+  logging.info(f"Model Response Object: {model_response}")
+
+  return {"content": model_response.content}
 
 async def handle_upload_pdf(file: UploadFile):
   if not file.filename.endswith(".pdf"):

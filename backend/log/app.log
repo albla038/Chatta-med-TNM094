@@ -1,0 +1,538 @@
+2025-03-15 15:11:51,709 - Will watch for changes in these directories: ['C:\\Users\\alber\\Documents\\LiU\\TNM094\\Chatta-med-TNM094\\backend']
+2025-03-15 15:11:51,712 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-03-15 15:11:51,714 - Started reloader process [17520] using WatchFiles
+2025-03-15 15:12:00,010 - Started server process [8412]
+2025-03-15 15:12:00,019 - Waiting for application startup.
+2025-03-15 15:12:00,022 - Application startup complete.
+2025-03-15 15:14:10,575 - Will watch for changes in these directories: ['C:\\Users\\alber\\Documents\\LiU\\TNM094\\Chatta-med-TNM094\\backend']
+2025-03-15 15:14:10,578 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-03-15 15:14:10,579 - Started reloader process [8772] using WatchFiles
+2025-03-15 15:14:14,801 - Started server process [15652]
+2025-03-15 15:14:14,819 - Waiting for application startup.
+2025-03-15 15:14:14,819 - Application startup complete.
+2025-03-15 15:14:45,183 - Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\fastapi\routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\app\main.py", line 39, in llm_conversation
+    response = await handle_conversation(req_body)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\app\services.py", line 47, in handle_conversation
+    found_documents = await vector_db.asimilarity_search_with_relevance_scores(last_question, k=10, kwargs={"score_threshold": 0.65})
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\langchain_core\vectorstores\base.py", line 603, in asimilarity_search_with_relevance_scores
+    docs_and_similarities = await self._asimilarity_search_with_relevance_scores(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\langchain_core\vectorstores\base.py", line 530, in _asimilarity_search_with_relevance_scores
+    docs_and_scores = await self.asimilarity_search_with_score(query, k, **kwargs)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\langchain_core\vectorstores\base.py", line 477, in asimilarity_search_with_score
+    return await run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\langchain_core\runnables\config.py", line 588, in run_in_executor
+    return await asyncio.get_running_loop().run_in_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\langchain_core\runnables\config.py", line 579, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+TypeError: PineconeVectorStore.similarity_search_with_score() got an unexpected keyword argument 'kwargs'
+2025-03-15 15:16:57,042 - 1 change detected
+2025-03-15 15:16:57,044 - WatchFiles detected changes in 'app\services.py'. Reloading...
+2025-03-15 15:17:32,524 - Shutting down
+2025-03-15 15:17:32,638 - Waiting for application shutdown.
+2025-03-15 15:17:32,640 - Application shutdown complete.
+2025-03-15 15:17:32,642 - Finished server process [15652]
+2025-03-15 15:17:33,408 - 2 changes detected
+2025-03-15 15:17:33,409 - WatchFiles detected changes in 'app\services.py'. Reloading...
+2025-03-15 15:17:37,368 - 5 changes detected
+2025-03-15 15:17:46,722 - Started server process [10560]
+2025-03-15 15:17:46,728 - Waiting for application startup.
+2025-03-15 15:17:46,731 - Application startup complete.
+2025-03-15 15:17:48,620 - Shutting down
+2025-03-15 15:17:48,729 - Waiting for application shutdown.
+2025-03-15 15:17:48,732 - Application shutdown complete.
+2025-03-15 15:17:48,733 - Finished server process [10560]
+2025-03-15 15:17:49,132 - Stopping reloader process [8772]
+2025-03-15 15:18:02,978 - Will watch for changes in these directories: ['C:\\Users\\alber\\Documents\\LiU\\TNM094\\Chatta-med-TNM094\\backend']
+2025-03-15 15:18:02,983 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-03-15 15:18:02,985 - Started reloader process [12860] using WatchFiles
+2025-03-15 15:18:11,184 - Started server process [4224]
+2025-03-15 15:18:11,189 - Waiting for application startup.
+2025-03-15 15:18:11,190 - Application startup complete.
+2025-03-15 15:18:37,380 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-03-15 15:18:39,240 - Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\fastapi\routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\app\main.py", line 39, in llm_conversation
+    response = await handle_conversation(req_body)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\app\services.py", line 48, in handle_conversation
+    docs_content = "\n".join(doc.page_content for doc in found_documents)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\alber\Documents\LiU\TNM094\Chatta-med-TNM094\backend\app\services.py", line 48, in <genexpr>
+    docs_content = "\n".join(doc.page_content for doc in found_documents)
+                             ^^^^^^^^^^^^^^^^
+AttributeError: 'tuple' object has no attribute 'page_content'
+2025-03-15 15:21:49,630 - 1 change detected
+2025-03-15 15:21:49,632 - WatchFiles detected changes in 'app\services.py'. Reloading...
+2025-03-15 15:22:41,086 - Shutting down
+2025-03-15 15:22:41,218 - Waiting for application shutdown.
+2025-03-15 15:22:41,221 - Application shutdown complete.
+2025-03-15 15:22:41,224 - Finished server process [4224]
+2025-03-15 15:22:42,069 - 1 change detected
+2025-03-15 15:22:43,285 - 5 changes detected
+2025-03-15 15:22:49,372 - Started server process [15060]
+2025-03-15 15:22:49,376 - Waiting for application startup.
+2025-03-15 15:22:49,378 - Application startup complete.
+2025-03-15 15:23:32,431 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-03-15 15:23:34,683 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-15 15:23:34,716 - Conversation: [ConversationData(role='user', content='Test')]
+2025-03-15 15:23:34,716 - Found Documents: [(Document(id='62076daa-09b8-4abb-b2f6-e782820fecad', metadata={'page': 29.0, 'page_label': '30', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Lisam\n• Demo och genomgång.'), 0.6597998885)]
+2025-03-15 15:23:34,717 - Model Response Object: content='Det ser ut som att du testar systemet. Hur kan jag hjälpa dig?' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 17, 'prompt_tokens': 122, 'total_tokens': 139, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_06737a9306', 'finish_reason': 'stop', 'logprobs': None} id='run-9b65cabe-1ff5-4739-85a2-c3b41d1e5717-0' usage_metadata={'input_tokens': 122, 'output_tokens': 17, 'total_tokens': 139, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+2025-03-15 15:23:42,769 - 1 change detected
+2025-03-15 15:23:43,125 - 1 change detected
+2025-03-15 15:23:43,478 - 1 change detected
+2025-03-15 15:23:43,843 - 1 change detected
+2025-03-15 15:23:44,210 - 1 change detected
+2025-03-15 15:23:44,594 - 1 change detected
+2025-03-15 15:23:44,955 - 1 change detected
+2025-03-15 15:23:45,311 - 1 change detected
+2025-03-15 15:23:45,675 - 1 change detected
+2025-03-15 15:23:46,028 - 1 change detected
+2025-03-15 15:23:46,391 - 1 change detected
+2025-03-15 15:23:46,747 - 1 change detected
+2025-03-15 15:23:47,109 - 1 change detected
+2025-03-15 15:23:47,474 - 1 change detected
+2025-03-15 15:23:47,833 - 1 change detected
+2025-03-15 15:23:48,185 - 1 change detected
+2025-03-15 15:23:48,550 - 1 change detected
+2025-03-15 15:23:48,913 - 1 change detected
+2025-03-15 15:23:49,272 - 1 change detected
+2025-03-15 15:23:49,630 - 1 change detected
+2025-03-15 15:23:49,986 - 1 change detected
+2025-03-15 15:23:50,344 - 1 change detected
+2025-03-15 15:23:50,702 - 1 change detected
+2025-03-15 15:23:51,058 - 1 change detected
+2025-03-15 15:23:51,423 - 1 change detected
+2025-03-15 15:23:51,781 - 1 change detected
+2025-03-15 15:23:52,141 - 1 change detected
+2025-03-15 15:23:52,494 - 1 change detected
+2025-03-15 15:23:52,847 - 1 change detected
+2025-03-15 15:23:53,206 - 1 change detected
+2025-03-15 15:23:53,571 - 1 change detected
+2025-03-15 15:23:53,925 - 1 change detected
+2025-03-15 15:23:54,283 - 1 change detected
+2025-03-15 15:23:54,653 - 1 change detected
+2025-03-15 15:23:55,016 - 1 change detected
+2025-03-15 15:23:55,382 - 1 change detected
+2025-03-15 15:23:55,740 - 1 change detected
+2025-03-15 15:23:56,094 - 1 change detected
+2025-03-15 15:23:56,456 - 1 change detected
+2025-03-15 15:23:56,822 - 1 change detected
+2025-03-15 15:23:57,183 - 1 change detected
+2025-03-15 15:23:57,545 - 1 change detected
+2025-03-15 15:23:57,905 - 1 change detected
+2025-03-15 15:23:58,257 - 1 change detected
+2025-03-15 15:23:58,609 - 1 change detected
+2025-03-15 15:23:58,988 - 1 change detected
+2025-03-15 15:23:59,342 - 1 change detected
+2025-03-15 15:23:59,708 - 1 change detected
+2025-03-15 15:24:00,074 - 1 change detected
+2025-03-15 15:24:00,442 - 1 change detected
+2025-03-15 15:24:00,796 - 1 change detected
+2025-03-15 15:24:01,154 - 1 change detected
+2025-03-15 15:24:01,507 - 1 change detected
+2025-03-15 15:24:01,872 - 1 change detected
+2025-03-15 15:24:02,231 - 1 change detected
+2025-03-15 15:24:02,586 - 1 change detected
+2025-03-15 15:24:02,950 - 1 change detected
+2025-03-15 15:24:03,311 - 1 change detected
+2025-03-15 15:24:03,668 - 1 change detected
+2025-03-15 15:24:04,025 - 1 change detected
+2025-03-15 15:24:04,387 - 1 change detected
+2025-03-15 15:24:04,748 - 1 change detected
+2025-03-15 15:24:05,103 - 1 change detected
+2025-03-15 15:24:05,458 - 1 change detected
+2025-03-15 15:24:05,810 - 1 change detected
+2025-03-15 15:24:06,176 - 1 change detected
+2025-03-15 15:24:06,535 - 1 change detected
+2025-03-15 15:24:06,895 - 1 change detected
+2025-03-15 15:24:07,254 - 1 change detected
+2025-03-15 15:24:07,620 - 1 change detected
+2025-03-15 15:24:07,989 - 1 change detected
+2025-03-15 15:24:08,353 - 1 change detected
+2025-03-15 15:24:08,710 - 1 change detected
+2025-03-15 15:24:09,064 - 1 change detected
+2025-03-15 15:24:09,430 - 1 change detected
+2025-03-15 15:24:09,800 - 1 change detected
+2025-03-15 15:24:10,167 - 1 change detected
+2025-03-15 15:24:10,524 - 1 change detected
+2025-03-15 15:24:10,885 - 1 change detected
+2025-03-15 15:24:11,196 - Shutting down
+2025-03-15 15:24:11,305 - Waiting for application shutdown.
+2025-03-15 15:24:11,308 - Application shutdown complete.
+2025-03-15 15:24:11,310 - Finished server process [15060]
+2025-03-15 15:24:11,774 - Stopping reloader process [12860]
+2025-03-15 15:26:27,928 - Will watch for changes in these directories: ['C:\\Users\\alber\\Documents\\LiU\\TNM094\\Chatta-med-TNM094\\backend']
+2025-03-15 15:26:27,931 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-03-15 15:26:27,933 - Started reloader process [10516] using WatchFiles
+2025-03-15 15:26:35,786 - Started server process [6460]
+2025-03-15 15:26:35,792 - Waiting for application startup.
+2025-03-15 15:26:35,793 - Application startup complete.
+2025-03-15 15:26:37,302 - 1 change detected
+2025-03-15 15:26:37,654 - 1 change detected
+2025-03-15 15:26:38,011 - 1 change detected
+2025-03-15 15:26:38,369 - 1 change detected
+2025-03-15 15:26:38,727 - 1 change detected
+2025-03-15 15:26:39,092 - 1 change detected
+2025-03-15 15:26:39,448 - 1 change detected
+2025-03-15 15:26:39,812 - 1 change detected
+2025-03-15 15:26:40,178 - 1 change detected
+2025-03-15 15:26:40,534 - 1 change detected
+2025-03-15 15:26:40,893 - 1 change detected
+2025-03-15 15:26:41,257 - 1 change detected
+2025-03-15 15:26:41,615 - 1 change detected
+2025-03-15 15:26:41,980 - 1 change detected
+2025-03-15 15:26:42,345 - 1 change detected
+2025-03-15 15:26:42,698 - 1 change detected
+2025-03-15 15:26:42,872 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-03-15 15:26:43,060 - 1 change detected
+2025-03-15 15:26:43,413 - 1 change detected
+2025-03-15 15:26:43,769 - 1 change detected
+2025-03-15 15:26:44,136 - 1 change detected
+2025-03-15 15:26:44,494 - 1 change detected
+2025-03-15 15:26:44,819 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-15 15:26:44,845 - Conversation: [ConversationData(role='user', content='Kan du skriva den individuella rapporten åt mig?')]
+2025-03-15 15:26:44,846 - Found Documents: [(Document(id='4c43eaae-e807-49ae-8e09-8e6568c5fd75', metadata={'page': 22.0, 'page_label': '23', 'source': 'uploads/pdf\\lecture-01_Introduktion.pdf', 'start_index': 0.0, 'timestamp': '2025-03-13T11:11:28.651768', 'title': 'PowerPoint Presentation', 'total_pages': 28.0}, page_content='Att tänka när du skriver din \nindividuella rapport\n• Vad presenterar du?\n• Ge kontext\n• Få läsaren intresserad snabbt\n• Vad bidrar ditt arbete med?\n• Vad är det vetenskapliga värdet, vad visar du?\n• För vem, målgrupp?\n• Lägg din nivå lite under förväntade läsares nivå'), 0.8013135495), (Document(id='80dc8ce6-5c3c-45d6-9e62-3416ffaee61c', metadata={'page': 17.0, 'page_label': '18', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Individuell rapport\n1,5 hp = 40 h arbetstid\nTvå delar\n• Teknisk utredning\n• Utred olika tekniska lösningar eller hur gruppen bör arbeta\n• Använd resultatet av utredningen i projektplanen\n• Projektplan\n• Planera utvecklingsprojektet med frihet att inkludera egna \nvisioner\n• Utnyttja teorier för att skapa en bra plan\nEn rapport\n…som i detalj beskriver den personliga planen och motiverar \nval utifrån teorier och praxis'), 0.790311), (Document(id='c2b75b53-eade-4343-8125-8069680b01e6', metadata={'page': 23.0, 'page_label': '24', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Etik och regler\nIndividuell rapport och opposition\n• Diskutera med varandra om uppdraget\n• Kopiera inte text mellan varandra\n• Dina rapporter ska vara skrivna av dig (från tanke till ord)\n• Citat, tabeller, bilder, figurer, etc. ska innehålla referenser\n• Upphovsrätt gäller; följ lagar och förordningar\nProjektdokumentation och –rapporter\n• Upphovsrätt gäller även här; följ lagar och förordningar\nPlagiering: vad är ok att återanvända i den här kursen? VIKTIGT!!!\nIndividuell rapport -> gemensam projektplan (ok)\nGemensam projektplan -> Projektrapport (ok)\nIndividuell rapport <- gemensam projektplan (ej ok, om inte DU helt har \nskrivit texten)'), 0.7867019774999999), (Document(id='18eda7cf-9598-4e6b-8cd9-155ff24e5f9b', metadata={'page': 18.0, 'page_label': '19', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Individuell rapport\n• Examination\n\u2012 Språklig bedömning av ISV/Språkverkstaden\n• Bra stavning, grammatik, flöde och struktur krävs\n• Språkligt godkänt krävs för godkänt på uppgiften\n\u2012 Teknisk bedömning av tekniskt lärarlag\n• Rättas enligt mall som ni har tillgång till och ska använda\n\u2012 Komplettering\n• En andra rättning av komplettering sker under HT1'), 0.7682789565), (Document(id='b4b3c813-a8b7-4f89-890c-488c65b2166c', metadata={'page': 10.0, 'page_label': '11', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Svenskastrimman\n• Språkligt stöd\n– Föreläsning om rapportskrivande\n– Stöd i rapportskrivande\n– Rättning av rapporter\n– Återkoppling och tips\n– Viktigt: Dyslexi eller dylikt? Be om hjälp om du \nkänner att det behövs och/eller lämna en kommentar i \ninlämningen.\n• Biblioteket (Tatiana Liljeström)\n• Informationssökning\n• Antiplagiering/referenshantering\nVictoria Pihlgren'), 0.7449771315), (Document(id='f1567ad5-da29-4d0d-81cb-7104bdffcc60', metadata={'page': 15.0, 'page_label': '16', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Viktiga milstolpar för projektet\n• Kundkontakt\n• Projektplan\n• Avstämningar\n• Färdig projektrapport (2x)\n• Slutseminarium\nViktiga personliga hållpunkter\n• Individuell rapport (2x) – lärt er inför andra inlämningen\n• Opponeringsrapport'), 0.7443382145), (Document(id='b1cf0799-3c14-4bda-a45b-09c7a1bbfb89', metadata={'page': 16.0, 'page_label': '17', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Första två veckorna i projektet\n• Uppstartsmöte för gruppen\n• Kundkontakt\n• Fördela ansvarsområden för undersökning av lösningar\n• Sätt upp versionshantering och bjud in mig\nSe till att ni kan rivstarta efter individuell rapport'), 0.7404563725), (Document(id='294562ba-bdf8-4892-8781-dfd42fffd1e7', metadata={'page': 28.0, 'page_label': '29', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 1520.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='projekten. Inga slackers accepteras! (Detta sägs i introduktionsföreläsningen)\nUrval av ändringar \n• Lagt till bedömningskriterier (se kursinformation)\n• Individuell rapport\n\u2012 Delat upp rapporten i två delar för att bättre efterlikna en projektplan i ett företag. Mer instruktioner i mallen.\n\u2012 Uppdaterat bedömningsmall för att bättre reflektera bedömningskriterierna.\n• Laborationer\n\u2012 Arbetat igenom instruktionerna för laboration 2 – förkortat ett moment. \n\u2012 Lagt till förberedelseinstruktioner i studieguiden.\n\u2012 Tydligare instruktioner när varje labb förväntas vara klar (se kursöversikt).\n\u2012 Tänk på att arbeta utanför schemalagd tid'), 0.736632541), (Document(id='79e2c969-4d99-4756-ba52-fa53979afa2b', metadata={'page': 19.0, 'page_label': '20', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Individuella rapporter -> Gemensam plan\nInnan ett projekt påbörjas behövs en plan…\n• Skapa en gemensam projektplan\n• Kom överens utifrån era individuella planer\n• Utnyttja teorier för att skapa en bra plan\n• Viktigt att tänka på\n• Alla projekt ska följa iterativ struktur\n• Alla projekt ska använda principer för systemutveckling\n• Alla är utvecklare med bisysslor och ansvarsområden\n• En enda person har yttersta ansvar för varje viktig aspekt\n• Alla förändringar i plan och organisation ska ske explicit\n• Spara material kontinuerligt \n• dokumentera vad som gjorts varje vecka för att kunna \njämföra med ursprungsplanen'), 0.734253973), (Document(id='6cff6448-8a9f-411e-ba67-363a67e1f2ce', metadata={'page': 26.0, 'page_label': '27', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 1622.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='- Använder korrekt språkbruk i skriftlig rapport.\n- Aktivt deltar i muntlig redovisning.\nPRA1\nkritiskt granska och diskutera ett framlagt arbete L6 - Diskuterar hur framlagt arbete har arbetet med systemutveckling.\n- Kan ge konstruktiva förslag på förbättringar av framlagt arbete.\nUPG2\nrelatera sitt arbete till relevanta samhälleliga och etiska aspekter L7 - Beskriver hur ett givet problem och/eller lösningar relaterar till samhälleliga och etiska \naspekter.\nUPG1\ntillämpa etablerade protokoll för utvecklingsprojekt (projektstyrning, kravhantering, \nsystemarkitektur, programdesign, implementation, dokumentation, test, underhåll)\nL8 - Beskriver hur etablerade protokoll kan appliceras i ett utvecklingsprojekt \n- Beskriver översiktligt systemarkitektur visuellt med etablerade diagram.\nUPG1\n- Kan göra programdesign för ett enkelt system.\n- Använder grundläggande principer från testdriven utveckling för att införa ny funktionalitet.'), 0.7296678125)]
+2025-03-15 15:26:44,847 - Model Response Object: content='Jag kan tyvärr inte skriva din individuella rapport åt dig. Du måste själv formulera dina tankar och idéer, men jag kan gärna hjälpa till med vägledning och svara på specifika frågor om rapporten.' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 47, 'prompt_tokens': 1481, 'total_tokens': 1528, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_06737a9306', 'finish_reason': 'stop', 'logprobs': None} id='run-ad16a3ec-7f13-4a9d-b883-6422b9d59913-0' usage_metadata={'input_tokens': 1481, 'output_tokens': 47, 'total_tokens': 1528, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+2025-03-15 15:26:44,851 - 1 change detected
+2025-03-15 15:26:45,216 - 1 change detected
+2025-03-15 15:26:45,574 - 1 change detected
+2025-03-15 15:26:45,936 - 1 change detected
+2025-03-15 15:26:46,300 - 1 change detected
+2025-03-15 15:26:46,654 - 1 change detected
+2025-03-15 15:26:47,011 - 1 change detected
+2025-03-15 15:26:47,365 - 1 change detected
+2025-03-15 15:26:47,722 - 1 change detected
+2025-03-15 15:26:48,077 - 1 change detected
+2025-03-15 15:26:48,439 - 1 change detected
+2025-03-15 15:26:48,806 - 1 change detected
+2025-03-15 15:26:49,166 - 1 change detected
+2025-03-15 15:26:49,527 - 1 change detected
+2025-03-15 15:26:49,890 - 1 change detected
+2025-03-15 15:26:50,247 - 1 change detected
+2025-03-15 15:26:50,601 - 1 change detected
+2025-03-15 15:26:50,959 - 1 change detected
+2025-03-15 15:26:51,320 - 1 change detected
+2025-03-15 15:26:51,677 - 1 change detected
+2025-03-15 15:26:52,032 - 1 change detected
+2025-03-15 15:26:52,386 - 1 change detected
+2025-03-15 15:26:52,748 - 1 change detected
+2025-03-15 15:26:53,110 - 1 change detected
+2025-03-15 15:26:53,464 - 1 change detected
+2025-03-15 15:26:53,817 - 1 change detected
+2025-03-15 15:26:54,175 - 1 change detected
+2025-03-15 15:26:54,528 - 1 change detected
+2025-03-15 15:26:54,881 - 1 change detected
+2025-03-15 15:26:55,236 - 1 change detected
+2025-03-15 15:26:55,597 - 1 change detected
+2025-03-15 15:26:55,956 - 1 change detected
+2025-03-15 15:26:56,310 - 1 change detected
+2025-03-15 15:26:56,673 - 1 change detected
+2025-03-15 15:26:57,029 - 1 change detected
+2025-03-15 15:26:57,388 - 1 change detected
+2025-03-15 15:26:57,749 - 1 change detected
+2025-03-15 15:26:58,114 - 1 change detected
+2025-03-15 15:26:58,474 - 1 change detected
+2025-03-15 15:26:58,836 - 1 change detected
+2025-03-15 15:26:59,191 - 1 change detected
+2025-03-15 15:26:59,554 - 1 change detected
+2025-03-15 15:26:59,920 - 1 change detected
+2025-03-15 15:27:00,284 - 1 change detected
+2025-03-15 15:27:00,637 - 1 change detected
+2025-03-15 15:27:01,000 - 1 change detected
+2025-03-15 15:27:01,361 - 1 change detected
+2025-03-15 15:27:01,727 - 1 change detected
+2025-03-15 15:27:02,082 - 1 change detected
+2025-03-15 15:27:02,446 - 1 change detected
+2025-03-15 15:27:02,805 - 1 change detected
+2025-03-15 15:27:03,159 - 1 change detected
+2025-03-15 15:27:03,524 - 1 change detected
+2025-03-15 15:27:03,879 - 1 change detected
+2025-03-15 15:27:04,240 - 1 change detected
+2025-03-15 15:27:04,598 - 1 change detected
+2025-03-15 15:27:04,962 - 1 change detected
+2025-03-15 15:27:05,324 - 1 change detected
+2025-03-15 15:27:05,678 - 1 change detected
+2025-03-15 15:27:06,035 - 1 change detected
+2025-03-15 15:27:06,390 - 1 change detected
+2025-03-15 15:27:06,755 - 1 change detected
+2025-03-15 15:27:07,116 - 1 change detected
+2025-03-15 15:27:07,471 - 1 change detected
+2025-03-15 15:27:07,824 - 1 change detected
+2025-03-15 15:27:08,182 - 1 change detected
+2025-03-15 15:27:08,536 - 1 change detected
+2025-03-15 15:27:08,682 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-03-15 15:27:08,897 - 1 change detected
+2025-03-15 15:27:09,257 - 1 change detected
+2025-03-15 15:27:09,613 - 1 change detected
+2025-03-15 15:27:09,804 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-15 15:27:09,809 - Conversation: [ConversationData(role='user', content='Kan du skriva den individuella rapporten åt mig?'), ConversationData(role='assistant', content='Jag kan tyvärr inte skriva din individuella rapport åt dig. Du måste själv formulera dina tankar och idéer, men jag kan gärna hjälpa till med vägledning och svara på specifika frågor om rapporten.'), ConversationData(role='user', content='Varför då?')]
+2025-03-15 15:27:09,810 - Found Documents: [(Document(id='08a1f7bc-105d-424c-9c65-c9ada7a7300d', metadata={'page': 2.0, 'page_label': '3', 'source': 'uploads/pdf\\lecture-01_Introduktion.pdf', 'start_index': 0.0, 'timestamp': '2025-03-13T11:11:28.651768', 'title': 'PowerPoint Presentation', 'total_pages': 28.0}, page_content='Varför är det svårt att utveckla \nmjukvarusystem?\n• Varför behöver vi systemutveckling?\n• Hur kan vi komma fram till krav på ett system?\n• Hur planerar vi för att utveckla ett system?\n• Hur gör vi för att leverera rätt sak och i tid?'), 0.707782656), (Document(id='4b1e1f05-3191-4612-add8-17d2f39756a6', metadata={'page': 1.0, 'page_label': '2', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Men först lite om mig'), 0.7065318675), (Document(id='8156ecde-00c2-416f-afe6-de037aeaf307', metadata={'page': 8.0, 'page_label': '9', 'source': 'uploads/pdf\\lecture-01_Introduktion.pdf', 'start_index': 0.0, 'timestamp': '2025-03-13T11:11:28.651768', 'title': 'PowerPoint Presentation', 'total_pages': 28.0}, page_content='Systemutveckling är problemlösning\n• Uppfyll angivna behov\n• Vilka behov? Angivna av vem? Varför?\n• Producera en högkvalitativ produkt\n• Vilken typ av kvalitet? För vem?\n• Kvalitet bara nu eller även i ett längre perspektiv?\n• Under begränsningar\n• Tidsbegränsning\n• Begränsade resurser\n• Andra begränsningar\n[Pfleeger]'), 0.696342945), (Document(id='f0c9cd51-a1d7-4572-8ef5-b21e8a6e0de3', metadata={'page': 10.0, 'page_label': '11', 'source': 'uploads/pdf\\lecture-01_Introduktion.pdf', 'start_index': 0.0, 'timestamp': '2025-03-13T11:11:28.651768', 'title': 'PowerPoint Presentation', 'total_pages': 28.0}, page_content='Några viktiga termer\nintressent: någon som har intresse i eller på \nannat sätt påverkar systemets utveckling\nslutanvändare: den person eller organisation \nsom förväntas använda systemet\nkund: den person eller organisation som betalar \nför utvecklingen av systemet\nmålplattform: hårdvara/mjukvara/operativsystem \nhos slutanvändare \n[Pfleeger]'), 0.6946083755), (Document(id='50ae8538-3dae-429d-9767-2ad1ccf6641e', metadata={'page': 9.0, 'page_label': '10', 'source': 'uploads/pdf\\lecture-01_Introduktion.pdf', 'start_index': 0.0, 'timestamp': '2025-03-13T11:11:28.651768', 'title': 'PowerPoint Presentation', 'total_pages': 28.0}, page_content='Kvalitetsaspekter\nFör slutanvändaren\n• Systemet uppfyller syftet\nFör utvecklaren\n• Systemet uppfyller specifikationen\n• Systemet uppfyller kontraktet\nFör IT-support\n• Systemet behöver lite underhåll och utbildning\nFör kunden\n• Systemet genererar inkomst (ekonomiskt värde)\n• Systemet skapar PR-värde\n[Pfleeger]'), 0.686056167), (Document(id='4c43eaae-e807-49ae-8e09-8e6568c5fd75', metadata={'page': 22.0, 'page_label': '23', 'source': 'uploads/pdf\\lecture-01_Introduktion.pdf', 'start_index': 0.0, 'timestamp': '2025-03-13T11:11:28.651768', 'title': 'PowerPoint Presentation', 'total_pages': 28.0}, page_content='Att tänka när du skriver din \nindividuella rapport\n• Vad presenterar du?\n• Ge kontext\n• Få läsaren intresserad snabbt\n• Vad bidrar ditt arbete med?\n• Vad är det vetenskapliga värdet, vad visar du?\n• För vem, målgrupp?\n• Lägg din nivå lite under förväntade läsares nivå'), 0.6855021565), (Document(id='b650552e-0b3a-44ec-86f5-ba80307860b8', metadata={'page': 14.0, 'page_label': '15', 'source': 'uploads/pdf\\lecture-01_Introduktion.pdf', 'start_index': 0.0, 'timestamp': '2025-03-13T11:11:28.651768', 'title': 'PowerPoint Presentation', 'total_pages': 28.0}, page_content='Utvecklingsprocessen/-er\n• Guidande principer och restriktioner\n• För att optimera arbete och kommunikation\n• För att hitta problem tidigt\n• Processbeskrivning\n• För att hitta inkonsekvens\n• För att hitta redundans\n• För att identifiera ouppfyllda behov\n• För en gemensam förståelse\n• För att återskapa en fungerande process\n[Pfleeger]'), 0.684756398), (Document(id='e581dee1-10b1-47be-8951-14fc5d8ae7ca', metadata={'page': 20.0, 'page_label': '21', 'source': 'uploads/pdf\\lecture-01_Introduktion.pdf', 'start_index': 0.0, 'timestamp': '2025-03-13T11:11:28.651768', 'title': 'PowerPoint Presentation', 'total_pages': 28.0}, page_content='Overhead i utvecklingsprojekt\n• Ökar med ökad storlek och komplexitet\n• Fel som behöver rättas\n• Strukturer som behöver implementeras\n• Delar som behöver förklaras\n• Minskas av tekniker inom systemutveckling\n• Planering, processer och rutiner\n• Strukturering, modellering och dokumentation\n• Möten\n• …'), 0.6833051295), (Document(id='0e3ce70d-9141-42a1-a45f-4da18a5f94b7', metadata={'page': 13.0, 'page_label': '14', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Laborationer\nVald programvara\nFör en grundläggande förståelse och erfarenhet - inte för att lära sig specifika \nverktyg eller menyer\nHur kan vi få en jämn fördelning?'), 0.682433769), (Document(id='af092f64-1dbe-47bc-839c-65f637986a97', metadata={'page': 14.0, 'page_label': '15', 'source': 'uploads/pdf\\lecture-00_Kursinformation.pdf', 'start_index': 0.0, 'title': 'PowerPoint Presentation', 'total_pages': 31.0}, page_content='Utvecklingsprojekt\nMål och syfte\n• Primärt: lära sig och examineras i systemutveckling\n• Primärt: använda och visa på medieteknisk kunskap\n• Primärt: Lära sig vetenskapligt arbete (utreda & utvärdera)\n• Sekundärt: producera fungerande programvara\nSteg\nteorier + idéer + visioner\n\u2192 individuell plan \u2192 gemensam plan \u2192 arbete'), 0.682177678)]
+2025-03-15 15:27:09,810 - Model Response Object: content='Det är viktigt att du själv skriver din rapport för att utveckla dina egna färdigheter i systemutveckling och vetenskapligt arbete. Dessutom ska rapporten reflektera dina egna insikter och analyser, vilket är centralt för lärandeprocessen. Jag kan hjälpa dig med tips och råd om du behöver!' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 68, 'prompt_tokens': 943, 'total_tokens': 1011, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_06737a9306', 'finish_reason': 'stop', 'logprobs': None} id='run-93d3c25a-cbcb-4185-9f73-9e8f011dc4b0-0' usage_metadata={'input_tokens': 943, 'output_tokens': 68, 'total_tokens': 1011, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+2025-03-15 15:27:09,980 - 1 change detected
+2025-03-15 15:27:10,348 - 1 change detected
+2025-03-15 15:27:10,715 - 1 change detected
+2025-03-15 15:27:11,068 - 1 change detected
+2025-03-15 15:27:11,424 - 1 change detected
+2025-03-15 15:27:11,779 - 1 change detected
+2025-03-15 15:27:12,136 - 1 change detected
+2025-03-15 15:27:12,494 - 1 change detected
+2025-03-15 15:27:12,848 - 1 change detected
+2025-03-15 15:27:13,205 - 1 change detected
+2025-03-15 15:27:13,559 - 1 change detected
+2025-03-15 15:27:13,916 - 1 change detected
+2025-03-15 15:27:14,271 - 1 change detected
+2025-03-15 15:27:14,628 - 1 change detected
+2025-03-15 15:27:14,981 - 1 change detected
+2025-03-15 15:27:15,337 - 1 change detected
+2025-03-15 15:27:15,695 - 1 change detected
+2025-03-15 15:27:16,055 - 1 change detected
+2025-03-15 15:27:16,410 - 1 change detected
+2025-03-15 15:27:16,765 - 1 change detected
+2025-03-15 15:27:17,157 - Shutting down
+2025-03-15 15:27:17,266 - Waiting for application shutdown.
+2025-03-15 15:27:17,269 - Application shutdown complete.
+2025-03-15 15:27:17,272 - Finished server process [6460]
+2025-03-15 15:27:18,077 - Stopping reloader process [10516]
+2025-03-15 15:58:22,008 - Started server process [22168]
+2025-03-15 15:58:22,012 - Waiting for application startup.
+2025-03-15 15:58:22,014 - Application startup complete.
+2025-03-15 16:13:43,679 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-03-15 16:13:45,430 - No relevant docs were retrieved using the relevance score threshold 0.75
+2025-03-15 16:13:46,534 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-15 16:13:46,560 - Conversation: [ConversationData(role='user', content='test'), ConversationData(role='user', content='hej')]
+2025-03-15 16:13:46,561 - Number of Found Documents: 0
+2025-03-15 16:13:46,561 - Found Documents: []
+2025-03-15 16:13:46,561 - Model Response Object: content='Hej! Hur kan jag hjälpa dig idag?' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 10, 'prompt_tokens': 118, 'total_tokens': 128, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_06737a9306', 'finish_reason': 'stop', 'logprobs': None} id='run-6f770f06-301a-4d62-a41f-386bf87eb3a9-0' usage_metadata={'input_tokens': 118, 'output_tokens': 10, 'total_tokens': 128, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+2025-03-15 16:14:07,421 - Shutting down
+2025-03-15 16:14:07,529 - Waiting for application shutdown.
+2025-03-15 16:14:07,532 - Application shutdown complete.
+2025-03-15 16:14:07,533 - Finished server process [22168]
+2025-03-16 18:18:29,561 - Will watch for changes in these directories: ['C:\\Users\\korpo\\Documents\\DesktopFiles\\LiU\\Årskurs 3\\Chatta med TNM094\\Chatta-med-TNM094\\backend']
+2025-03-16 18:18:29,564 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-03-16 18:18:29,568 - Started reloader process [9952] using WatchFiles
+2025-03-16 18:18:35,267 - Started server process [23684]
+2025-03-16 18:18:35,271 - Waiting for application startup.
+2025-03-16 18:18:35,274 - Application startup complete.
+2025-03-16 18:19:15,194 - Shutting down
+2025-03-16 18:19:15,302 - Waiting for application shutdown.
+2025-03-16 18:19:15,305 - Application shutdown complete.
+2025-03-16 18:19:15,307 - Finished server process [23684]
+2025-03-16 18:19:15,622 - Stopping reloader process [9952]
+2025-03-16 18:19:37,427 - Will watch for changes in these directories: ['C:\\Users\\korpo\\Documents\\DesktopFiles\\LiU\\Årskurs 3\\Chatta med TNM094\\Chatta-med-TNM094\\backend']
+2025-03-16 18:19:37,430 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-03-16 18:19:37,431 - Started reloader process [24096] using WatchFiles
+2025-03-16 18:19:43,950 - Started server process [24744]
+2025-03-16 18:19:43,953 - Waiting for application startup.
+2025-03-16 18:19:43,955 - Application startup complete.
+2025-03-17 08:29:56,614 - Will watch for changes in these directories: ['C:\\Users\\korpo\\Documents\\DesktopFiles\\LiU\\Årskurs 3\\Chatta med TNM094\\Chatta-med-TNM094\\backend']
+2025-03-17 08:29:56,616 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-03-17 08:29:56,617 - Started reloader process [5740] using WatchFiles
+2025-03-17 08:30:01,768 - Started server process [26244]
+2025-03-17 08:30:01,771 - Waiting for application startup.
+2025-03-17 08:30:01,772 - Application startup complete.
+2025-03-17 08:30:37,003 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-03-17 08:30:38,057 - No relevant docs were retrieved using the relevance score threshold 0.75
+2025-03-17 08:30:38,977 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-17 08:30:39,006 - Conversation: [ConversationData(role='user', content='Hej')]
+2025-03-17 08:30:39,006 - Number of Found Documents: 0
+2025-03-17 08:30:39,006 - Found Documents: []
+2025-03-17 08:30:39,006 - Model Response Object: content='Hej! Hur kan jag hjälpa dig idag?' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 10, 'prompt_tokens': 113, 'total_tokens': 123, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_06737a9306', 'finish_reason': 'stop', 'logprobs': None} id='run-b336e1d9-80f0-4c59-b4aa-6c4bb7e3ae18-0' usage_metadata={'input_tokens': 113, 'output_tokens': 10, 'total_tokens': 123, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+2025-03-17 08:36:35,687 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-03-17 08:36:36,820 - No relevant docs were retrieved using the relevance score threshold 0.75
+2025-03-17 08:36:37,488 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-17 08:36:37,492 - Conversation: [ConversationData(role='user', content='Hej')]
+2025-03-17 08:36:37,492 - Number of Found Documents: 0
+2025-03-17 08:36:37,492 - Found Documents: []
+2025-03-17 08:36:37,493 - Model Response Object: content='Hej! Hur kan jag hjälpa dig idag?' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 10, 'prompt_tokens': 113, 'total_tokens': 123, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_06737a9306', 'finish_reason': 'stop', 'logprobs': None} id='run-df7995dd-b081-49ba-b6a5-52e73dcd37a6-0' usage_metadata={'input_tokens': 113, 'output_tokens': 10, 'total_tokens': 123, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+2025-03-17 08:39:19,446 - 1 change detected
+2025-03-17 08:39:19,447 - WatchFiles detected changes in 'app\services.py'. Reloading...
+2025-03-17 08:39:19,546 - Shutting down
+2025-03-17 08:39:19,654 - Waiting for application shutdown.
+2025-03-17 08:39:19,655 - Application shutdown complete.
+2025-03-17 08:39:19,656 - Finished server process [26244]
+2025-03-17 08:39:20,260 - 1 change detected
+2025-03-17 08:39:21,115 - 5 changes detected
+2025-03-17 08:39:25,701 - 1 change detected
+2025-03-17 08:39:25,702 - WatchFiles detected changes in 'app\services.py'. Reloading...
+2025-03-17 08:39:27,414 - Started server process [16432]
+2025-03-17 08:39:27,417 - Waiting for application startup.
+2025-03-17 08:39:27,417 - Application startup complete.
+2025-03-17 08:39:27,457 - Traceback (most recent call last):
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 686, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\korpo\Documents\DesktopFiles\LiU\Årskurs 3\Chatta med TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 699, in lifespan
+    await receive()
+  File "C:\Users\korpo\Documents\DesktopFiles\LiU\Årskurs 3\Chatta med TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\queues.py", line 158, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2025-03-17 08:39:28,031 - 1 change detected
+2025-03-17 08:39:28,535 - 5 changes detected
+2025-03-17 08:39:33,201 - 1 change detected
+2025-03-17 08:39:33,201 - WatchFiles detected changes in 'app\services.py'. Reloading...
+2025-03-17 08:39:33,700 - Started server process [23716]
+2025-03-17 08:39:33,705 - Waiting for application startup.
+2025-03-17 08:39:33,706 - Application startup complete.
+2025-03-17 08:39:33,709 - Traceback (most recent call last):
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 686, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\korpo\Documents\DesktopFiles\LiU\Årskurs 3\Chatta med TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\starlette\routing.py", line 699, in lifespan
+    await receive()
+  File "C:\Users\korpo\Documents\DesktopFiles\LiU\Årskurs 3\Chatta med TNM094\Chatta-med-TNM094\backend\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\korpo\AppData\Local\Programs\Python\Python312\Lib\asyncio\queues.py", line 158, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2025-03-17 08:39:34,297 - 1 change detected
+2025-03-17 08:39:34,749 - 5 changes detected
+2025-03-17 08:39:39,658 - Started server process [23760]
+2025-03-17 08:39:39,661 - Waiting for application startup.
+2025-03-17 08:39:39,662 - Application startup complete.
+2025-03-17 08:39:51,371 - Shutting down
+2025-03-17 08:39:51,479 - Waiting for application shutdown.
+2025-03-17 08:39:51,480 - Application shutdown complete.
+2025-03-17 08:39:51,482 - Finished server process [23760]
+2025-03-17 08:39:51,684 - Stopping reloader process [5740]

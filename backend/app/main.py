@@ -1,11 +1,14 @@
 from fastapi import FastAPI, HTTPException, status, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from .services import handle_question, handle_upload_pdf, handle_upload_webpage
-from .models import QuestionReqBody
+from .services import handle_question, handle_conversation, handle_upload_pdf, handle_upload_webpage
+from .models import QuestionReqBody, ConversationData
+
 from .vector_db import vector_db
 from .vector_db import find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
+from typing import List
+
 
 app = FastAPI()
 
@@ -26,12 +29,15 @@ app.add_middleware(
 async def root():
   return {"status": "ok", "message": "All systems up and running"}
 
-@app.post("/ask")
-async def ask(req_body: QuestionReqBody):
-  response = await handle_question(req_body)
+@app.post("/llm/query")
+async def llm_query(req_body: QuestionReqBody):
+  response = await handle_question(req_body.query)
   return response
-  
 
+@app.post("/llm/conversation")
+async def llm_conversation(req_body: List[ConversationData]):
+  return await handle_conversation(req_body)
+   
 @app.post("/vector", status_code=status.HTTP_201_CREATED)
 async def create_vector(query: str):
   document = Document(
