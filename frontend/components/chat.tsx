@@ -1,42 +1,27 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChatInput } from "./chat-input";
-import { UserMessage } from "./user-message";
-import { ClientMessage } from "./client-message";
+import UserMessage from "./user-message";
+import AssistantMessage from "./assistant-message";
+import useLocalStorage from "@/hooks/use-local-storage";
 
 type ResponseData = {
   content: string;
 };
 
-type ConversationData = {
+type ConversationItem = {
   role: string;
   content: string;
-}[];
+};
 
 export default function Chat() {
-  // --- state ---
+  // State
   const [input, setInput] = useState("");
-  const [conversationHistory, setConversationHistory] =
-    useState<ConversationData>([]);
+  const [conversationHistory, setConversationHistory] = useLocalStorage<
+    ConversationItem[]
+  >("conversation-history", []);
 
-  // --- side effects ---
-
-  // read data from localStorage on mount
-  useEffect(() => {
-    const storageString = localStorage.getItem("conversation-history");
-    if (storageString) {
-      setConversationHistory(JSON.parse(storageString) as ConversationData);
-    }
-  }, []);
-
-  // write to localStorage when state changes
-  useEffect(() => {
-    localStorage.setItem(
-      "conversation-history",
-      JSON.stringify(conversationHistory)
-    );
-  }, [conversationHistory]);
-
+  // Send message to the backend and update the conversation history
   async function sendMessage() {
     const trimmedInput = input.trim();
     setInput("");
@@ -71,8 +56,6 @@ export default function Chat() {
         ...prev,
         { role: "assistant", content: data.content },
       ]);
-
-      console.log(data.content);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -93,22 +76,12 @@ export default function Chat() {
             {message.role === "user" ? (
               <UserMessage>{message.content}</UserMessage>
             ) : (
-              <ClientMessage>{message.content}</ClientMessage>
+              <AssistantMessage>{message.content}</AssistantMessage>
             )}
           </li>
         ))}
       </ul>
-      <ChatInput
-        input={input}
-        setInput={setInput}
-        handleClick={sendMessage}
-      ></ChatInput>
+      <ChatInput input={input} setInput={setInput} handleClick={sendMessage} />
     </main>
   );
 }
-
-// We wish to store the conversation history in local storage in order to access previous conversations.
-// We need an id to be able to switch between the conversations.
-// (Later, we need a title of the conversation, which can be set by either the llm or user. useState. Changes in the layout.)
-// We can use localStorage.setItem(conversationHistory, id/key)
-// To remove the object, we can use localStorage.removeItem()
