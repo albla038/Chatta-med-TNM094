@@ -18,7 +18,7 @@ async def handle_question(req_body: QuestionReqBody):
   docs_content = "\n".join(doc.page_content for doc in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings Universitet.
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings Universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat.
   Kontext:
   {context}
 
