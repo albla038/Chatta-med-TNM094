@@ -104,7 +104,6 @@ async def handle_upload_webpage(page_url: str):
       page_content.append(doc)
 
     all_chunks = split_text(page_content, chunk_size=1000, chunk_overlap=200)
-    
     allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
     all_chunks = filter_document_metadata(all_chunks, allowed_keys)
     cleaned_url = clean_text(page_url)
@@ -117,10 +116,9 @@ async def handle_upload_webpage(page_url: str):
     raise
 
 async def delete_document_by_prefix(filename_or_url:str):
-   # Clean filename (or url) from spaces
+   # Clean "filename_or_url" from spaces
   id_prefix = clean_text(filename_or_url)
-  # Go through all ids in the database index
-  # Delete all ids that starts with "filename"
+  # Delete all ids in the database that starts with "id_prefix"
   for ids in index.list(prefix=id_prefix):
     vector_db.delete(ids=ids)
   return ids

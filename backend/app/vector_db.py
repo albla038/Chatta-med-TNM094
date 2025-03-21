@@ -28,8 +28,10 @@ async def find_vectors_with_query(query: str, k: int, threshold: float):
     return result
   
 async def ingest_documents(documents: list[Document], filename: str):
+  # example: filename-p2-c3-14d0152a-e7c1-4b70-88e6-2448155f2c24 (p-page and c-chunk)
   ids = [
     f"{filename}-p{doc.metadata.get('page', 0)}-c{idx}-{str(uuid4())}"
     for idx, doc in enumerate(documents)
   ]
+  # ad to database
   await vector_db.aadd_documents(documents, ids=ids)
