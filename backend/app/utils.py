@@ -1,3 +1,4 @@
+import os, re
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -21,3 +22,9 @@ def split_text(documents: list[Document], chunk_size: int, chunk_overlap: int):
   # Split text with text splitter
   all_chunks = text_splitter.split_documents(documents)
   return all_chunks
+
+def clean_text(filename: str):
+    #filename = os.path.splitext(filename)[0]  # Remove filename end
+    filename = filename.replace(" ", "_")  # Replace space with _
+    # filename = re.sub(r"[^\w\-]", "", filename)  # Remove all specialcharacters except - and _
+    return filename

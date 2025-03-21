@@ -1,15 +1,11 @@
 from .llm import call_model, call_model_with_conversation
 from .vector_db import vector_db, ingest_documents
 from fastapi import HTTPException, UploadFile
-import os
+import os, re, logging
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from .utils import filter_document_metadata, split_text
+from .utils import filter_document_metadata, split_text, clean_text
 from .models import ConversationData
 from typing import List
-import logging
-import re
-
 
 # Define file directory and create it if it doesn't exist
 # This directory will be used to store uploaded PDF files
@@ -72,8 +68,10 @@ async def handle_upload_pdf(file: UploadFile):
   if not file.filename.endswith(".pdf"):
     raise HTTPException(status_code=400, detail={"error": "Bad Request", "message": "Only PDF files are allowed"})
   
+  filename_clean = clean_text(file.filename)
+
   # Create file path for the uploaded file
-  file_path = os.path.join(UPLOAD_DIR, file.filename)
+  file_path = os.path.join(UPLOAD_DIR, f"{filename_clean}.pdf")
 
   # Save the uploaded file by reading it in chunks and writing it to the file path
   with open(file_path, "wb") as buffer:
@@ -89,7 +87,7 @@ async def handle_upload_pdf(file: UploadFile):
   allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
   all_chunks = filter_document_metadata(all_chunks, allowed_keys)
   
-  await ingest_documents(all_chunks)
+  await ingest_documents(all_chunks, filename_clean)
 
   return all_chunks
   
@@ -109,8 +107,8 @@ async def handle_upload_webpage(page_url: str):
     
     allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
     all_chunks = filter_document_metadata(all_chunks, allowed_keys)
-    
-    await ingest_documents(all_chunks)
+    cleaned_url = clean_text(page_url)
+    await ingest_documents(all_chunks, cleaned_url)
     
     return {"status": "ok", "message": "Webpage uploaded successfully", "url": page_url, "all chunks": all_chunks}
 

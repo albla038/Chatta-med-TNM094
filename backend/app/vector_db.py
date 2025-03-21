@@ -27,6 +27,9 @@ async def find_vectors_with_query(query: str, k: int, threshold: float):
   else:
     return result
   
-async def ingest_documents(documents: list[Document]):
-  ids = [str(uuid4()) for _ in range(len(documents))]
+async def ingest_documents(documents: list[Document], filename: str):
+  ids = [
+    f"{filename}-p{doc.metadata.get('page', 0)}-c{idx}-{str(uuid4())}"
+    for idx, doc in enumerate(documents)
+  ]
   await vector_db.aadd_documents(documents, ids=ids)
