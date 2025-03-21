@@ -1,5 +1,5 @@
 from .llm import call_model, call_model_with_conversation
-from .vector_db import vector_db, ingest_documents
+from .vector_db import vector_db, ingest_documents, index
 from fastapi import HTTPException, UploadFile
 import os, re, logging
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
@@ -115,3 +115,13 @@ async def handle_upload_webpage(page_url: str):
   except Exception as e:
     # Return error
     raise
+
+async def delete_document_by_prefix(filename_or_url:str):
+   # Clean filename (or url) from spaces
+  id_prefix = clean_text(filename_or_url)
+  # Go through all ids in the database index
+  # Delete all ids that starts with "filename"
+  for ids in index.list(prefix=id_prefix):
+    vector_db.delete(ids=ids)
+  return ids
+    

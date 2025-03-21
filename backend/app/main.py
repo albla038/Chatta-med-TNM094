@@ -1,12 +1,12 @@
 from fastapi import FastAPI, HTTPException, status, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from .services import handle_question, handle_conversation, handle_upload_pdf, handle_upload_webpage
+from .services import handle_question, handle_conversation, handle_upload_pdf, handle_upload_webpage, delete_document_by_prefix
 from .models import QuestionReqBody, ConversationData
-from .vector_db import vector_db, index, find_vectors_with_query
+from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
 from typing import List
-from .utils import clean_text
+
 
 app = FastAPI()
 
@@ -86,11 +86,9 @@ async def upload_url(page_url: str):
   return result
 
 @app.delete("/delete/document")
-async def delete_document_with_filename(filename: str):
+async def delete_document(filename_or_url: str):
   try:
-    filename_clean = clean_text(filename)
-    for ids in index.list(prefix=filename_clean):
-      vector_db.delete(ids=ids)
+      ids = await delete_document_by_prefix(filename_or_url)
       return {
       "status": "ok",
       "message": "Document deleted",
