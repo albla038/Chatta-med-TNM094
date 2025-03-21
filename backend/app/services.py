@@ -9,12 +9,7 @@ from .models import ConversationData
 from typing import List
 import logging
 import re
-
-
-# Define file directory and create it if it doesn't exist
-# This directory will be used to store uploaded PDF files
-UPLOAD_DIR = "uploads/pdf"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+import tempfile
 
 # Configure logging
 logging.basicConfig(filename="log/app.log", level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -71,27 +66,30 @@ async def handle_conversation(conversation: List[ConversationData]):
 async def handle_upload_pdf(file: UploadFile):
   if not file.filename.endswith(".pdf"):
     raise HTTPException(status_code=400, detail={"error": "Bad Request", "message": "Only PDF files are allowed"})
-  
-  # Create file path for the uploaded file
-  file_path = os.path.join(UPLOAD_DIR, file.filename)
 
-  # Save the uploaded file by reading it in chunks and writing it to the file path
-  with open(file_path, "wb") as buffer:
-    buffer.write(await file.read())
+  # Create a temporary directory
+  with tempfile.TemporaryDirectory() as temp_dir:
+    temp_file_path = os.path.join(temp_dir, file.filename)
 
-  # Load and extract text using PyPDFLoader
-  loader = PyPDFLoader(file_path)
-  pages = await loader.aload()
+    # Save the file to the temporary directory
+    with open(temp_file_path, "wb") as temp_file:
+      content = await file.read()
+      temp_file.write(content)
+      temp_file.flush()
 
-  # Split the text into chunks
-  all_chunks = split_text(pages, chunk_size=1000, chunk_overlap=200)
-  
-  allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
-  all_chunks = filter_document_metadata(all_chunks, allowed_keys)
-  
-  await ingest_documents(all_chunks)
+    # Load and extract text using PyPDFLoader
+    loader = PyPDFLoader(temp_file_path)
+    pages = await loader.aload()
 
-  return all_chunks
+    # Split the text into chunks
+    all_chunks = split_text(pages, chunk_size=1000, chunk_overlap=200)
+    
+    allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
+    all_chunks = filter_document_metadata(all_chunks, allowed_keys)
+    
+    await ingest_documents(all_chunks)
+
+    return all_chunks
   
 async def handle_upload_webpage(page_url: str):
   try:

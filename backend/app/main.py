@@ -53,25 +53,30 @@ async def find_similar_vectors(query: str):
   result = await find_vectors_with_query(query, k=5, threshold=0.5)
   return {"status": "ok", "message": "Search successful", "data": result}
 
-# @app.post("/upload/text")
-# async def upload_text():
-#   pass
-
 @app.post("/upload/pdf")
 async def upload_pdf(file: UploadFile):
-  all_chunks = await handle_upload_pdf(file)
+  chunks = await handle_upload_pdf(file)
 
   return {
     "status": "ok",
     "message": "File uploaded successfully",
     "filename": file.filename,
     "content_type": file.content_type,
-    "all chunks": all_chunks
+    "chunks": chunks
   }
 
 @app.post("/upload/pdfs")
 async def upload_pdfs(files: list[UploadFile]):
-  pass
+  results = []
+  for file in files:
+    chunks = await handle_upload_pdf(file)
+    results.append({"filename": file.filename, "chunks": chunks})
+
+  return {
+    "status": "ok",
+    "message": "File uploaded successfully",
+    "file_chunks": results,
+  }
 
 @app.post("/upload/url")
 async def upload_url(page_url: str):
