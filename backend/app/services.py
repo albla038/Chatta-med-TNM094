@@ -4,7 +4,7 @@ from fastapi import HTTPException, UploadFile
 import os
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from .utils import filter_document_metadata
+from .utils import filter_document_metadata, split_text
 from .models import ConversationData
 from typing import List
 import logging
@@ -83,15 +83,15 @@ async def handle_upload_pdf(file: UploadFile):
   loader = PyPDFLoader(file_path)
   pages = await loader.aload()
 
-  text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000, chunk_overlap=200, add_start_index=True
-  )
-  all_splits = text_splitter.split_documents(pages)
+  # Split the text into chunks
+  all_chunks = split_text(pages, chunk_size=1000, chunk_overlap=200)
   
   allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
-  all_splits = filter_document_metadata(all_splits, allowed_keys)
+  all_chunks = filter_document_metadata(all_chunks, allowed_keys)
   
-  await ingest_documents(all_splits)
+  await ingest_documents(all_chunks)
+
+  return all_chunks
   
 async def handle_upload_webpage(page_url: str):
   try:
@@ -105,17 +105,14 @@ async def handle_upload_webpage(page_url: str):
       doc.page_content = re.sub(r'\n{3,}', '\n\n', doc.page_content)
       page_content.append(doc)
 
-    text_splitter = RecursiveCharacterTextSplitter(
-      chunk_size=1000, chunk_overlap=200, add_start_index=True
-    )
-    all_splits = text_splitter.split_documents(page_content)
+    all_chunks = split_text(page_content, chunk_size=1000, chunk_overlap=200)
     
     allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
-    all_splits = filter_document_metadata(all_splits, allowed_keys)
+    all_chunks = filter_document_metadata(all_chunks, allowed_keys)
     
-    await ingest_documents(all_splits)
+    await ingest_documents(all_chunks)
     
-    return {"status": "ok", "message": "Webpage uploaded successfully", "url": page_url, "all splits": all_splits}
+    return {"status": "ok", "message": "Webpage uploaded successfully", "url": page_url, "all chunks": all_chunks}
 
   except Exception as e:
     # Return error

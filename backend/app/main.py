@@ -59,13 +59,14 @@ async def find_similar_vectors(query: str):
 
 @app.post("/upload/pdf")
 async def upload_pdf(file: UploadFile):
-  await handle_upload_pdf(file)
+  all_chunks = await handle_upload_pdf(file)
 
   return {
     "status": "ok",
     "message": "File uploaded successfully",
     "filename": file.filename,
     "content_type": file.content_type,
+    "all chunks": all_chunks
   }
 
 @app.post("/upload/pdfs")
