@@ -1,10 +1,9 @@
 from .llm import call_model, call_model_with_conversation
-from .vector_db import vector_db, ingest_documents
+from .vector_db import vector_db, ingest_documents, index
 from fastapi import HTTPException, UploadFile
-import os
+import os, re, logging
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from .utils import filter_document_metadata, split_text
+from .utils import filter_document_metadata, split_text, clean_text
 from .models import ConversationData
 from typing import List
 import logging
@@ -66,11 +65,13 @@ async def handle_conversation(conversation: List[ConversationData]):
 async def handle_upload_pdf(file: UploadFile):
   if not file.filename.endswith(".pdf"):
     raise HTTPException(status_code=400, detail={"error": "Bad Request", "message": "Only PDF files are allowed"})
+  
+  filename_clean = clean_text(file.filename)
 
   # Create a temporary directory
   with tempfile.TemporaryDirectory() as temp_dir:
     temp_file_path = os.path.join(temp_dir, file.filename)
-
+  
     # Save the file to the temporary directory
     with open(temp_file_path, "wb") as temp_file:
       content = await file.read()
@@ -87,7 +88,7 @@ async def handle_upload_pdf(file: UploadFile):
     allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
     all_chunks = filter_document_metadata(all_chunks, allowed_keys)
     
-    await ingest_documents(all_chunks)
+    await ingest_documents(all_chunks, filename_clean)
 
     return all_chunks
   
@@ -104,14 +105,22 @@ async def handle_upload_webpage(page_url: str):
       page_content.append(doc)
 
     all_chunks = split_text(page_content, chunk_size=1000, chunk_overlap=200)
-    
     allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
     all_chunks = filter_document_metadata(all_chunks, allowed_keys)
-    
-    await ingest_documents(all_chunks)
+    cleaned_url = clean_text(page_url)
+    await ingest_documents(all_chunks, cleaned_url)
     
     return {"status": "ok", "message": "Webpage uploaded successfully", "url": page_url, "all chunks": all_chunks}
 
   except Exception as e:
     # Return error
     raise
+
+async def delete_document_by_prefix(filename_or_url:str):
+   # Clean "filename_or_url" from spaces
+  id_prefix = clean_text(filename_or_url)
+  # Delete all ids in the database that starts with "id_prefix"
+  for ids in index.list(prefix=id_prefix):
+    vector_db.delete(ids=ids)
+  return ids
+    
