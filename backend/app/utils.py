@@ -24,7 +24,9 @@ def split_text(documents: list[Document], chunk_size: int, chunk_overlap: int):
   return all_chunks
 
 def clean_text(filename: str):
-    #filename = os.path.splitext(filename)[0]  # Remove filename end
-    filename = filename.replace(" ", "_")  # Replace space with _
-    # filename = re.sub(r"[^\w\-]", "", filename)  # Remove all specialcharacters except - and _
+    # Replace swedish 
+    filename = filename.replace("å", "a").replace("ä", "a").replace("ö", "o")
+    filename = filename.replace("Å", "A").replace("Ä", "A").replace("Ö", "O")
+    # Replace space with _
+    filename = filename.replace(" ", "_")  
     return filename
