@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, status, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from .services import handle_question, handle_conversation, handle_upload_pdf, handle_upload_webpage, delete_document_by_prefix
+from fastapi.responses import PlainTextResponse
+from .services import handle_question, handle_conversation, handle_upload_pdf, handle_upload_webpage, delete_document_by_prefix, fetch_all_ids
 from .models import QuestionReqBody, ConversationData
 from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
@@ -101,6 +102,21 @@ async def delete_document(filename_or_url: str):
     }
   except Exception as e:
     # Return 400 Bad Request
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail={"error": type(e).__name__, "message": str(e)}
+    )
+
+@app.get("/get_uploaded_vectorIDs")
+async def get_uploaded_vectorIDs():
+  try:
+    ids = await fetch_all_ids()
+    return PlainTextResponse(
+      content="\n".join(ids),
+      status_code=200
+    )
+  except Exception as e:
+  # Return 400 Bad Request
     raise HTTPException(
       status_code=status.HTTP_400_BAD_REQUEST,
       detail={"error": type(e).__name__, "message": str(e)}

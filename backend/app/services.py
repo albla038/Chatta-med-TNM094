@@ -123,4 +123,26 @@ async def delete_document_by_prefix(filename_or_url:str):
   for ids in index.list(prefix=id_prefix):
     vector_db.delete(ids=ids)
   return ids
-    
+
+async def fetch_all_ids():
+  # Initialize the variables
+  all_ids = []
+  pagination_token = None
+
+  # Fetch data in a paginated manner
+  while True:
+    # List vectors in the namespace with pagination
+    results = index.list_paginated(
+        limit=100,                         # Number of records to fetch per call (100 is max value)
+        pagination_token=pagination_token  # Use the token to paginate
+    )
+    # Collect the vector IDs
+    all_ids.extend([v.id for v in results.vectors])
+    # Check if pagination exists and get the next token for the next request
+    if results.pagination and results.pagination.next:
+      pagination_token = results.pagination.next
+    else:
+      # If there's no next token, break out of the loop
+      break
+
+  return sorted(all_ids)
