@@ -111,6 +111,7 @@ async def delete_document(filename_or_url: str):
 async def get_uploaded_vectorIDs():
   try:
     ids = await fetch_all_ids()
+    # PlainTextResponse to display each id on a new row
     return PlainTextResponse(
       content="\n".join(ids),
       status_code=200
