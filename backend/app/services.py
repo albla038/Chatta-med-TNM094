@@ -129,12 +129,14 @@ async def fetch_all_ids():
   all_ids = []
   pagination_token = None
 
-  # Fetch data in a paginated manner
+  # Fetch data, paginated
   while True:
     # List vectors in the namespace with pagination
     results = index.list_paginated(
-        limit=100,                         # Number of records to fetch per call (100 is max value)
-        pagination_token=pagination_token  # Use the token to paginate
+        # Number of records to fetch per call (100 is max value)
+        limit=100,
+        # Use the token to paginate
+        pagination_token=pagination_token
     )
     # Collect the vector IDs
     all_ids.extend([v.id for v in results.vectors])
@@ -142,7 +144,7 @@ async def fetch_all_ids():
     if results.pagination and results.pagination.next:
       pagination_token = results.pagination.next
     else:
-      # If there's no next token, break out of the loop
+      # If there's no next token, break
       break
 
   return sorted(all_ids)
