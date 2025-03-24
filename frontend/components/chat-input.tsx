@@ -10,7 +10,7 @@ type ChatInputProps = {
 
 export function ChatInput({ input, setInput, handleClick }: ChatInputProps) {
   return (
-    <div className="relative">
+    <div className="bg-white max-w-4xl">
       <Button
         onClick={handleClick}
         size={"icon"}

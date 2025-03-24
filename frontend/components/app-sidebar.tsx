@@ -111,25 +111,6 @@ export function AppSidebar() {
         </SidebarHeader>
       </div>
       <SidebarContent>
-        {/* <SidebarGroup className="">
-          <div className="flex row items-center justify-between">
-            <SidebarGroupLabel className="text-xl">HISTORIK</SidebarGroupLabel>
-            <Button
-              className="cursor-pointer rounded-full flex justify-center items-center py-0 size-max hover:bg-white"
-              size={"icon"}
-              variant={"ghost"}
-            >
-              <CirclePlus className="size-6 stroke-liu-primary p-0" />
-            </Button>
-          </div>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuButton className="hover:bg-liu-primary/13">
-                Scrum vs Spiralmetoden
-              </SidebarMenuButton>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup> */}
         <SidebarGroup className="">
           <SidebarGroupLabel>HISTORIK</SidebarGroupLabel>
           <SidebarGroupContent>

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Button } from "@/components/ui/button";
+import { CircleHelp } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Chatta med TNM094",
@@ -18,9 +20,18 @@ export default function RootLayout({
       <body>
         <SidebarProvider>
           <AppSidebar />
-          <div className={`antialiased min-h-svh flex flex-col w-full`}>
-            <header>
+          <div
+            className={`antialiased h-svh max-h-svh flex flex-col w-full relative`}
+          >
+            <header className="fixed h-7 w-full right-0 flex items-center justify-between top-0 bg-white/80 backdrop-blur-xs bg-blend-normal">
               <SidebarTrigger />
+              <Button
+                size={"icon"}
+                className="cursor-pointer flex justify-center items-center hover:bg-white"
+                variant={"ghost"}
+              >
+                <CircleHelp className="stroke-gray-300 size-5" />
+              </Button>
             </header>
             {children}
           </div>
