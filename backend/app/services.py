@@ -133,10 +133,10 @@ async def fetch_all_ids():
   while True:
     # List vectors in the namespace with pagination
     results = index.list_paginated(
-        # Number of records to fetch per call (100 is max value)
-        limit=100,
-        # Use the token to paginate
-        pagination_token=pagination_token
+      # Number of records to fetch per call (100 is max value)
+      limit=100,
+      # Use the token to paginate
+      pagination_token=pagination_token
     )
     # Collect the vector IDs
     all_ids.extend([v.id for v in results.vectors])

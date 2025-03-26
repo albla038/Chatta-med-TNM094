@@ -106,7 +106,7 @@ async def delete_document(filename_or_url: str):
       detail={"error": type(e).__name__, "message": str(e)}
     )
 
-@app.get("/get_uploaded_ids")
+@app.get("/vector/ids")
 async def get_uploaded_ids():
   try:
     ids = await fetch_all_ids()
