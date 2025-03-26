@@ -107,18 +107,17 @@ async def delete_document(filename_or_url: str):
       detail={"error": type(e).__name__, "message": str(e)}
     )
 
-@app.get("/get_uploaded_vectorIDs")
-async def get_uploaded_vectorIDs():
+@app.get("/get_uploaded_ids")
+async def get_uploaded_ids():
   try:
     ids = await fetch_all_ids()
-    # PlainTextResponse to display each id on a new row
-    return PlainTextResponse(
-      content="\n".join(ids),
-      status_code=200
-    )
+    return {
+    "status": "ok",
+    "All uploaded document id:s": ids
+    }
   except Exception as e:
-  # Return 400 Bad Request
+  # Return 500 Internal server error
     raise HTTPException(
-      status_code=status.HTTP_400_BAD_REQUEST,
+      status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
       detail={"error": type(e).__name__, "message": str(e)}
     )
