@@ -4,6 +4,7 @@ import { ChatInput } from "./chat-input";
 import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
 import useLocalStorage from "@/hooks/use-local-storage";
+import clsx from "clsx";
 
 type ResponseData = {
   content: string;
@@ -66,21 +67,29 @@ export default function Chat() {
   }
 
   return (
-    <main className="w-full grow flex flex-col justify-end p-8 pb-16 max-w-4xl">
-      <ul className="w-full flex flex-col grow items-end gap-4">
-        {conversationHistory.map((message, id) => (
-          <li
-            key={id}
-            className={message.role === "assistant" ? "self-start" : ""}
-          >
-            {message.role === "user" ? (
-              <UserMessage>{message.content}</UserMessage>
-            ) : (
-              <AssistantMessage>{message.content}</AssistantMessage>
-            )}
-          </li>
-        ))}
-      </ul>
+    <main className="w-full h-full flex items-center flex-col pb-12">
+      <div
+        className="w-full h-full overflow-y-auto flex flex-col items-center pl-[14px]"
+        style={{ scrollbarGutter: "stable" }}
+      >
+        <ul className="flex flex-col w-full h-full items-end gap-4 max-w-4xl">
+          {conversationHistory.map((message, id) => (
+            <li
+              key={id}
+              className={clsx(
+                "first:pt-12 last:pb-12",
+                message.role === "assistant" ? "self-start" : ""
+              )}
+            >
+              {message.role === "user" ? (
+                <UserMessage>{message.content}</UserMessage>
+              ) : (
+                <AssistantMessage>{message.content}</AssistantMessage>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
       <ChatInput input={input} setInput={setInput} handleClick={sendMessage} />
     </main>
   );
