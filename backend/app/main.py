@@ -1,10 +1,8 @@
 from fastapi import FastAPI, HTTPException, status, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from .services import handle_question, handle_conversation, handle_upload_pdf, handle_upload_webpage
+from .services import handle_question, handle_conversation, handle_upload_pdf, handle_upload_webpage, delete_document_by_prefix, fetch_all_ids
 from .models import QuestionReqBody, ConversationData
-
-from .vector_db import vector_db
-from .vector_db import find_vectors_with_query
+from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
 from typing import List
@@ -53,25 +51,30 @@ async def find_similar_vectors(query: str):
   result = await find_vectors_with_query(query, k=5, threshold=0.5)
   return {"status": "ok", "message": "Search successful", "data": result}
 
-# @app.post("/upload/text")
-# async def upload_text():
-#   pass
-
 @app.post("/upload/pdf")
 async def upload_pdf(file: UploadFile):
-  all_chunks = await handle_upload_pdf(file)
+  chunks = await handle_upload_pdf(file)
 
   return {
     "status": "ok",
     "message": "File uploaded successfully",
     "filename": file.filename,
     "content_type": file.content_type,
-    "all chunks": all_chunks
+    "chunks": chunks
   }
 
 @app.post("/upload/pdfs")
 async def upload_pdfs(files: list[UploadFile]):
-  pass
+  results = []
+  for file in files:
+    chunks = await handle_upload_pdf(file)
+    results.append({"filename": file.filename, "chunks": chunks})
+
+  return {
+    "status": "ok",
+    "message": "File uploaded successfully",
+    "file_chunks": results,
+  }
 
 @app.post("/upload/url")
 async def upload_url(page_url: str):
@@ -86,3 +89,34 @@ async def upload_url(page_url: str):
     )
 
   return result
+
+@app.delete("/delete/document")
+async def delete_document(filename_or_url: str):
+  try:
+      ids = await delete_document_by_prefix(filename_or_url)
+      return {
+      "status": "ok",
+      "message": "Document deleted",
+      "Document id:s deleted": ids
+    }
+  except Exception as e:
+    # Return 400 Bad Request
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail={"error": type(e).__name__, "message": str(e)}
+    )
+
+@app.get("/vector/ids")
+async def get_uploaded_ids():
+  try:
+    ids = await fetch_all_ids()
+    return {
+    "status": "ok",
+    "All uploaded document id:s": ids
+    }
+  except Exception as e:
+  # Return 500 Internal server error
+    raise HTTPException(
+      status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+      detail={"error": type(e).__name__, "message": str(e)}
+    )
