@@ -10,7 +10,10 @@ type ChatInputProps = {
 
 export function ChatInput({ input, setInput, handleClick }: ChatInputProps) {
   return (
-    <div className="relative">
+    <div
+      style={{ scrollbarGutter: "stable" }}
+      className="relative w-full max-w-[926px]"
+    >
       <Button
         onClick={handleClick}
         size={"icon"}

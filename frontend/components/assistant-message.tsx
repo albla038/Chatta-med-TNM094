@@ -3,5 +3,5 @@ type AssistantMessageProps = {
 };
 
 export default function AssistantMessage({ children }: AssistantMessageProps) {
-  return <div className="w-full break-keep">{children}</div>;
+  return <div className="w-full break-keep text-justify">{children}</div>;
 }
