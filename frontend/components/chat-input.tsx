@@ -17,7 +17,7 @@ export function ChatInput({ input, setInput, handleClick }: ChatInputProps) {
       <Button
         onClick={handleClick}
         size={"icon"}
-        className="absolute right-3 top-3 rounded-full flex justify-center items-center"
+        className="cursor-pointer absolute right-3 top-3 rounded-full flex justify-center items-center"
         variant={"liu"}
       >
         <SendHorizontal className="size-6" />

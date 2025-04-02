@@ -1,0 +1,42 @@
+2025-04-02 15:11:07,300 - Will watch for changes in these directories: ['C:\\Users\\korpo\\Documents\\DesktopFiles\\LiU\\Årskurs 3\\Chatta med TNM094\\Chatta-med-TNM094\\backend']
+2025-04-02 15:11:07,303 - Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2025-04-02 15:11:07,305 - Started reloader process [14964] using WatchFiles
+2025-04-02 15:11:13,121 - Started server process [30144]
+2025-04-02 15:11:13,124 - Waiting for application startup.
+2025-04-02 15:11:13,127 - Application startup complete.
+2025-04-02 15:11:30,844 - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-04-02 15:11:32,124 - No relevant docs were retrieved using the relevance score threshold 0.75
+2025-04-02 15:11:32,910 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-02 15:11:32,934 - Conversation: [ConversationData(role='user', content='Berätta ett skämt'), ConversationData(role='assistant', content='Varför kunde inte cykeln stå själv? För att den var två-hjulig!'), ConversationData(role='user', content='Okej')]
+2025-04-02 15:11:32,934 - Number of Found Documents: 0
+2025-04-02 15:11:32,934 - Found Documents: []
+2025-04-02 15:11:32,934 - Model Response Object: content='Om du har fler frågor eller vill ha mer information, tveka inte att fråga!' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 18, 'prompt_tokens': 147, 'total_tokens': 165, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_b376dfbbd5', 'finish_reason': 'stop', 'logprobs': None} id='run-e3cdade2-d219-41db-ad0a-9e3606a8e601-0' usage_metadata={'input_tokens': 147, 'output_tokens': 18, 'total_tokens': 165, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+2025-04-02 15:12:04,888 - 1 change detected
+2025-04-02 15:12:10,608 - 14 changes detected
+2025-04-02 15:12:10,612 - WatchFiles detected changes in 'app\services.py', 'app\main.py', 'app\llm.py', 'app\models.py', 'app\vector_db.py', 'app\utils.py'. Reloading...
+2025-04-02 15:12:10,677 - Shutting down
+2025-04-02 15:12:10,785 - Waiting for application shutdown.
+2025-04-02 15:12:10,787 - Application shutdown complete.
+2025-04-02 15:12:10,788 - Finished server process [30144]
+2025-04-02 15:12:12,266 - 1 change detected
+2025-04-02 15:12:12,727 - 14 changes detected
+2025-04-02 15:12:12,730 - WatchFiles detected changes in 'app\services.py', 'app\main.py', 'app\llm.py', 'app\models.py', 'app\vector_db.py', 'app\utils.py'. Reloading...
+2025-04-02 15:12:14,232 - 2 changes detected
+2025-04-02 15:12:14,915 - 5 changes detected
+2025-04-02 15:12:15,522 - 9 changes detected
+2025-04-02 15:12:17,949 - 5 changes detected
+2025-04-02 15:12:18,603 - 5 changes detected
+2025-04-02 15:12:20,330 - Started server process [10608]
+2025-04-02 15:12:20,335 - Waiting for application startup.
+2025-04-02 15:12:20,337 - Application startup complete.
+2025-04-02 15:12:20,371 - 5 changes detected
+2025-04-02 15:12:22,264 - 1 change detected
+2025-04-02 15:12:22,620 - 1 change detected
+2025-04-02 15:20:35,433 - 1 change detected
+2025-04-02 15:20:42,492 - 1 change detected
+2025-04-02 15:20:42,858 - 1 change detected
+2025-04-02 15:20:45,178 - 1 change detected
+2025-04-02 15:20:45,543 - 1 change detected
+2025-04-02 15:20:46,753 - 1 change detected
+2025-04-02 15:20:47,106 - 1 change detected
+2025-04-02 15:20:47,610 - 1 change detected
