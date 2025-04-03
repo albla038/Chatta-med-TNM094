@@ -15,27 +15,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <SidebarProvider>
+      <body className="antialiased h-svh overflow-hidden">
+        <SidebarProvider className="h-full flex">
           <AppSidebar />
-          <div className={`antialiased min-h-svh flex flex-col w-full`}>
+          <div className="h-full flex flex-col w-full">
             <header>
               <SidebarTrigger />
             </header>
-            {children}
+            <div className="flex-grow overflow-auto">{children}</div>
+            {/* <div className="h-[712.8px]">{children}</div> */}
           </div>
         </SidebarProvider>
       </body>
     </html>
   );
 }
-
-// return (
-//   <SidebarProvider>
-//     <AppSidebar />
-//     <main>
-//       <SidebarTrigger />
-//       {children}
-//     </main>
-//   </SidebarProvider>
-// )
