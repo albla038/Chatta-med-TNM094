@@ -15,15 +15,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased h-svh overflow-hidden">
+      <body className="antialiased h-svh">
         <SidebarProvider className="h-full flex">
           <AppSidebar />
           <div className="h-full flex flex-col w-full">
-            <header>
+            <header className="bg-white">
               <SidebarTrigger />
             </header>
-            <div className="flex-grow overflow-auto">{children}</div>
-            {/* <div className="h-[712.8px]">{children}</div> */}
+            <div className="grow overflow-y-auto">{children}</div>
           </div>
         </SidebarProvider>
       </body>
