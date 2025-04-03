@@ -20,7 +20,7 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [conversationHistory, setConversationHistory] = useLocalStorage<
     ConversationItem[]
-  >("conversation-history", []);
+  >(`chat/`, []);
 
   // Send message to the backend and update the conversation history
   async function sendMessage() {

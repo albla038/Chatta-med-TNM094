@@ -1,8 +1,10 @@
+"use client";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
@@ -27,6 +29,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import useLocalStorage from "@/hooks/use-local-storage";
+import { title } from "process";
+
+type ConversationListItem = {
+  id: string;
+  title: string;
+  href: string;
+};
 
 const previousChats = [
   "Scrum vs Spiralmetoden",
@@ -34,7 +44,50 @@ const previousChats = [
   "Deadlines i kursen",
 ];
 
+const mockData: ConversationListItem[] = [
+  {
+    id: "1",
+    title: "Scrum vs Spiralmetoden",
+    href: "/chat/1",
+  },
+  {
+    id: "2",
+    title: "Hjälp med användargränssnitt",
+    href: "/chat/2",
+  },
+  {
+    id: "3",
+    title: "Deadlines i kursen",
+    href: "/chat/3",
+  },
+];
+
 export function AppSidebar() {
+  const [conversationList, setConversationList] = useLocalStorage<
+    ConversationListItem[]
+  >("conversation-list", mockData);
+
+  function newConversation() {
+    // Create unique id
+    const id = crypto.randomUUID();
+
+    // Update conversation list with new chat conversation
+    setConversationList((prevData) => [
+      ...prevData,
+      {
+        id: id,
+        title: "New Conversation",
+        href: `/chat/${id}`,
+      },
+    ]);
+  }
+
+  function deleteConversation(id: string) {
+    setConversationList((prevData) =>
+      prevData.filter((item) => item.id !== id)
+    );
+  }
+
   return (
     <Sidebar className="px-10 py-10">
       <div>
@@ -44,40 +97,25 @@ export function AppSidebar() {
         </SidebarHeader>
       </div>
       <SidebarContent>
-        {/* <SidebarGroup className="">
-          <div className="flex row items-center justify-between">
-            <SidebarGroupLabel className="text-xl">HISTORIK</SidebarGroupLabel>
-            <Button
-              className="cursor-pointer rounded-full flex justify-center items-center py-0 size-max hover:bg-white"
-              size={"icon"}
-              variant={"ghost"}
-            >
-              <CirclePlus className="size-6 stroke-liu-primary p-0" />
-            </Button>
-          </div>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuButton className="hover:bg-liu-primary/13">
-                Scrum vs Spiralmetoden
-              </SidebarMenuButton>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup> */}
         <SidebarGroup className="">
           <SidebarGroupLabel>HISTORIK</SidebarGroupLabel>
+          <SidebarGroupAction title="Ny chatt" onClick={newConversation}>
+            <CirclePlus className="text-liu-primary cursor-pointer" />
+          </SidebarGroupAction>
           <SidebarGroupContent>
             <SidebarMenu>
-              {previousChats.map((item) => (
-                <SidebarMenuItem key={item} className="flex flex-row">
+              {conversationList.map((item) => (
+                <SidebarMenuItem key={item.id} className="flex">
                   <SidebarMenuButton
                     asChild
                     className="hover:bg-liu-primary/10"
                   >
-                    <Link href="https://ui.shadcn.com/docs/components/sidebar">
-                      {item}
-                    </Link>
+                    <Link href={item.href}>{item.title}</Link>
                   </SidebarMenuButton>
-                  <SidebarMenuAction className="hover:bg-liu-primary/0">
+                  <SidebarMenuAction
+                    className="hover:bg-liu-primary/0"
+                    onClick={() => deleteConversation(item.id)}
+                  >
                     <Ellipsis className="cursor-pointer" />
                   </SidebarMenuAction>
                 </SidebarMenuItem>
@@ -105,7 +143,7 @@ export function AppSidebar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="border border-gray-200 p-3 rounded-xl drop-shadow-xs w-64 bg-white flex flex-col justify-between h-50"
-            side="right"
+            side="top"
           >
             <div>
               <div className="flex flex-row justify-between">
