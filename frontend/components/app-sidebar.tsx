@@ -36,7 +36,7 @@ const previousChats = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="px-10 py-10 bg-white">
+    <Sidebar className="px-10 py-10">
       <div>
         <SidebarHeader className="text-2xl p-4 font-semibold">
           CHATTA MED TNM094

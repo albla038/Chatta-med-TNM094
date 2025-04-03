@@ -33,7 +33,7 @@
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
   /* --sidebar: oklch(0.985 0.002 247.839); */
-  --sidebar: white;
+  --sidebar: var(--background);
   --sidebar-foreground: oklch(0.13 0.028 261.692);
   --sidebar-primary: oklch(0.21 0.034 264.665);
   --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
