@@ -6,12 +6,9 @@ from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from .utils import filter_document_metadata, split_text, clean_text
 from .models import ConversationData
 from typing import List
-import logging
+from .logger import logger
 import re
 import tempfile
-
-# Configure logging
-logging.basicConfig(filename="log/app.log", level=logging.INFO, format='%(asctime)s - %(message)s')
 
 async def handle_question(question: str): 
   # Retrive relevant text/inputs from vector database...
@@ -55,10 +52,12 @@ async def handle_conversation(conversation: List[ConversationData]):
   model_response = await call_model_with_conversation(conversation, context)
 
   # Log the results
-  logging.info(f"Conversation: {conversation}")
-  logging.info(f"Number of Found Documents: {len(found_documents)}")
-  logging.info(f"Found Documents: {found_documents}")
-  logging.info(f"Model Response Object: {model_response}")
+  logger.info(f"Last Question: {last_question}")
+  logger.info(f"Conversation: {conversation}")
+  logger.info(f"Number of Found Documents: {len(found_documents)}")
+  logger.info(f"Found Documents: {found_documents}")
+  logger.info(f"Model Response Object: {model_response}")
+  logger.info(f"-----------------------------")
 
   return {"content": model_response.content}
 
