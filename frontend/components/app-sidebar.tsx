@@ -20,6 +20,8 @@ import { Profile } from "./profile";
 import Image from "next/image";
 import Link from "next/link";
 import liuLogo from "@/public/liuLogo.png";
+import { useRouter } from "next/navigation";
+
 // import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -67,6 +69,8 @@ export function AppSidebar() {
     ConversationListItem[]
   >("conversation-list", []);
 
+  const router = useRouter();
+
   function newConversation() {
     // Create unique id
     const id = crypto.randomUUID();
@@ -76,10 +80,12 @@ export function AppSidebar() {
       ...prevData,
       {
         id: id,
-        title: "New Conversation",
+        title: "New chat",
         href: `/chat/${id}`,
       },
     ]);
+
+    router.push(`/chat/${id}`);
   }
 
   function deleteConversation(id: string) {

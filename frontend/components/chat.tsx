@@ -4,6 +4,7 @@ import { ChatInput } from "./chat-input";
 import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
 import useLocalStorage from "@/hooks/use-local-storage";
+
 import clsx from "clsx";
 
 type ResponseData = {
@@ -15,21 +16,23 @@ type ConversationItem = {
   content: string;
 };
 
-export default function Chat() {
+export default function Chat({ id }: { id: string | null }) {
   // State
   const [input, setInput] = useState("");
   const [conversationHistory, setConversationHistory] = useLocalStorage<
     ConversationItem[]
-  >(`chat/`, []);
+  >(`conversation-history-${id}`, []);
 
   // Send message to the backend and update the conversation history
   async function sendMessage() {
+    // Clean the user-input and clear the chat-input component
     const trimmedInput = input.trim();
     setInput("");
     if (trimmedInput.length === 0) {
       return;
     }
 
+    // Update the conversation history
     const newConversationHistory = [
       ...conversationHistory,
       { role: "user", content: input },
@@ -38,6 +41,7 @@ export default function Chat() {
 
     const url = "http://127.0.0.1:8000"; // TODO Change in production
 
+    // Send conversation to server/llm
     try {
       const response = await fetch(`${url}/llm/conversation`, {
         method: "POST",
@@ -53,6 +57,8 @@ export default function Chat() {
       }
 
       const data = (await response.json()) as ResponseData;
+
+      // Update the conversation with llm answer
       setConversationHistory((prev) => [
         ...prev,
         { role: "assistant", content: data.content },
