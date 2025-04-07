@@ -129,23 +129,28 @@ async def ws_llm_conversation(ws: WebSocket):
   await ws.accept()
 
   try:
-    # Recieve the incoming JSON data continuously
+    # Receive the incoming JSON data continuously
     while True:
       json_data = await ws.receive_json()
 
+      # Validate the incoming JSON data against the Pydantic model (using unpacking operator **)
       try:
-        # Validate the incoming JSON data against the Pydantic model (using unpacking operator **)
-        data = QuestionReqBody(**json_data)
+        data = [ConversationData(**item) for item in json_data]
         result = await handle_conversation(data)
         # Send the result back to the client
-        await ws.send_json(result)
+        await ws.send_json({"status": "ok", "role": "assistant", "content": result["content"]})
       
       except ValidationError as e:
         # Send an error message back to the client if validation fails
         await ws.send_json({"status": "error", "error": "Invalid data", "details": e.errors()})
         continue
 
+      except Exception as e:
+        # Handle any other exceptions that may occur during processing
+        await ws.send_json({"status": "error", "error": str(e)})
+        continue
+
   # Handle WebSocket disconnection
   except WebSocketDisconnect:
-    ws.send_json({"status": "error", "error": "WebSocket disconnected unexpectedly"})
-    await ws.close()
+    # Remove saved state like client ids or perform any cleanup if necessary
+    pass
