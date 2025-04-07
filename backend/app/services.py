@@ -11,7 +11,7 @@ import re
 import tempfile
 
 # Configure logging
-logging.basicConfig(filename="log/app.log", level=logging.INFO, format='%(asctime)s - %(message)s')
+# logging.basicConfig(filename="log/app.log", level=logging.INFO, format='%(asctime)s - %(message)s')
 
 async def handle_question(question: str): 
   # Retrive relevant text/inputs from vector database...
@@ -55,10 +55,10 @@ async def handle_conversation(conversation: List[ConversationData]):
   model_response = await call_model_with_conversation(conversation, context)
 
   # Log the results
-  logging.info(f"Conversation: {conversation}")
-  logging.info(f"Number of Found Documents: {len(found_documents)}")
-  logging.info(f"Found Documents: {found_documents}")
-  logging.info(f"Model Response Object: {model_response}")
+  # logging.info(f"Conversation: {conversation}")
+  # logging.info(f"Number of Found Documents: {len(found_documents)}")
+  # logging.info(f"Found Documents: {found_documents}")
+  # logging.info(f"Model Response Object: {model_response}")
 
   return {"content": model_response.content}
 

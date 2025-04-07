@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException, status, UploadFile
+from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from .services import handle_question, handle_conversation, handle_upload_pdf, handle_upload_webpage, delete_document_by_prefix, fetch_all_ids
 from .models import QuestionReqBody, ConversationData
@@ -6,6 +7,7 @@ from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
 from typing import List
+from pydantic import ValidationError
 
 
 app = FastAPI()
@@ -120,3 +122,30 @@ async def get_uploaded_ids():
       status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
       detail={"error": type(e).__name__, "message": str(e)}
     )
+
+@app.websocket("/ws/llm/conversation")
+async def ws_llm_conversation(ws: WebSocket):
+  # Accept and open the WebSocket connection
+  await ws.accept()
+
+  try:
+    # Recieve the incoming JSON data continuously
+    while True:
+      json_data = await ws.receive_json()
+
+      try:
+        # Validate the incoming JSON data against the Pydantic model (using unpacking operator **)
+        data = QuestionReqBody(**json_data)
+        result = await handle_conversation(data)
+        # Send the result back to the client
+        await ws.send_json(result)
+      
+      except ValidationError as e:
+        # Send an error message back to the client if validation fails
+        await ws.send_json({"status": "error", "error": "Invalid data", "details": e.errors()})
+        continue
+
+  # Handle WebSocket disconnection
+  except WebSocketDisconnect:
+    ws.send_json({"status": "error", "error": "WebSocket disconnected unexpectedly"})
+    await ws.close()
