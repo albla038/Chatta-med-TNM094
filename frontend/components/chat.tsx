@@ -70,7 +70,7 @@ export default function Chat() {
     // TODO Handle other error cases, such as connection errors or timeouts
     // maybe use function onError() or form useWebSocket()
     // or shouldReconnect() function event
-  }, [lastJsonMessage, setConversationHistory, readyState]);
+  }, [lastJsonMessage, setConversationHistory]);
 
   // Send message to the backend and update the conversation history
   async function sendMessage() {
@@ -116,6 +116,7 @@ export default function Chat() {
     }
   }
 
+  // Send message to the backend and update the conversation history
   function sendMessageViaWS() {
     // Trim the input to remove leading and trailing whitespace
     // and set the input state to an empty string
@@ -160,7 +161,7 @@ export default function Chat() {
           ))}
           {/* Pending/thinking indicator */}
           {pending && (
-            <li className="animate-pulse w-4 h-4 rounded-full bg-gray-400 self-start" />
+            <li className="animate-pulse w-4 h-1.5 rounded-full bg-gray-400 self-start" />
           )}
         </ul>
       </div>
