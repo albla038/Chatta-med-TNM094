@@ -26,7 +26,6 @@ backend/
 │ 
 ├── .env                # Miljövariabler
 ├── .gitignore          # Git-ignore
-├── app.log             # Loggfil
 ├── requirements.txt    # pip-beroenden
 └── README.md           # Dokumentation
 ```
