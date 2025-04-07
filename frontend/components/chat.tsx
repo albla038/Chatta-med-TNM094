@@ -1,12 +1,20 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatInput } from "./chat-input";
 import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
 import useLocalStorage from "@/hooks/use-local-storage";
 import clsx from "clsx";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 type ResponseData = {
+  content: string;
+};
+
+type ResponseMessage = {
+  status: string;
+  // id: string;
+  role: string;
   content: string;
 };
 
@@ -16,11 +24,53 @@ type ConversationItem = {
 };
 
 export default function Chat() {
-  // State
+  // STATE
   const [input, setInput] = useState("");
   const [conversationHistory, setConversationHistory] = useLocalStorage<
     ConversationItem[]
   >("conversation-history", []);
+
+  // TODO State to manage the error state of the chat input
+  const [isError, setIsError] = useState(false);
+
+  // DERIVED STATE
+  // Check if the last message in the conversation history is from the user
+  const pending =
+    conversationHistory[conversationHistory.length - 1]?.role === "user";
+
+  // WebSocket connection
+  const socketURL = "ws://127.0.0.1:8000/ws/llm/conversation";
+  const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
+    socketURL,
+    {
+      share: true,
+      // Will attempt to reconnect on all close events, such as server shutting down
+      shouldReconnect: () => true,
+      // Log messages to console
+      onOpen: () => console.log("WebSocket opened"),
+      onClose: () => console.log("WebSocket closed"),
+    }
+  );
+
+  // Update conversation history when a new message is received from the server
+  useEffect(() => {
+    // Check if the last message is a valid JSON object
+    if (lastJsonMessage) {
+      // Cast the incoming message to the expected type and destructure it
+      const { role, content, status } = lastJsonMessage as ResponseMessage;
+
+      if (status === "ok") {
+        setConversationHistory((prev) => [...prev, { role, content }]);
+      } else {
+        // TODO Handle error messages from the server by rendering them in the UI
+        console.error("Error in response:", lastJsonMessage);
+      }
+    }
+
+    // TODO Handle other error cases, such as connection errors or timeouts
+    // maybe use function onError() or form useWebSocket()
+    // or shouldReconnect() function event
+  }, [lastJsonMessage, setConversationHistory, readyState]);
 
   // Send message to the backend and update the conversation history
   async function sendMessage() {
@@ -32,7 +82,7 @@ export default function Chat() {
 
     const newConversationHistory = [
       ...conversationHistory,
-      { role: "user", content: input },
+      { role: "user", content: trimmedInput },
     ];
     setConversationHistory(newConversationHistory);
 
@@ -66,6 +116,26 @@ export default function Chat() {
     }
   }
 
+  function sendMessageViaWS() {
+    // Trim the input to remove leading and trailing whitespace
+    // and set the input state to an empty string
+    const trimmedInput = input.trim();
+    setInput("");
+    if (trimmedInput.length === 0) {
+      return;
+    }
+
+    // Add the user message to the conversation history
+    const newConversationHistory = [
+      ...conversationHistory,
+      { role: "user", content: trimmedInput },
+    ];
+    setConversationHistory(newConversationHistory);
+
+    // Send the message to the server via WebSocket
+    sendJsonMessage(newConversationHistory);
+  }
+
   return (
     <main className="w-full h-full flex items-center flex-col pb-12">
       <div
@@ -88,9 +158,18 @@ export default function Chat() {
               )}
             </li>
           ))}
+          {/* Pending/thinking indicator */}
+          {pending && (
+            <li className="animate-pulse w-4 h-4 rounded-full bg-gray-400 self-start" />
+          )}
         </ul>
       </div>
-      <ChatInput input={input} setInput={setInput} handleClick={sendMessage} />
+      <ChatInput
+        input={input}
+        setInput={setInput}
+        handleClick={sendMessageViaWS}
+        disabled={readyState !== ReadyState.OPEN}
+      />
     </main>
   );
 }
