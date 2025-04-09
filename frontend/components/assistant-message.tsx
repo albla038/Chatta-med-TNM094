@@ -1,7 +1,19 @@
+import MarkdownRenderer from "./markdown";
+
 type AssistantMessageProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  message: string;
 };
 
-export default function AssistantMessage({ children }: AssistantMessageProps) {
-  return <div className="w-full break-keep text-justify">{children}</div>;
+export default function AssistantMessage({
+  children,
+  message,
+}: AssistantMessageProps) {
+  return (
+    <div className="w-full break-keep text-justify">
+      <MarkdownRenderer message={message} />
+      {children}
+    </div>
+  );
 }
+
