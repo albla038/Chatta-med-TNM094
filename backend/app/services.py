@@ -40,7 +40,7 @@ async def handle_conversation(conversation: List[ConversationData]):
   docs_content = "\n".join(doc.page_content for doc, score in found_documents)
 
   promt_template = """
-    Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt.
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt.
   Kontext:
   {context}
 
@@ -71,7 +71,7 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
   docs_content = "\n".join(doc.page_content for doc, score in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet och fråga användaren att utveckla. Håll svaret kortfattat, om inte användaren ber om mer information. Svara tydligt och koncist.
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt.
   Kontext:
   {context}
 
@@ -82,6 +82,8 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
 
   openai_message = [msg.model_dump() for msg in conversation]
   openai_message.insert(0, {"role": "system", "content": context})
+
+  # TODO Log the results
 
   async for chunk in llm.astream(openai_message):
     yield {
