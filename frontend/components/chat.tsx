@@ -115,7 +115,7 @@ export default function Chat({ currentId }: { currentId: string | null }) {
         <div className="w-full h-full flex items-center justify-center">
           <TopicSuggestionCard
             topicSuggestionsList={topicSuggestionsList}
-            handleTopicClick={() => sendMessage("Hello world!!")}
+            handleTopicClick={(message) => sendMessage(message)}
           />
         </div>
       );
