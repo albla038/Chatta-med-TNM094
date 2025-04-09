@@ -4,8 +4,7 @@ export default function Home() {
   return (
     <>
       <div className="h-full w-full">
-        <Chat currentId={""} />
-        {/* <div>Hi!</div> */}
+        <Chat chatId={"home"} />
       </div>
     </>
   );

@@ -24,31 +24,31 @@ const topicSuggestionsList = [
   "Hur examineras jag i kursen?",
 ];
 
-export default function Chat({ currentId }: { currentId: string | null }) {
+export default function Chat({ chatId }: { chatId: string }) {
   // State
   const [input, setInput] = useState("");
   const [conversationHistory, setConversationHistory] = useLocalStorage<
     ConversationItem[]
-  >(`conversation-history-${currentId}`, []);
+  >(`conversation-history-${chatId}`, []);
+
+  function handleSendMessageClick() {
+    // Clean the user-input and clear the chat-input component
+    const trimmedInput = input.trim();
+    setInput("");
+    if (trimmedInput.length === 0) {
+      return;
+    }
+    sendMessage(trimmedInput);
+  }
 
   // Send message to the backend and update the conversation history
-  async function sendMessage(message: string = "") {
-    let trimmedInput: string;
-    if (message === "") {
-      // Clean the user-input and clear the chat-input component
-      trimmedInput = input.trim();
-      setInput("");
-      if (trimmedInput.length === 0) {
-        return;
-      }
-    } else {
-      trimmedInput = message;
-    }
+  async function sendMessage(message: string) {
+    const trimmedMessage = message.trim();
 
     // Update the conversation history
     const newConversationHistory = [
       ...conversationHistory,
-      { role: "user", content: trimmedInput },
+      { role: "user", content: trimmedMessage },
     ];
     setConversationHistory(newConversationHistory);
 
@@ -124,7 +124,11 @@ export default function Chat({ currentId }: { currentId: string | null }) {
           {printConversation()}
         </ul>
       </div>
-      <ChatInput input={input} setInput={setInput} handleClick={sendMessage} />
+      <ChatInput
+        input={input}
+        setInput={setInput}
+        handleClick={handleSendMessageClick}
+      />
     </main>
   );
 }
