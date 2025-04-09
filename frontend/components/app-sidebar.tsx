@@ -14,9 +14,9 @@ import {
   SidebarMenuItem,
   // SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { CirclePlus, Ellipsis, LogOut, User } from "lucide-react";
+import { CirclePlus, Ellipsis, LogOut, Pen, Trash2, User } from "lucide-react";
 // import { Button } from "./ui/button";
-import { Profile } from "./profile";
+// import { Profile } from "./profile";
 import Image from "next/image";
 import Link from "next/link";
 import liuLogo from "@/public/liuLogo.png";
@@ -40,7 +40,6 @@ type ConversationListItem = {
   title: string;
   href: string;
 };
-
 
 export function AppSidebar() {
   const [conversationList, setConversationList] = useLocalStorage<
@@ -66,10 +65,15 @@ export function AppSidebar() {
     router.push(`/chat/${id}`);
   }
 
-  function deleteConversation(id: string) {
+  function deleteConversation(deleteId: string, currentId: string) {
+    const deleteCurrentChat = `/chat/${deleteId}` == currentId;
+
     setConversationList((prevData) =>
-      prevData.filter((item) => item.id !== id)
+      prevData.filter((item) => item.id !== deleteId)
     );
+
+    //Redirect if user deleted current chat
+    if (deleteCurrentChat) router.push("http://localhost:3000/");
   }
   const currentURL = usePathname();
 
@@ -104,9 +108,27 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                   <SidebarMenuAction
                     className="hover:bg-liu-primary/0"
-                    onClick={() => deleteConversation(item.id)}
+                    // onClick={() => deleteConversation(item.id)}
                   >
-                    <Ellipsis className="cursor-pointer" />
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Ellipsis className="cursor-pointer" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>
+                          <Pen className="stroke-black" />
+                          <p>Byt namn</p>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            deleteConversation(item.id, currentURL)
+                          }
+                        >
+                          <Trash2 className="stroke-destructive" />
+                          <p className="text-destructive">Radera chatt</p>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </SidebarMenuAction>
                 </SidebarMenuItem>
               ))}
@@ -127,7 +149,7 @@ export function AppSidebar() {
             priority
           />
         </Link>
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Profile initials="FE"></Profile>
           </DropdownMenuTrigger>
@@ -156,7 +178,7 @@ export function AppSidebar() {
               <span>Logga ut</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </SidebarFooter>
     </Sidebar>
   );

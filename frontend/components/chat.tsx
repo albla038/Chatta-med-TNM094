@@ -6,7 +6,7 @@ import AssistantMessage from "./assistant-message";
 import useLocalStorage from "@/hooks/use-local-storage";
 
 import clsx from "clsx";
-import TopicSuggestionCard from "./topic-suggestion-card";
+import TopicSuggestionCards from "./topic-suggestion-cards";
 
 type ResponseData = {
   content: string;
@@ -113,7 +113,7 @@ export default function Chat({ currentId }: { currentId: string | null }) {
     } else {
       return (
         <div className="w-full h-full flex items-center justify-center">
-          <TopicSuggestionCard
+          <TopicSuggestionCards
             topicSuggestionsList={topicSuggestionsList}
             handleTopicClick={(message) => sendMessage(message)}
           />

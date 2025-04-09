@@ -12,12 +12,12 @@ export function ChatInput({ input, setInput, handleClick }: ChatInputProps) {
   return (
     <div
       style={{ scrollbarGutter: "stable" }}
-      className="relative w-full max-w-[926px]"
+      className="relative w-full max-w-[926px] px-0 min-[24rem]:px-4"
     >
       <Button
         onClick={handleClick}
         size={"icon"}
-        className="cursor-pointer absolute right-3 top-3 rounded-full flex justify-center items-center"
+        className="min-[24rem]:right-7 cursor-pointer absolute right-4 top-3 rounded-full flex justify-center items-center"
         variant={"liu"}
       >
         <SendHorizontal className="size-6" />
@@ -26,7 +26,7 @@ export function ChatInput({ input, setInput, handleClick }: ChatInputProps) {
         value={input}
         onChange={(e) => setInput(e.target.value)}
         placeholder="Ställ din fråga ..."
-        className="shadow-md pr-14 resize-none field-sizing-content h-fit  min-h-24"
+        className="min-[24rem]:rounded-md rounded-none shadow-md pr-14 resize-none field-sizing-content h-fit  min-h-24"
       />
     </div>
   );
