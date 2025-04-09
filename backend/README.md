@@ -17,6 +17,7 @@ backend/
 │   ├── config.py       # Konfigurationsinställningar (för miljövariabler)
 │   ├── embeddings.py   # Embeddingmodell-anslutning
 │   ├── llm.py          # Språkmodell-anslutning
+│   ├── logger.py       # Konfiguration av loggning
 │   ├── main.py         # Huvudfil
 │   ├── models.py       # Pydantic models
 │   ├── services.py     # Tjänster / Route handlers / Business logic
