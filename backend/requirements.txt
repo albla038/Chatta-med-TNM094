@@ -6,3 +6,11 @@ langchain[openai]
 langchain-pinecone
 langchain-community
 python-multipart
+unstructured==0.10.25
+# Error onnx, unstructured[docx,xlsx,pdf,html]
+python-docx 
+openpyxl 
+pdfminer.six 
+beautifulsoup4 
+lxml
+pdf2image
