@@ -16,12 +16,12 @@ type ConversationItem = {
   content: string;
 };
 
-export default function Chat({ id }: { id: string | null }) {
+export default function Chat({ currentId }: { currentId: string | null }) {
   // State
   const [input, setInput] = useState("");
   const [conversationHistory, setConversationHistory] = useLocalStorage<
     ConversationItem[]
-  >(`conversation-history-${id}`, []);
+  >(`conversation-history-${currentId}`, []);
 
   // Send message to the backend and update the conversation history
   async function sendMessage() {

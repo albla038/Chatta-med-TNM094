@@ -32,7 +32,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import useLocalStorage from "@/hooks/use-local-storage";
-// import { title } from "process";
+import clsx from "clsx";
+import { usePathname } from "next/navigation";
 
 type ConversationListItem = {
   id: string;
@@ -80,7 +81,7 @@ export function AppSidebar() {
       ...prevData,
       {
         id: id,
-        title: "New chat",
+        title: "Ny chatt",
         href: `/chat/${id}`,
       },
     ]);
@@ -93,6 +94,7 @@ export function AppSidebar() {
       prevData.filter((item) => item.id !== id)
     );
   }
+  const currentURL = usePathname();
 
   return (
     <Sidebar className="px-10 py-10">
@@ -104,7 +106,7 @@ export function AppSidebar() {
       </div>
       <SidebarContent>
         <SidebarGroup className="">
-          <SidebarGroupLabel>HISTORIK</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-base">HISTORIK</SidebarGroupLabel>
           <SidebarGroupAction title="Ny chatt" onClick={newConversation}>
             <CirclePlus className="text-liu-primary cursor-pointer" />
           </SidebarGroupAction>
@@ -114,7 +116,12 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.id} className="flex">
                   <SidebarMenuButton
                     asChild
-                    className="hover:bg-liu-primary/10"
+                    className={clsx(
+                      "hover:bg-liu-primary/10",
+                      `/chat/${item.id}` === currentURL
+                        ? "bg-liu-primary/15"
+                        : ""
+                    )}
                   >
                     <Link href={item.href}>{item.title}</Link>
                   </SidebarMenuButton>
