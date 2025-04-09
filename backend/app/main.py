@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
-from .services import handle_question, handle_conversation, handle_upload_pdf, handle_upload_webpage, delete_document_by_prefix, fetch_all_ids
+from .services import handle_question, handle_conversation, handle_conversation_stream, handle_upload_pdf, handle_upload_webpage, delete_document_by_prefix, fetch_all_ids
 from .models import QuestionReqBody, ConversationData
 from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
@@ -136,9 +136,11 @@ async def ws_llm_conversation(ws: WebSocket):
       # Validate the incoming JSON data against the Pydantic model (using unpacking operator **)
       try:
         data = [ConversationData(**item) for item in json_data]
-        result = await handle_conversation(data)
-        # Send the result back to the client
-        await ws.send_json({"status": "ok", "role": "assistant", "content": result["content"]})
+
+        # Stream result back to the client
+        async for chunk in handle_conversation_stream(data):
+          # Send the chunk of data back to the client
+          await ws.send_json({"status": "ok", "id": chunk["id"], "role": "assistant", "content": chunk["content"], "responseMetadata": chunk["response_metadata"]})
       
       except ValidationError as e:
         # Send an error message back to the client if validation fails
