@@ -22,14 +22,6 @@ const topicSuggestionsList = [
   "Vad lär jag mig i kursen TNM094?",
   "Vad handlar projektarbetet om?",
   "Hur examineras jag i kursen?",
-  // "Vilka systemutvecklingsmetoder ingår i kursen?",
-  // "Finns det någon kurslitteratur?",
-  // "Hur ska jag strukturera min individuella rapport?",
-  // "Vad är viktigt att tänka på vid samarbete i projektgrupp?",
-  // "Vem är examinator?",
-  // "Vilka deadlines finns i kursen?",
-  // "Vad ingår i laborationerna?",
-  // "Vad behöver jag förbereda inför Föreläsning 1?",
 ];
 
 export default function Chat({ currentId }: { currentId: string | null }) {
