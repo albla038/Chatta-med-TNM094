@@ -6,6 +6,7 @@ import AssistantMessage from "./assistant-message";
 import useLocalStorage from "@/hooks/use-local-storage";
 
 import clsx from "clsx";
+import TopicSuggestionCard from "./topic-suggestion-card";
 
 type ResponseData = {
   content: string;
@@ -16,6 +17,21 @@ type ConversationItem = {
   content: string;
 };
 
+const topicSuggestionsList = [
+  "Vad är syftet med kursen TNM094?",
+  "Vad lär jag mig i kursen TNM094?",
+  "Vad handlar projektarbetet om?",
+  "Hur examineras jag i kursen?",
+  // "Vilka systemutvecklingsmetoder ingår i kursen?",
+  // "Finns det någon kurslitteratur?",
+  // "Hur ska jag strukturera min individuella rapport?",
+  // "Vad är viktigt att tänka på vid samarbete i projektgrupp?",
+  // "Vem är examinator?",
+  // "Vilka deadlines finns i kursen?",
+  // "Vad ingår i laborationerna?",
+  // "Vad behöver jag förbereda inför Föreläsning 1?",
+];
+
 export default function Chat({ currentId }: { currentId: string | null }) {
   // State
   const [input, setInput] = useState("");
@@ -24,18 +40,23 @@ export default function Chat({ currentId }: { currentId: string | null }) {
   >(`conversation-history-${currentId}`, []);
 
   // Send message to the backend and update the conversation history
-  async function sendMessage() {
-    // Clean the user-input and clear the chat-input component
-    const trimmedInput = input.trim();
-    setInput("");
-    if (trimmedInput.length === 0) {
-      return;
+  async function sendMessage(message: string = "") {
+    let trimmedInput: string;
+    if (message === "") {
+      // Clean the user-input and clear the chat-input component
+      trimmedInput = input.trim();
+      setInput("");
+      if (trimmedInput.length === 0) {
+        return;
+      }
+    } else {
+      trimmedInput = message;
     }
 
     // Update the conversation history
     const newConversationHistory = [
       ...conversationHistory,
-      { role: "user", content: input },
+      { role: "user", content: trimmedInput },
     ];
     setConversationHistory(newConversationHistory);
 
@@ -72,6 +93,35 @@ export default function Chat({ currentId }: { currentId: string | null }) {
     }
   }
 
+  function printConversation() {
+    if (conversationHistory.length != 0) {
+      return conversationHistory.map((message, id) => (
+        <li
+          key={id}
+          className={clsx(
+            "first:pt-12 last:pb-12",
+            message.role === "assistant" ? "self-start" : ""
+          )}
+        >
+          {message.role === "user" ? (
+            <UserMessage>{message.content}</UserMessage>
+          ) : (
+            <AssistantMessage>{message.content}</AssistantMessage>
+          )}
+        </li>
+      ));
+    } else {
+      return (
+        <div className="w-full h-full flex items-center justify-center">
+          <TopicSuggestionCard
+            topicSuggestionsList={topicSuggestionsList}
+            handleTopicClick={() => sendMessage("Hello world!!")}
+          />
+        </div>
+      );
+    }
+  }
+
   return (
     <main className="w-full h-full flex items-center flex-col pb-12">
       <div
@@ -79,21 +129,7 @@ export default function Chat({ currentId }: { currentId: string | null }) {
         style={{ scrollbarGutter: "stable" }}
       >
         <ul className="flex flex-col w-full h-full items-end gap-4 max-w-4xl">
-          {conversationHistory.map((message, id) => (
-            <li
-              key={id}
-              className={clsx(
-                "first:pt-12 last:pb-12",
-                message.role === "assistant" ? "self-start" : ""
-              )}
-            >
-              {message.role === "user" ? (
-                <UserMessage>{message.content}</UserMessage>
-              ) : (
-                <AssistantMessage>{message.content}</AssistantMessage>
-              )}
-            </li>
-          ))}
+          {printConversation()}
         </ul>
       </div>
       <ChatInput input={input} setInput={setInput} handleClick={sendMessage} />

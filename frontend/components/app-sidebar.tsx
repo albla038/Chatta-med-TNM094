@@ -41,29 +41,6 @@ type ConversationListItem = {
   href: string;
 };
 
-// const previousChats = [
-//   "Scrum vs Spiralmetoden",
-//   "Hjälp med användargränssnitt",
-//   "Deadlines i kursen",
-// ];
-
-// const mockData: ConversationListItem[] = [
-//   {
-//     id: "1",
-//     title: "Scrum vs Spiralmetoden",
-//     href: "/chat/1",
-//   },
-//   {
-//     id: "2",
-//     title: "Hjälp med användargränssnitt",
-//     href: "/chat/2",
-//   },
-//   {
-//     id: "3",
-//     title: "Deadlines i kursen",
-//     href: "/chat/3",
-//   },
-// ];
 
 export function AppSidebar() {
   const [conversationList, setConversationList] = useLocalStorage<
