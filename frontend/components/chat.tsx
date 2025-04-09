@@ -144,7 +144,7 @@ export default function Chat() {
               {message.role === "user" ? (
                 <UserMessage>{message.content}</UserMessage>
               ) : (
-                <AssistantMessage>{message.content}</AssistantMessage>
+                <AssistantMessage message={message.content}></AssistantMessage>
               )}
             </li>
           ))}

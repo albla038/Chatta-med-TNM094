@@ -6,12 +6,9 @@ from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from .utils import filter_document_metadata, split_text, clean_text
 from .models import ConversationData
 from typing import List
-import logging
+from .logger import logger
 import re
 import tempfile
-
-# Configure logging
-# logging.basicConfig(filename="log/app.log", level=logging.INFO, format='%(asctime)s - %(message)s')
 
 async def handle_question(question: str): 
   # Retrive relevant text/inputs from vector database...
@@ -19,7 +16,7 @@ async def handle_question(question: str):
   docs_content = "\n".join(doc.page_content for doc in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat, om inte användaren ber om mer information. Svara tydligt och koncist.
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt.
   Kontext:
   {context}
 
@@ -43,7 +40,8 @@ async def handle_conversation(conversation: List[ConversationData]):
   docs_content = "\n".join(doc.page_content for doc, score in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat, om inte användaren ber om mer information. Svara tydligt och koncist.
+    Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt.
+  Kontext:
   Kontext:
   {context}
 
@@ -55,10 +53,13 @@ async def handle_conversation(conversation: List[ConversationData]):
   model_response = await call_model_with_conversation(conversation, context)
 
   # Log the results
-  # logging.info(f"Conversation: {conversation}")
-  # logging.info(f"Number of Found Documents: {len(found_documents)}")
-  # logging.info(f"Found Documents: {found_documents}")
-  # logging.info(f"Model Response Object: {model_response}")
+  logger.info(f"Last Question: {last_question}")
+  logger.info(f"Conversation: {conversation}")
+  logger.info(f"Number of Found Documents: {len(found_documents)}")
+  logger.info(f"Found Documents: {found_documents}")
+  logger.info(f"Model Response Object: {model_response}")
+  logger.info(f"-----------------------------")
+
 
   return {"content": model_response.content}
 
