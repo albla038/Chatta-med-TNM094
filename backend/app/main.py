@@ -1,11 +1,13 @@
-from fastapi import FastAPI, HTTPException, status, UploadFile
+from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
-from .services import handle_question, handle_conversation, handle_upload_pdf, handle_upload_webpage, delete_document_by_prefix, fetch_all_ids
+from .services import handle_question, handle_conversation, handle_conversation_stream, handle_upload_pdf, handle_upload_webpage, delete_document_by_prefix, fetch_all_ids
 from .models import QuestionReqBody, ConversationData
 from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
 from typing import List
+from pydantic import ValidationError
 
 
 app = FastAPI()
@@ -120,3 +122,37 @@ async def get_uploaded_ids():
       status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
       detail={"error": type(e).__name__, "message": str(e)}
     )
+
+@app.websocket("/ws/llm/conversation")
+async def ws_llm_conversation(ws: WebSocket):
+  # Accept and open the WebSocket connection
+  await ws.accept()
+
+  try:
+    # Receive the incoming JSON data continuously
+    while True:
+      json_data = await ws.receive_json()
+
+      # Validate the incoming JSON data against the Pydantic model (using unpacking operator **)
+      try:
+        data = [ConversationData(**item) for item in json_data]
+
+        # Stream result back to the client
+        async for chunk in handle_conversation_stream(data):
+          # Send the chunk of data back to the client
+          await ws.send_json({"status": "ok", "id": chunk["id"], "role": "assistant", "content": chunk["content"], "responseMetadata": chunk["response_metadata"]})
+      
+      except ValidationError as e:
+        # Send an error message back to the client if validation fails
+        await ws.send_json({"status": "error", "error": "Invalid data", "details": e.errors()})
+        continue
+
+      except Exception as e:
+        # Handle any other exceptions that may occur during processing
+        await ws.send_json({"status": "error", "error": str(e)})
+        continue
+
+  # Handle WebSocket disconnection
+  except WebSocketDisconnect:
+    # Remove saved state like client ids or perform any cleanup if necessary
+    pass

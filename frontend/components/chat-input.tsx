@@ -6,9 +6,15 @@ type ChatInputProps = {
   input: string;
   setInput: React.Dispatch<React.SetStateAction<string>>;
   handleClick: () => void;
+  disabled?: boolean;
 };
 
-export function ChatInput({ input, setInput, handleClick }: ChatInputProps) {
+export function ChatInput({
+  input,
+  setInput,
+  handleClick,
+  disabled = false,
+}: ChatInputProps) {
   return (
     <div
       style={{ scrollbarGutter: "stable" }}
@@ -17,6 +23,7 @@ export function ChatInput({ input, setInput, handleClick }: ChatInputProps) {
       <div className="relative mx-0 min-[24rem]:mx-4">
         <Button
           onClick={handleClick}
+          disabled={disabled}
           size={"icon"}
           className="cursor-pointer absolute right-4 top-3 rounded-full flex justify-center items-center"
           variant={"liu"}
