@@ -101,8 +101,9 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
       "id": chunk.id,
       "response_metadata": chunk.response_metadata,
     }
+
 async def handle_assesment_paragraph(student_paragraph: str):
-  prompt_template = f"""
+  T3_prompt_template = f"""
   Du är examinator för en universitetskurs.
 
   ### Exempel 1 - Godkänd
@@ -137,8 +138,8 @@ async def handle_assesment_paragraph(student_paragraph: str):
 
   Ge en kommentar och välj ett betyg: -, (x), eller x
   """
-
-  model_response = await call_model_for_assesment(prompt_template)
+  prompt = T3_prompt_template.format(student_paragraph=student_paragraph)
+  model_response = await call_model_for_assesment(prompt)
 
   return {"Assesment": model_response.content}
 
