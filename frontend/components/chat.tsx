@@ -49,7 +49,7 @@ export default function Chat({ chatId }: { chatId: string }) {
   // Check if the last message in the conversation history is from the user
   const pending = conversationHistory.slice(-1)[0]?.role === "user";
 
-  // WebSocket connection
+  // WebSocket connection *
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
     "ws://127.0.0.1:8000/ws/llm/conversation",
     {
