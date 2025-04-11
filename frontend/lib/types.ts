@@ -1,7 +1,8 @@
 export type Message = {
+  id: string;
   role: "user" | "assistant";
   content: string;
-  loading: boolean;
+  loading?: boolean;
 };
 
 export type Conversation = {
@@ -19,11 +20,11 @@ export type ConversationMeta = {
 
 // TODO Types for sending JSON over WS
 
-// type WebSocketMessage =
-//   | { type: 'userMessage'; content: string }
-//   | { type: 'assistantMessageChunk'; id: string; content: string }
-//   | { type: 'done'; id: string }
-//   | { type: 'error'; message: string };
+export type WebSocketMessage =
+  // | { type: "userMessage"; content: string }
+  | { type: "messageChunk"; id: string; content: string }
+  | { type: "done"; id: string }
+  | { type: "error"; error: string; details: string };
 
 // type ResponseMessage = {
 //   status: string;
