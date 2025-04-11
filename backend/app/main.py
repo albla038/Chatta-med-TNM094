@@ -1,14 +1,22 @@
 from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
-from .services import handle_question, handle_conversation, handle_conversation_stream, handle_upload_pdf, handle_upload_webpage, delete_document_by_prefix, fetch_all_ids
+from .services import (
+    handle_question, 
+    handle_conversation,
+    handle_conversation_stream,
+    handle_upload_pdf, 
+    handle_upload_webpage, 
+    handle_upload_file,
+    delete_document_by_prefix, 
+    fetch_all_ids
+)
 from .models import QuestionReqBody, ConversationData
 from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
 from typing import List
 from pydantic import ValidationError
-
 
 app = FastAPI()
 
@@ -91,6 +99,21 @@ async def upload_url(page_url: str):
     )
 
   return result
+
+@app.post("/upload/files")
+async def upload_files(files: list[UploadFile]):
+  try:
+    results = []
+    for file in files:
+      result = await handle_upload_file(file)
+      results.append(result)
+  except Exception as e:
+    # Return 400 Bad Request
+    raise HTTPException(
+      status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+      detail={"error": type(e).__name__, "message": str(e)}
+    )
+  return results
 
 @app.delete("/delete/document")
 async def delete_document(filename_or_url: str):
