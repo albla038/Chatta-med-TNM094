@@ -1,4 +1,4 @@
-from .llm import call_model, call_model_with_conversation
+from .llm import llm, call_model, call_model_with_conversation
 from .vector_db import vector_db, ingest_documents, index
 from fastapi import HTTPException, UploadFile
 import os, re, logging
@@ -25,7 +25,7 @@ async def handle_question(question: str):
   docs_content = "\n".join(doc.page_content for doc in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Använd högst tre meningar och håll svaret kortfattat, om inte användaren ber om mer information. Svara tydligt och koncist.
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt.
   Kontext:
   {context}
 
@@ -50,6 +50,7 @@ async def handle_conversation(conversation: List[ConversationData]):
 
   promt_template = """
   Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt och tydligt.
+
   Kontext:
   {context}
 
@@ -68,7 +69,38 @@ async def handle_conversation(conversation: List[ConversationData]):
   logger.info(f"Model Response Object: {model_response}")
   logger.info(f"-----------------------------")
 
+
   return {"content": model_response.content}
+
+
+async def handle_conversation_stream(conversation: List[ConversationData]): 
+  last_question = conversation[-1].content
+
+  # Retrive relevant text/inputs from vector database...
+  found_documents = await vector_db.asimilarity_search_with_relevance_scores(last_question, k=10, score_threshold=0.75)
+  docs_content = "\n".join(doc.page_content for doc, score in found_documents)
+
+  promt_template = """
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt.
+  Kontext:
+  {context}
+
+
+  """
+
+  context = promt_template.format(context=docs_content)
+
+  openai_message = [msg.model_dump() for msg in conversation]
+  openai_message.insert(0, {"role": "system", "content": context})
+
+  # TODO Log the results
+
+  async for chunk in llm.astream(openai_message):
+    yield {
+      "content": chunk.content,
+      "id": chunk.id,
+      "response_metadata": chunk.response_metadata,
+    }
 
 async def handle_upload_pdf(file: UploadFile):
   if not file.filename.endswith(".pdf"):
