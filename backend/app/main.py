@@ -5,6 +5,7 @@ from .services import (
     handle_question, 
     handle_conversation,
     handle_conversation_stream,
+    handle_assesment_paragraph,
     handle_upload_pdf, 
     handle_upload_webpage, 
     handle_upload_file,
@@ -45,7 +46,12 @@ async def llm_query(req_body: QuestionReqBody):
 @app.post("/llm/conversation")
 async def llm_conversation(req_body: List[ConversationData]):
   return await handle_conversation(req_body)
-   
+
+@app.post("/llm/assement/paragraph")
+async def llm_assesment_paragraph(student_paragraph: str):
+  response = await handle_assesment_paragraph(student_paragraph)
+  return response
+  
 @app.post("/vector", status_code=status.HTTP_201_CREATED)
 async def create_vector(query: str):
   document = Document(
