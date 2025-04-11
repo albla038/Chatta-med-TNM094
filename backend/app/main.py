@@ -107,7 +107,7 @@ async def upload_files(files: list[UploadFile]):
   except Exception as e:
     # Return 400 Bad Request
     raise HTTPException(
-      status_code=status.HTTP_400_BAD_REQUEST,
+      status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
       detail={"error": type(e).__name__, "message": str(e)}
     )
   return results
