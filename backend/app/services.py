@@ -145,20 +145,21 @@ async def handle_upload_file(file: UploadFile):
         temp_file.write(content)
         temp_file.flush()
 
-      if suffix == ".txt":
-        loader = TextLoader(temp_file_path)
-
-      elif suffix == ".pdf":
-        loader = UnstructuredPDFLoader(temp_file_path)
-
-      elif suffix == ".docx":
-        loader = UnstructuredWordDocumentLoader(temp_file_path)
-
-      elif suffix == ".html":
-        loader = UnstructuredHTMLLoader(temp_file_path)
+      match suffix:
+        case ".txt":
+          loader = TextLoader(temp_file_path)
       
-      elif suffix == ".xlsx":
-        loader = UnstructuredExcelLoader(temp_file_path, mode = "elements")
+        case ".pdf":
+          loader = UnstructuredPDFLoader(temp_file_path)
+      
+        case ".docx":
+          loader = UnstructuredWordDocumentLoader(temp_file_path)
+      
+        case ".html":
+          loader = UnstructuredHTMLLoader(temp_file_path)
+      
+        case ".xlsx":
+          loader = UnstructuredExcelLoader(temp_file_path, mode="elements")
       
       pages = []
       for doc in loader.lazy_load():
