@@ -86,10 +86,10 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
   # TODO Log the results
 
   async for chunk in llm.astream(openai_message):
+    # If metadata with "finish_reason" exists, send stop message
     yield {
-      "content": chunk.content,
       "id": chunk.id,
-      "response_metadata": chunk.response_metadata,
+      "content": chunk.content,
     }
 
 async def handle_upload_pdf(file: UploadFile):

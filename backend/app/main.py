@@ -140,16 +140,16 @@ async def ws_llm_conversation(ws: WebSocket):
         # Stream result back to the client
         async for chunk in handle_conversation_stream(data):
           # Send the chunk of data back to the client
-          await ws.send_json({"status": "ok", "id": chunk["id"], "role": "assistant", "content": chunk["content"], "responseMetadata": chunk["response_metadata"]})
+          await ws.send_json({"type": "messageChunk", "id": chunk["id"], "content": chunk["content"]})
       
       except ValidationError as e:
         # Send an error message back to the client if validation fails
-        await ws.send_json({"status": "error", "error": "Invalid data", "details": e.errors()})
+        await ws.send_json({"type": "error", "error": "Invalid data", "details": e.errors()})
         continue
 
       except Exception as e:
         # Handle any other exceptions that may occur during processing
-        await ws.send_json({"status": "error", "error": str(e)})
+        await ws.send_json({"type": "error", "error": "Unknown error", "details": str(e)})
         continue
 
   # Handle WebSocket disconnection
