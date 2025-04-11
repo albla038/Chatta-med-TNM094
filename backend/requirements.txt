@@ -13,3 +13,4 @@ pdfminer.six
 beautifulsoup4 
 lxml
 pdf2image
+websockets
