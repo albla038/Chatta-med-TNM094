@@ -35,6 +35,13 @@ export default function useConversations() {
     return successfulRes;
   }
 
+  function getConversation(id: string): Conversation | null {
+    const conversation = conversations.find((conv) => {
+      return conv.id === id;
+    });
+    return conversation ? conversation : null;
+  }
+
   // Update one conversation in the list of conversations
   function updateConversation(updatedConversation: Conversation) {
     let successfulRes = false;
@@ -66,6 +73,7 @@ export default function useConversations() {
     conversations,
     saveConversations,
     addConversation,
+    getConversation,
     updateConversation,
     removeConversation,
   };

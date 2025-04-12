@@ -2,24 +2,17 @@ export type Message = {
   id: string;
   role: "user" | "assistant";
   content: string;
-  loading?: boolean;
+  isStreaming?: boolean;
 };
 
 export type Conversation = {
   id: string;
-  createdAt: string;
+  createdAt: number;
   messages: Message[];
   sentFirstMessage: boolean; // Flag to check if the first message has been sent
 };
 
-export type ConversationMeta = {
-  id: string;
-  createdAt: string;
-  title?: string;
-};
-
 // TODO Types for sending JSON over WS
-
 export type WebSocketMessage =
   // | { type: "userMessage"; content: string }
   | { type: "messageChunk"; id: string; content: string }
@@ -32,6 +25,15 @@ export type WebSocketMessage =
 //   role: string;
 //   content: string;
 //   responseMetadata: null | {
+//     [key: string]: string;
+//   };
+// };
+
+// type ConversationItem = {
+//   messageId: string;
+//   role: string;
+//   content: string;
+//   metadata?: {
 //     [key: string]: string;
 //   };
 // };

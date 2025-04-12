@@ -3,148 +3,41 @@ import { useEffect, useState } from "react";
 import { ChatInput } from "./chat-input";
 import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
-import useLocalStorage from "@/hooks/use-local-storage";
-
 import clsx from "clsx";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import TopicSuggestionCards from "./topic-suggestion-cards";
+import { Conversation, Message } from "@/lib/types";
+import { SOCKET_URL } from "@/lib/constants";
+import { useChat } from "@/hooks/useChat";
 
-type ResponseMessage = {
-  status: string;
-  id: string;
-  role: string;
-  content: string;
-  responseMetadata: null | {
-    [key: string]: string;
-  };
+type ChatProps = {
+  chatId: string;
 };
 
-type ConversationItem = {
-  messageId: string;
-  role: string;
-  content: string;
-  metadata?: {
-    [key: string]: string;
-  };
-};
-
-const topicSuggestionsList = [
-  "Vad är syftet med kursen TNM094?",
-  "Vad lär jag mig i kursen TNM094?",
-  "Vad handlar projektarbetet om?",
-  "Hur examineras jag i kursen?",
-];
-
-export default function Chat({ chatId }: { chatId: string }) {
+export default function Chat({ chatId }: ChatProps) {
   // STATE
   const [input, setInput] = useState("");
-  const [conversationHistory, setConversationHistory] = useLocalStorage<
-    ConversationItem[]
-  >(`conversation-history-${chatId}`, []);
-
-  // TODO State to manage the error state of the chat input
-  // const [isError, setIsError] = useState(false);
+  // HOOKS
+  const { messages, sendMessage, isOpen } = useChat(chatId);
 
   // DERIVED STATE
   // Check if the last message in the conversation history is from the user
-  const pending = conversationHistory.slice(-1)[0]?.role === "user";
-
-  // WebSocket connection *
-  const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
-    "ws://127.0.0.1:8000/ws/llm/conversation",
-    {
-      share: true,
-      // Will attempt to reconnect on all close events, such as server shutting down
-      shouldReconnect: () => true,
-      // Log messages to console
-      onOpen: () => console.log("WebSocket opened"),
-      onClose: () => console.log("WebSocket closed"),
-    }
-  );
-
-  // Update conversation history when a new message is received from the server
-  useEffect(() => {
-    // Check if the last message is a valid JSON object
-    if (lastJsonMessage) {
-      // Cast the incoming message to the expected type and destructure it
-      const { status, id, role, content, responseMetadata } =
-        lastJsonMessage as ResponseMessage;
-
-      if (status === "ok") {
-        setConversationHistory((prev) => {
-          // console.log(prev);
-
-          // Check if the message ID already exists in the conversation history
-          const existingMessage = prev.find((msg) => msg.messageId === id);
-          if (existingMessage) {
-            // If it exists, update the content of the existing message
-            if (responseMetadata !== null) {
-              // If the message has metadata, then the streaming has ended
-              return prev.map((msg) =>
-                msg.messageId === id
-                  ? {
-                      ...msg,
-                      content: msg.content + content,
-                      metadata: responseMetadata,
-                    }
-                  : msg
-              );
-            }
-
-            // If the message doesn't have metadata, then it's still streaming
-            return prev.map((msg) =>
-              msg.messageId === id
-                ? { ...msg, content: msg.content + content }
-                : msg
-            );
-          }
-
-          // If the message doesn't exist already, add the new message to the conversation history
-          return [...prev, { messageId: id, role, content }];
-        });
-      } else {
-        // TODO Handle error messages from the server by rendering them in the UI
-        console.error("Error in response:", lastJsonMessage);
-      }
-    }
-
-    // TODO Handle other error cases, such as connection errors or timeouts
-    // maybe use function onError() or form useWebSocket()
-    // or shouldReconnect() function event
-  }, [lastJsonMessage, setConversationHistory]);
+  const pending = messages.slice(-1)[0]?.role === "user";
 
   function handleSendMessageClick() {
     // Clean the user-input and clear the chat-input component
     const trimmedInput = input.trim();
-    setInput("");
     if (trimmedInput.length === 0) {
       return;
     }
+    setInput("");
     sendMessage(trimmedInput);
   }
 
-  // Send message to the backend and update the conversation history
-  async function sendMessage(message: string) {
-    // TODO Is this unneccesary?
-    const trimmedMessage = message.trim();
-
-    // Update the conversation history
-    const newConversationHistory = [
-      ...conversationHistory,
-      { messageId: crypto.randomUUID(), role: "user", content: trimmedMessage },
-    ];
-    setConversationHistory(newConversationHistory);
-
-    // Send the message to the server via WebSocket
-    // TODO Remove or handle the messageId in the backend
-    sendJsonMessage(newConversationHistory);
-  }
-
   function printConversation() {
-    if (conversationHistory.length != 0) {
-      return conversationHistory.map((message) => (
+    if (messages.length != 0) {
+      return messages.map((message) => (
         <li
-          key={message.messageId}
+          key={message.id}
           className={clsx(
             "first:pt-12 last:pb-12",
             message.role === "assistant" ? "self-start" : ""
@@ -157,15 +50,6 @@ export default function Chat({ chatId }: { chatId: string }) {
           )}
         </li>
       ));
-    } else {
-      return (
-        <div className="w-full h-full flex items-center justify-center">
-          <TopicSuggestionCards
-            topicSuggestionsList={topicSuggestionsList}
-            handleTopicClick={(message) => sendMessage(message)}
-          />
-        </div>
-      );
     }
   }
 
@@ -187,8 +71,23 @@ export default function Chat({ chatId }: { chatId: string }) {
         input={input}
         setInput={setInput}
         handleClick={handleSendMessageClick}
-        disabled={readyState !== ReadyState.OPEN}
+        disabled={!isOpen}
       />
     </main>
   );
 }
+
+// const mock: Conversation = {
+//   id: crypto.randomUUID(),
+//   messages: [
+//     {
+//       id: crypto.randomUUID(),
+//       role: "user",
+//       content: "Hej",
+//     },
+//   ],
+//   createdAt: new Date().toISOString(),
+//   sentFirstMessage: false,
+// };
+
+// console.log(JSON.stringify(mock));
