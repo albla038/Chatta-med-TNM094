@@ -10,7 +10,7 @@ export default function TopicSuggestionCards({
   topicSuggestionsList,
 }: topicClickType) {
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="h-full flex flex-col justify-center items-center mx-4">
       <h2 className="text-2xl font-semibold p-6 text-center">
         Hur kan jag hjälpa dig idag?
       </h2>

@@ -9,7 +9,8 @@ export default async function Page({
   return (
     <>
       <div className="h-full w-full">
-        <Chat chatId={id} />
+        {id}
+        {/* <Chat chatId={id} /> */}
       </div>
     </>
   );
