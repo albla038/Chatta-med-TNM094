@@ -9,6 +9,8 @@ from uuid import uuid4
 from typing import List
 from pydantic import ValidationError
 
+import asyncio
+
 
 app = FastAPI()
 
@@ -139,8 +141,19 @@ async def ws_llm_conversation(ws: WebSocket):
 
         # Stream result back to the client
         async for chunk in handle_conversation_stream(data):
+          chunk_id = chunk["id"]
           # Send the chunk of data back to the client
-          await ws.send_json({"type": "messageChunk", "id": chunk["id"], "content": chunk["content"]})
+          await ws.send_json({
+            "type": "messageChunk",
+            "id": chunk["id"],
+            "content": chunk["content"]
+          })
+        
+        # Send final type "done"
+        await ws.send_json({
+          "type": "done",
+          "id": chunk_id
+        })
       
       except ValidationError as e:
         # Send an error message back to the client if validation fails
@@ -156,3 +169,35 @@ async def ws_llm_conversation(ws: WebSocket):
   except WebSocketDisconnect:
     # Remove saved state like client ids or perform any cleanup if necessary
     pass
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+  await websocket.accept()
+  print("Client connected")
+
+  try:
+    while True:
+      data = await websocket.receive_json()
+      message_id = str(uuid4())
+      await stream_assistant_message(websocket, message_id)
+  except WebSocketDisconnect:
+    print("Client disconnected")
+
+async def stream_assistant_message(websocket: WebSocket, message_id: str):
+  full_text = ["Lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit.", "Sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua."] * 25
+  current = ""
+
+  for word in full_text:
+    current += word + " "
+    await websocket.send_json({
+      "type": "messageChunk",
+      "id": message_id,
+      "content": current
+    })
+    await asyncio.sleep(0.010)  # 10ms between chunks
+
+  # Send final "done" flag
+  await websocket.send_json({
+    "type": "done",
+    "id": message_id
+  })

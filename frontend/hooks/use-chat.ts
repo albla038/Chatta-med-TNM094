@@ -14,7 +14,7 @@ export function useChat(chatId: string) {
 
   // Websocket hook
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
-    SOCKET_URL,
+    "ws://127.0.0.1:8000/ws",
     {
       share: true,
       // Attempts to reconnect on all close events (such as server shutting down)
@@ -29,6 +29,7 @@ export function useChat(chatId: string) {
   // Read messages from local storage
   // and send first message in conversation to the server if the chat is new
   useEffect(() => {
+    console.log("Initial effect ran.", "isLoading: ", isLoading);
     if (isLoading || !chatId) return;
 
     const conversation = getConversation(chatId);
@@ -48,6 +49,11 @@ export function useChat(chatId: string) {
     }
 
     setMessages(conversation.messages);
+
+    return () => {
+      conversationRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, isLoading]);
 
   // Handle chunks sent from server over WebSocket
@@ -72,7 +78,7 @@ export function useChat(chatId: string) {
         const existingMessage = prevMessages.find((msg) => msg.id === id);
         if (existingMessage) {
           const updatedMessages = prevMessages.map((msg) =>
-            msg.id === id ? { ...msg, content: msg.content + content } : msg
+            msg.id === id ? { ...msg, content } : msg
           );
           // updateConversation({ ...conversation, messages: updatedMessages });
           return updatedMessages;
@@ -98,7 +104,7 @@ export function useChat(chatId: string) {
           const updatedMessages = prevMessages.map((msg) =>
             msg.id === id ? { ...msg, isStreaming: false } : msg
           );
-          // updateConversation({ ...conversation, messages: updatedMessages });
+          updateConversation({ ...conversation, messages: updatedMessages });
           return updatedMessages;
         } else {
           return prevMessages;
@@ -117,6 +123,7 @@ export function useChat(chatId: string) {
       // maybe use function onError() or form useWebSocket()
       // or shouldReconnect() function event
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastJsonMessage]);
 
   // Send message to the server
