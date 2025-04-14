@@ -10,7 +10,7 @@ export function useChat(chatId: string) {
   const conversationRef = useRef<Conversation>(null);
 
   // HOOKS
-  const { getConversation, updateConversation } = useConversations();
+  const { getConversation, updateConversation, isLoading } = useConversations();
 
   // Websocket hook
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
@@ -29,9 +29,11 @@ export function useChat(chatId: string) {
   // Read messages from local storage
   // and send first message in conversation to the server if the chat is new
   useEffect(() => {
+    if (isLoading || !chatId) return;
+
     const conversation = getConversation(chatId);
     if (!conversation) {
-      // console.error(`Conversation with id ${chatId} doesn't exist.`);
+      console.error(`Conversation with id ${chatId} doesn't exist.`);
       return;
     }
     conversationRef.current = conversation;
@@ -46,7 +48,7 @@ export function useChat(chatId: string) {
     }
 
     setMessages(conversation.messages);
-  }, [chatId, getConversation]);
+  }, [chatId, isLoading]);
 
   // Handle chunks sent from server over WebSocket
   useEffect(() => {
@@ -54,8 +56,6 @@ export function useChat(chatId: string) {
     if (!lastJsonMessage) return;
 
     const responseMessage = lastJsonMessage as WebSocketMessage;
-
-    console.log(responseMessage);
 
     // Get conversation id and data
     const conversation = conversationRef.current;
@@ -67,17 +67,13 @@ export function useChat(chatId: string) {
     // Handle each type (done, error and messageChunk) individually
     if (responseMessage.type === "messageChunk") {
       const { id, content } = responseMessage;
-      console.log(responseMessage);
       setMessages((prevMessages) => {
-        // console.log("id: ", id, "content: ", content);
         // Check if the message ID already exists in the message history
         const existingMessage = prevMessages.find((msg) => msg.id === id);
         if (existingMessage) {
-          // console.log("existingMessage", existingMessage);
           const updatedMessages = prevMessages.map((msg) =>
             msg.id === id ? { ...msg, content: msg.content + content } : msg
           );
-          console.log(updatedMessages);
           // updateConversation({ ...conversation, messages: updatedMessages });
           return updatedMessages;
         }

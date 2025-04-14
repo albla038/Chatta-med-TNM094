@@ -6,11 +6,13 @@ const KEY = "conversations";
 
 export default function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Set initial data from local storage
   useEffect(() => {
     const data = getFromLocalStorage<Conversation[]>(KEY);
     if (data) setConversations(data);
+    setIsLoading(false);
   }, []);
 
   // Save the conversation list in local storage with KEY
@@ -76,5 +78,6 @@ export default function useConversations() {
     getConversation,
     updateConversation,
     removeConversation,
+    isLoading,
   };
 }

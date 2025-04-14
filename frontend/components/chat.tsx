@@ -7,7 +7,7 @@ import clsx from "clsx";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { Conversation, Message } from "@/lib/types";
 import { SOCKET_URL } from "@/lib/constants";
-import { useChat } from "@/hooks/useChat";
+import { useChat } from "@/hooks/use-chat";
 
 type ChatProps = {
   chatId: string;
