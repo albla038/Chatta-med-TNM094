@@ -140,13 +140,16 @@ async def ws_llm_conversation(ws: WebSocket):
         data = [ConversationData(**item) for item in json_data]
 
         # Stream result back to the client
+        content = ""
+        # chunk_id: str
         async for chunk in handle_conversation_stream(data):
           chunk_id = chunk["id"]
+          content += chunk["content"]
           # Send the chunk of data back to the client
           await ws.send_json({
             "type": "messageChunk",
             "id": chunk["id"],
-            "content": chunk["content"]
+            "content": content
           })
         
         # Send final type "done"

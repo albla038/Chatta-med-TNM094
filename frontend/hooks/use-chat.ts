@@ -15,6 +15,7 @@ export function useChat(chatId: string) {
   // Websocket hook
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
     "ws://127.0.0.1:8000/ws",
+    // SOCKET_URL,
     {
       share: true,
       // Attempts to reconnect on all close events (such as server shutting down)
@@ -150,22 +151,6 @@ export function useChat(chatId: string) {
     }
     updateConversation({ ...conversation, messages: newMessageList });
   }
-
-  // function fetchLocalStorage() {
-  //   const storedValues = localStorage.getItem(key);
-  //   if (!storedValues) {
-  //     console.error(`Local storage with key ${key} doesn't exist!`);
-  //     notFound();
-  //   }
-
-  //   return JSON.parse(storedValues) as Conversation;
-  // }
-
-  // function saveToLocalStorage(messages: Message[]) {
-  //   const prevConversation = fetchLocalStorage();
-  //   const newConversation = { ...prevConversation, messages };
-  //   localStorage.setItem(key, JSON.stringify(newConversation));
-  // }
 
   return { messages, sendMessage, isOpen: readyState === ReadyState.OPEN };
 }
