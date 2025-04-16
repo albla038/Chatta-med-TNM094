@@ -54,7 +54,7 @@ export default function Chat({ chatId }: ChatProps) {
   }
 
   return (
-    <main className="w-full h-full flex items-center flex-col pb-12">
+    <main className="w-full h-full flex items-center flex-col pb-0 min-[24rem]:pb-12">
       <div
         className="w-full h-full overflow-y-auto flex flex-col items-center pl-[14px]"
         style={{ scrollbarGutter: "stable" }}

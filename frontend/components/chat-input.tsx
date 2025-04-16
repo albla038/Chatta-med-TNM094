@@ -1,6 +1,7 @@
 import { Textarea } from "./ui/textarea";
 import { SendHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
+import type React from "react";
 
 type ChatInputProps = {
   input: string;
@@ -15,11 +16,15 @@ export function ChatInput({
   handleClick,
   disabled = false,
 }: ChatInputProps) {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleClick();
+    }
+  }
+
   return (
-    <div
-      style={{ scrollbarGutter: "stable" }}
-      className="w-full max-w-[926px] "
-    >
+    <div style={{ scrollbarGutter: "stable" }} className="w-full max-w-[926px]">
       <div className="relative mx-0 min-[24rem]:mx-4">
         <Button
           onClick={handleClick}
@@ -32,9 +37,12 @@ export function ChatInput({
         </Button>
         <Textarea
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            setInput(e.target.value);
+          }}
+          onKeyDown={handleKeyDown}
           placeholder="Ställ din fråga ..."
-          className="min-[24rem]:rounded-md rounded-none shadow-md pr-14 resize-none field-sizing-content h-fit  min-h-24"
+          className="min-[24rem]:rounded-md rounded-none shadow-md pr-14 resize-none field-sizing-content h-fit min-h-36 min-[24rem]:min-h-24"
         />
       </div>
     </div>

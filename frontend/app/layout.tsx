@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Button } from "@/components/ui/button";
+import QuestionButton from "@/components/question-button";
 
 export const metadata: Metadata = {
   title: "Chatta med TNM094",
