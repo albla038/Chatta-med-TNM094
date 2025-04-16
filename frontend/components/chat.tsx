@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatInput } from "./chat-input";
 import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
@@ -8,6 +8,7 @@ import useWebSocket, { ReadyState } from "react-use-websocket";
 import { Conversation, Message } from "@/lib/types";
 import { SOCKET_URL } from "@/lib/constants";
 import { useChat } from "@/hooks/use-chat";
+import { motion } from "motion/react";
 
 type ChatProps = {
   chatId: string;
@@ -39,7 +40,7 @@ export default function Chat({ chatId }: ChatProps) {
         <li
           key={message.id}
           className={clsx(
-            "first:pt-12 last:pb-12",
+            "first:pt-12 last:pb-12 px-4",
             message.role === "assistant" ? "self-start" : ""
           )}
         >
@@ -59,13 +60,17 @@ export default function Chat({ chatId }: ChatProps) {
         className="w-full h-full overflow-y-auto flex flex-col items-center pl-[14px]"
         style={{ scrollbarGutter: "stable" }}
       >
-        <ul className="flex flex-col w-full h-full items-end gap-4 max-w-4xl">
+        <motion.ul
+          initial={{ opacity: 0, y: -2 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col w-full h-full items-end gap-4 max-w-4xl"
+        >
           {printConversation()}
           {/* Pending/thinking indicator */}
           {pending && (
             <li className="animate-pulse w-4 h-1.5 rounded-full bg-gray-400 self-start" />
           )}
-        </ul>
+        </motion.ul>
       </div>
       <ChatInput
         input={input}
@@ -73,6 +78,9 @@ export default function Chat({ chatId }: ChatProps) {
         handleClick={handleSendMessageClick}
         disabled={!isOpen}
       />
+      <div className="bottom-4 absolute text-muted-foreground text-sm">
+        Språkmodellen kan göra misstag. Kontrollera viktig information.
+      </div>
     </main>
   );
 }
