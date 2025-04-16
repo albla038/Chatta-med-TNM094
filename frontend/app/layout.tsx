@@ -3,7 +3,7 @@ import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
-import QuestionButton from "@/components/question-button";
+import { CircleHelp } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Chatta med TNM094",
@@ -21,8 +21,15 @@ export default function RootLayout({
         <SidebarProvider className="h-full flex">
           <AppSidebar />
           <div className="h-full flex flex-col w-full">
-            <header className="bg-white">
+            <header className="bg-white flex h-16 flex-row justify-between items-center pr-2 border-b border-gray-100">
               <SidebarTrigger />
+              <Button
+                size="icon"
+                className="size-6 hover:bg-white cursor-pointer"
+                variant={"ghost"}
+              >
+                <CircleHelp className="stroke-gray-300 size-5" />
+              </Button>
             </header>
             <div className="grow overflow-y-auto">{children}</div>
           </div>
