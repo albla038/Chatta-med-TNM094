@@ -151,11 +151,13 @@ async def ws_llm_conversation(ws: WebSocket):
             "id": chunk["id"],
             "content": content
           })
+          # await asyncio.sleep(0.010) # 25ms between chunks
         
         # Send final type "done"
         await ws.send_json({
           "type": "done",
-          "id": chunk_id
+          "id": chunk_id,
+          "content": content
         })
       
       except ValidationError as e:
@@ -187,7 +189,7 @@ async def websocket_endpoint(websocket: WebSocket):
     print("Client disconnected")
 
 async def stream_assistant_message(websocket: WebSocket, message_id: str):
-  full_text = ["Lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit.", "Sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua."] * 25
+  full_text = ["Lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit.", "Sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua."] * 20
   current = ""
 
   for word in full_text:
@@ -197,10 +199,11 @@ async def stream_assistant_message(websocket: WebSocket, message_id: str):
       "id": message_id,
       "content": current
     })
-    await asyncio.sleep(0.010)  # 10ms between chunks
+    await asyncio.sleep(0.005)  # 50ms between chunks
 
   # Send final "done" flag
   await websocket.send_json({
     "type": "done",
-    "id": message_id
+    "id": message_id,
+    "content": current
   })
