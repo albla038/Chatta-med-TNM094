@@ -5,7 +5,6 @@ import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
 import clsx from "clsx";
 import { useChat } from "@/hooks/use-chat";
-import { motion } from "motion/react";
 
 type ChatProps = {
   chatId: string;
@@ -31,43 +30,33 @@ export default function Chat({ chatId }: ChatProps) {
     sendMessage(trimmedInput);
   }
 
-  function printConversation() {
-    if (messages.length != 0) {
-      return messages.map((message) => (
-        <li
-          key={message.id}
-          className={clsx(
-            "first:pt-12 last:pb-12 px-4",
-            message.role === "assistant" ? "self-start" : ""
-          )}
-        >
-          {message.role === "user" ? (
-            <UserMessage>{message.content}</UserMessage>
-          ) : (
-            <AssistantMessage message={message.content}></AssistantMessage>
-          )}
-        </li>
-      ));
-    }
-  }
-
   return (
     <main className="w-full h-full flex items-center flex-col pb-0 min-[24rem]:pb-12">
       <div
         className="w-full h-full overflow-y-auto flex flex-col items-center pl-[14px]"
         style={{ scrollbarGutter: "stable" }}
       >
-        <motion.ul
-          initial={{ opacity: 0, y: -2 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col w-full h-full items-end gap-4 max-w-4xl"
-        >
-          {printConversation()}
+        <ul className="flex flex-col w-full h-full items-end gap-4 max-w-4xl">
+          {messageList.map((message) => (
+            <li
+              key={message.id}
+              className={clsx(
+                "first:pt-12 last:pb-12 px-4",
+                message.role === "assistant" ? "self-start" : ""
+              )}
+            >
+              {message.role === "user" ? (
+                <UserMessage>{message.content}</UserMessage>
+              ) : (
+                <AssistantMessage message={message.content}></AssistantMessage>
+              )}
+            </li>
+          ))}
           {/* Pending/thinking indicator */}
           {pending && (
             <li className="animate-pulse w-4 h-1.5 rounded-full bg-gray-400 self-start" />
           )}
-        </motion.ul>
+        </ul>
       </div>
       <ChatInput
         input={input}
