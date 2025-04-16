@@ -34,4 +34,4 @@ async def ingest_documents(documents: list[Document], filename: str):
     for idx, doc in enumerate(documents)
   ]
   # ad to database
-  await vector_db.aadd_documents(documents, ids=ids)
+  await vector_db.aadd_documents(documents, ids=ids, namespace="small_chunk")
