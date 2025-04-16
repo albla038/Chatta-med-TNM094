@@ -1,5 +1,7 @@
 import MarkdownRenderer from "./markdown";
 
+import { motion } from "motion/react";
+
 type AssistantMessageProps = {
   children?: React.ReactNode;
   message: string;
@@ -10,10 +12,13 @@ export default function AssistantMessage({
   message,
 }: AssistantMessageProps) {
   return (
-    <div className="w-full break-keep text-justify">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="w-full break-keep text-justify"
+    >
       <MarkdownRenderer message={message} />
       {children}
-    </div>
+    </motion.div>
   );
 }
-

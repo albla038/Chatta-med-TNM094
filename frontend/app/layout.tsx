@@ -2,6 +2,16 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Button } from "@/components/ui/button";
+import { CircleHelp } from "lucide-react";
+import {
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export const metadata: Metadata = {
   title: "Chatta med TNM094",
@@ -16,15 +26,33 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased h-svh">
-        <SidebarProvider className="h-full flex">
-          <AppSidebar />
-          <div className="h-full flex flex-col w-full">
-            <header className="bg-white">
-              <SidebarTrigger />
-            </header>
-            <div className="grow overflow-y-auto">{children}</div>
-          </div>
-        </SidebarProvider>
+        <Dialog>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>[Titel]</DialogTitle>
+              <DialogDescription>
+                [Infoga information till användare]
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+          <SidebarProvider className="h-full flex">
+            <AppSidebar />
+            <div className="h-full flex flex-col w-full">
+              <header className="bg-white flex flex-row justify-between items-center drop-shadow-[0_0px_2px_rgba(0,0,0,0.05)] px-3 border-b border-gray-100">
+                <SidebarTrigger />
+                <DialogTrigger asChild>
+                  <Button
+                    className="hover:bg-white cursor-pointer"
+                    variant={"ghost"}
+                  >
+                    <CircleHelp className="stroke-gray-400 size-6" />
+                  </Button>
+                </DialogTrigger>
+              </header>
+              <div className="grow overflow-y-auto">{children}</div>
+            </div>
+          </SidebarProvider>
+        </Dialog>
       </body>
     </html>
   );

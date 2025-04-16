@@ -5,6 +5,7 @@ import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
 import clsx from "clsx";
 import { useChat } from "@/hooks/use-chat";
+import { motion } from "motion/react";
 
 type ChatProps = {
   chatId: string;
@@ -31,36 +32,42 @@ export default function Chat({ chatId }: ChatProps) {
   }
 
   function printConversation() {
-    return messageList.map((message) => (
-      <li
-        key={message.id}
-        className={clsx(
-          "first:pt-12 last:pb-12",
-          message.role === "assistant" ? "self-start" : ""
-        )}
-      >
-        {message.role === "user" ? (
-          <UserMessage>{message.content}</UserMessage>
-        ) : (
-          <AssistantMessage message={message.content}></AssistantMessage>
-        )}
-      </li>
-    ));
+    if (messages.length != 0) {
+      return messages.map((message) => (
+        <li
+          key={message.id}
+          className={clsx(
+            "first:pt-12 last:pb-12 px-4",
+            message.role === "assistant" ? "self-start" : ""
+          )}
+        >
+          {message.role === "user" ? (
+            <UserMessage>{message.content}</UserMessage>
+          ) : (
+            <AssistantMessage message={message.content}></AssistantMessage>
+          )}
+        </li>
+      ));
+    }
   }
 
   return (
-    <main className="w-full h-full flex items-center flex-col pb-12">
+    <main className="w-full h-full flex items-center flex-col pb-0 min-[24rem]:pb-12">
       <div
         className="w-full h-full overflow-y-auto flex flex-col items-center pl-[14px]"
         style={{ scrollbarGutter: "stable" }}
       >
-        <ul className="flex flex-col w-full h-full items-end gap-4 max-w-4xl">
+        <motion.ul
+          initial={{ opacity: 0, y: -2 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col w-full h-full items-end gap-4 max-w-4xl"
+        >
           {printConversation()}
           {/* Pending/thinking indicator */}
           {pending && (
             <li className="animate-pulse w-4 h-1.5 rounded-full bg-gray-400 self-start" />
           )}
-        </ul>
+        </motion.ul>
       </div>
       <ChatInput
         input={input}
@@ -68,6 +75,9 @@ export default function Chat({ chatId }: ChatProps) {
         handleClick={handleSendMessageClick}
         disabled={!isOpen}
       />
+      <div className="bottom-4 absolute text-muted-foreground text-sm">
+        Språkmodellen kan göra misstag. Kontrollera viktig information.
+      </div>
     </main>
   );
 }

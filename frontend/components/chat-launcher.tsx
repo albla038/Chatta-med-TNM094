@@ -56,7 +56,7 @@ export default function ChatLauncher() {
   }
 
   return (
-    <main className="w-full h-full flex items-center flex-col pb-12">
+    <main className="w-full h-full flex items-center flex-col pb-0 min-[24rem]:pb-12">
       <TopicSuggestionCards
         topicSuggestionsList={topicSuggestionsList}
         handleTopicClick={(message) => sendMessage(message)}
