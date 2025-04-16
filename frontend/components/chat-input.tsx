@@ -30,10 +30,10 @@ export function ChatInput({
           onClick={handleClick}
           disabled={disabled}
           size={"icon"}
-          className="cursor-pointer absolute right-4 top-3 rounded-full flex justify-center items-center"
+          className="cursor-pointer absolute right-4 top-3 rounded-full flex justify-center items-center bg-[#00d9ff] hover:bg-[#90e8f7]"
           variant={"liu"}
         >
-          <SendHorizontal className="size-6" />
+          <SendHorizontal className="size-6 pl-0.5" />
         </Button>
         <Textarea
           value={input}
