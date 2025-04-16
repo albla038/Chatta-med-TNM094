@@ -1,6 +1,9 @@
-import { getFromLocalStorage, setToLocalStorage } from "@/lib/utils";
+import {
+  getConversationFromLocalStorage,
+  setConversationToLocalStorage,
+} from "@/lib/utils";
 import { Conversation } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const KEY = "conversations";
 
@@ -10,66 +13,76 @@ export default function useConversations() {
 
   // Set initial data from local storage
   useEffect(() => {
-    const data = getFromLocalStorage<Conversation[]>(KEY);
+    const data = getConversationFromLocalStorage<Conversation[]>(KEY);
     if (data) setConversations(data);
     setIsLoading(false);
   }, []);
 
   // Save the conversation list in local storage with KEY
-  function saveConversations(conversations: Conversation[]): boolean {
-    if (setToLocalStorage(KEY, conversations)) {
-      setConversations(conversations);
-      return true;
-    } else {
-      return false;
-    }
-  }
+  const saveConversations = useCallback(
+    (conversations: Conversation[]): boolean => {
+      if (setConversationToLocalStorage(KEY, conversations)) {
+        setConversations(conversations);
+        return true;
+      } else {
+        return false;
+      }
+    },
+    []
+  );
 
-  function addConversation(newConversation: Conversation): boolean {
-    let successfulRes = false;
+  const addConversation = useCallback(
+    (newConversation: Conversation): boolean => {
+      let successfulRes = false;
 
-    setConversations((prevConversations) => {
-      const updatedList = [...prevConversations, newConversation];
-      successfulRes = setToLocalStorage(KEY, updatedList);
-      return successfulRes ? updatedList : prevConversations;
-    });
+      setConversations((prevConversations) => {
+        const updatedList = [...prevConversations, newConversation];
+        successfulRes = setConversationToLocalStorage(KEY, updatedList);
+        return successfulRes ? updatedList : prevConversations;
+      });
 
-    return successfulRes;
-  }
+      return successfulRes;
+    },
+    []
+  );
 
-  function getConversation(id: string): Conversation | null {
-    const conversation = conversations.find((conv) => {
-      return conv.id === id;
-    });
-    return conversation ? conversation : null;
-  }
+  const getConversation = useCallback(
+    (id: string): Conversation | null => {
+      const conversation = conversations.find((conv) => conv.id === id);
+      return conversation ? conversation : null;
+    },
+    [conversations]
+  );
 
   // Update one conversation in the list of conversations
-  function updateConversation(updatedConversation: Conversation) {
-    let successfulRes = false;
+  const updateConversation = useCallback(
+    (updatedConversation: Conversation) => {
+      let successfulRes = false;
 
-    setConversations((prevConversations) => {
-      const updatedList = prevConversations.map((conv) =>
-        conv.id === updatedConversation.id ? updatedConversation : conv
-      );
-      successfulRes = setToLocalStorage(KEY, updatedList);
-      return successfulRes ? updatedList : prevConversations;
-    });
+      setConversations((prevConversations) => {
+        const updatedList = prevConversations.map((conv) =>
+          conv.id === updatedConversation.id ? updatedConversation : conv
+        );
+        successfulRes = setConversationToLocalStorage(KEY, updatedList);
+        return successfulRes ? updatedList : prevConversations;
+      });
 
-    return successfulRes;
-  }
+      return successfulRes;
+    },
+    []
+  );
 
-  function removeConversation(id: string): boolean {
+  const removeConversation = useCallback((id: string): boolean => {
     let successfulRes = false;
 
     setConversations((prevConversations) => {
       const updatedList = prevConversations.filter((conv) => conv.id !== id);
-      successfulRes = setToLocalStorage(KEY, updatedList);
+      successfulRes = setConversationToLocalStorage(KEY, updatedList);
       return successfulRes ? updatedList : prevConversations;
     });
 
     return successfulRes;
-  }
+  }, []);
 
   return {
     conversations,

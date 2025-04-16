@@ -81,7 +81,7 @@ export function AppSidebar() {
     <Sidebar className="px-10 py-10">
       <div>
         <SidebarHeader className="text-2xl p-4 font-semibold">
-          CHATTA MED TNM094
+          <Link href={"/"}>CHATTA MED TNM094</Link>
           <div className="bg-liu-primary h-0.5 w-20" />
         </SidebarHeader>
       </div>

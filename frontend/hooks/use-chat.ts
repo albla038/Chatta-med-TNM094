@@ -1,21 +1,30 @@
 import { SOCKET_URL } from "@/lib/constants";
 import { Conversation, Message, WebSocketMessage } from "@/lib/types";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import useConversations from "./use-conversations";
+import { throttle } from "lodash";
 
 export function useChat(chatId: string) {
   // STATE
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Map<string, Message>>(new Map());
   const conversationRef = useRef<Conversation>(null);
+
+  const messageList = useMemo(() => [...messages.values()], [messages]);
 
   // HOOKS
   const { getConversation, updateConversation, isLoading } = useConversations();
 
+  // Throttled function to update conversation
+  // This is used to prevent saving the conversation to local storage too often
+  const updateConversationThrottled = useRef(
+    throttle(updateConversation, 1000, { leading: true, trailing: false })
+  );
+
   // Websocket hook
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
-    "ws://127.0.0.1:8000/ws",
-    // SOCKET_URL,
+    // "ws://127.0.0.1:8000/ws",
+    SOCKET_URL,
     {
       share: true,
       // Attempts to reconnect on all close events (such as server shutting down)
@@ -27,130 +36,173 @@ export function useChat(chatId: string) {
   );
 
   // EFFECTS
+  // Keep refs updated with the latest functions
+  useEffect(() => {
+    conversationRef.current = getConversation(chatId);
+  }, [getConversation, chatId]);
+
   // Read messages from local storage
   // and send first message in conversation to the server if the chat is new
   useEffect(() => {
-    console.log("Initial effect ran.", "isLoading: ", isLoading);
     if (isLoading || !chatId) return;
 
-    const conversation = getConversation(chatId);
-    if (!conversation) {
+    if (!conversationRef.current) {
       console.error(`Conversation with id ${chatId} doesn't exist.`);
       return;
     }
-    conversationRef.current = conversation;
-    const firstMessage = conversation.messages[0];
 
-    if (!conversation.sentFirstMessage && firstMessage.role === "user") {
-      // TODO Check if we need to make sure the socket connection is open
-      sendJsonMessage(conversation.messages);
-      conversation.sentFirstMessage = true;
-      updateConversation(conversation);
-      // TODO handle error if line above returns false
-    }
-
+    // Store the current conversation in the ref
+    const conversation = conversationRef.current;
+    // Set the initial messages for the chat UI
     setMessages(conversation.messages);
 
+    // Check if the first message needs to be sent
+    const firstMessage = conversation.messages.values().next().value;
+    if (!conversation.sentFirstMessage && firstMessage?.role === "user") {
+      const messages = [...conversation.messages.values()];
+      sendJsonMessage(messages);
+      // Mark as sent and update the conversation state immediately
+      const updatedConversation = { ...conversation, sentFirstMessage: true };
+      updateConversation(updatedConversation);
+      // Update the ref as well
+      conversationRef.current = updatedConversation;
+    }
+
+    // Cleanup function to clear the ref when chatId changes or component unmounts
     return () => {
       conversationRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatId, isLoading]);
+  }, [chatId, isLoading, sendJsonMessage, updateConversation]);
 
-  // Handle chunks sent from server over WebSocket
+  // Send message to the server
+  const sendMessage = useCallback(
+    (content: string) => {
+      const messageId = crypto.randomUUID();
+      const userMessage: Message = {
+        id: messageId,
+        role: "user",
+        content,
+      };
+
+      // Update local state immediately for responsiveness
+
+      setMessages((prevMessages) => {
+        const newMessages = new Map(prevMessages);
+        newMessages.set(messageId, userMessage);
+        // Get the current conversation state
+        const conversation = conversationRef.current;
+        if (!conversation) {
+          console.error("Cannot send message: Conversation Ref not set!");
+          // setMessages(messages); // Revert optimistic update
+          return prevMessages;
+        }
+
+        // Send messages to backend
+        const messagesArray = [...newMessages.values()];
+        sendJsonMessage(messagesArray);
+
+        const updatedConversation = { ...conversation, messages: newMessages };
+        // Update the persistent conversation state
+        updateConversation(updatedConversation);
+
+        // Update the ref
+        // conversationRef.current = updatedConversation;
+
+        return newMessages;
+      });
+    },
+    [sendJsonMessage, updateConversation]
+  );
+
+  const handleStreamChunk = useCallback((id: string, content: string) => {
+    setMessages((prevMessages) => {
+      // Copy previous messages to a new Map
+      const newMessages = new Map(prevMessages);
+      // Update the message with the new content
+      // If the message doesn't exist, create a new one
+      newMessages.set(id, {
+        id,
+        role: "assistant",
+        content,
+        isStreaming: true,
+      });
+      // Get conversation id and data
+      // const conversation = conversationRef.current;
+      // if (conversation) {
+      //   updateConversationThrottled.current({ ...conversation, messages });
+      // }
+      return newMessages;
+    });
+  }, []);
+
+  const handleStreamDone = useCallback(
+    (id: string, content: string) => {
+      setMessages((prevMessages) => {
+        // Get conversation id and data
+        const conversation = conversationRef.current;
+        if (conversation) {
+          // Copy previous messages to a new Map
+          // Update the message with the new content
+          const newMessages = new Map(prevMessages);
+          newMessages.set(id, {
+            id,
+            role: "assistant",
+            content,
+            isStreaming: false,
+          });
+          updateConversation({ ...conversation, messages: newMessages });
+          return newMessages;
+        }
+        return prevMessages;
+      });
+    },
+    [updateConversation]
+  );
+
+  // Handle incoming WebSocket messages
   useEffect(() => {
-    // if (!lastMessage) return;
     if (!lastJsonMessage) return;
+
+    // Get conversation id and data
+    const conversation = conversationRef.current;
+    if (!conversation) {
+      console.error("Conversation Ref not set!");
+      return;
+    }
 
     const responseMessage = lastJsonMessage as WebSocketMessage;
 
-    // Get conversation id and data
-    const conversation = conversationRef.current;
-    if (!conversation) {
-      console.error("Conversation Ref not set!");
-      return;
+    switch (responseMessage.type) {
+      case "messageChunk": {
+        const { id, content } = responseMessage;
+        handleStreamChunk(id, content);
+        break;
+      }
+      case "done": {
+        const { id, content } = responseMessage;
+        handleStreamDone(id, content);
+        break;
+      }
+      case "error": {
+        console.error(
+          "Error: ",
+          responseMessage.error,
+          "Details: ",
+          responseMessage.details
+        );
+        // Potentially update UI to show error state
+        break;
+      }
+      default: {
+        console.error("Unknown WebSocket message type:", responseMessage);
+      }
     }
+  }, [lastJsonMessage, handleStreamChunk, handleStreamDone]);
 
-    // Handle each type (done, error and messageChunk) individually
-    if (responseMessage.type === "messageChunk") {
-      const { id, content } = responseMessage;
-      setMessages((prevMessages) => {
-        // Check if the message ID already exists in the message history
-        const existingMessage = prevMessages.find((msg) => msg.id === id);
-        if (existingMessage) {
-          const updatedMessages = prevMessages.map((msg) =>
-            msg.id === id ? { ...msg, content } : msg
-          );
-          // updateConversation({ ...conversation, messages: updatedMessages });
-          return updatedMessages;
-        }
-
-        // If the message doesn't exist already, add the new message to the message history
-        const newMessage: Message = {
-          id,
-          role: "assistant",
-          content,
-          isStreaming: true,
-        };
-        const updatedMessages = [...prevMessages, newMessage];
-        // updateConversation({ ...conversation, messages: updatedMessages });
-        return updatedMessages;
-      });
-    } else if (responseMessage.type === "done") {
-      const { id } = responseMessage;
-      setMessages((prevMessages) => {
-        // Check if the message ID exists in the conversation history
-        const existingMessage = prevMessages.find((msg) => msg.id === id);
-        if (existingMessage) {
-          const updatedMessages = prevMessages.map((msg) =>
-            msg.id === id ? { ...msg, isStreaming: false } : msg
-          );
-          updateConversation({ ...conversation, messages: updatedMessages });
-          return updatedMessages;
-        } else {
-          return prevMessages;
-        }
-      });
-    } else if (responseMessage.type === "error") {
-      // TODO Handle error messages from the server by rendering them in the UI
-      console.error(
-        "Error: ",
-        responseMessage.error,
-        "Details: ",
-        responseMessage.details
-      );
-    } else {
-      // TODO Handle other error cases, such as connection errors or timeouts
-      // maybe use function onError() or form useWebSocket()
-      // or shouldReconnect() function event
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastJsonMessage]);
-
-  // Send message to the server
-  function sendMessage(content: string) {
-    // Create new message
-    const newMessage: Message = {
-      id: crypto.randomUUID(),
-      role: "user",
-      content,
-    };
-    const newMessageList = [...messages, newMessage];
-
-    // Send messages to backend
-    sendJsonMessage(newMessageList);
-
-    // Add to state
-    setMessages(newMessageList);
-
-    // Get conversation id and data
-    const conversation = conversationRef.current;
-    if (!conversation) {
-      console.error("Conversation Ref not set!");
-      return;
-    }
-    updateConversation({ ...conversation, messages: newMessageList });
-  }
-
-  return { messages, sendMessage, isOpen: readyState === ReadyState.OPEN };
+  return {
+    messages,
+    messageList,
+    sendMessage,
+    isOpen: readyState === ReadyState.OPEN,
+  };
 }

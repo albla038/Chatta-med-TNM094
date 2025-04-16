@@ -4,7 +4,7 @@ import { ChatInput } from "./chat-input";
 import TopicSuggestionCards from "./topic-suggestion-cards";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { SOCKET_URL } from "@/lib/constants";
-import { Conversation } from "@/lib/types";
+import { Conversation, Message } from "@/lib/types";
 import useConversations from "@/hooks/use-conversations";
 import { useRouter } from "next/navigation";
 
@@ -31,17 +31,21 @@ export default function ChatLauncher() {
 
   function sendMessage(message: string) {
     const conversationId = crypto.randomUUID();
+    const messageId = crypto.randomUUID();
 
     const newConversation: Conversation = {
       id: conversationId,
       createdAt: Date.now(),
-      messages: [
-        {
-          id: crypto.randomUUID(),
-          role: "user",
-          content: message,
-        },
-      ],
+      messages: new Map<string, Message>([
+        [
+          messageId,
+          {
+            id: messageId,
+            role: "user",
+            content: message,
+          },
+        ],
+      ]),
       sentFirstMessage: false,
     };
 
