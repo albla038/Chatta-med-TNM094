@@ -13,8 +13,8 @@ T3_prompt_template = f"""
   Betyg: (x)
 
   ### Exempel 3 - Underkänd
-  Text: " "
-  Kommentar: "Ingen frågeställning alls"
+  Text: "Vilken databas är bäst att använda i projektet?"
+  Kommentar: "Alldeles för stor och otydlig. Otydligt vilka databaser som ska jämföras och vad som menas med bäst. Frågeställningen bör också vara självbärande undvik ord som projektet"
   Betyg: -
 
   ---

@@ -6,6 +6,7 @@ from .services import (
     handle_conversation,
     handle_conversation_stream,
     handle_assesment_paragraph,
+    handle_assesment_pdf,
     handle_upload_pdf, 
     handle_upload_webpage, 
     handle_upload_file,
@@ -47,11 +48,6 @@ async def llm_query(req_body: QuestionReqBody):
 async def llm_conversation(req_body: List[ConversationData]):
   return await handle_conversation(req_body)
 
-@app.post("/llm/assement/paragraph")
-async def llm_assesment_paragraph(student_paragraph: str):
-  response = await handle_assesment_paragraph(student_paragraph)
-  return response
-  
 @app.post("/vector", status_code=status.HTTP_201_CREATED)
 async def create_vector(query: str):
   document = Document(
@@ -114,7 +110,6 @@ async def upload_files(files: list[UploadFile]):
       result = await handle_upload_file(file)
       results.append(result)
   except Exception as e:
-    # Return 400 Bad Request
     raise HTTPException(
       status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
       detail={"error": type(e).__name__, "message": str(e)}
@@ -185,3 +180,23 @@ async def ws_llm_conversation(ws: WebSocket):
   except WebSocketDisconnect:
     # Remove saved state like client ids or perform any cleanup if necessary
     pass
+
+@app.post("/assement/llm/paragraph")
+async def llm_assesment_paragraph(student_paragraph: str):
+  response = await handle_assesment_paragraph(student_paragraph)
+  return response
+
+@app.post("/assesment/upload/pdf")
+async def assesment_upload_pdf(pdf: UploadFile):
+  try:
+    paragraphs = handle_assesment_pdf(pdf)
+    return{
+      "status": "ok",
+      "All paragraphs": paragraphs
+    }
+  except Exception as e:
+      raise HTTPException(
+      status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+      detail={"error": type(e).__name__, "message": str(e)}
+    )
+  
