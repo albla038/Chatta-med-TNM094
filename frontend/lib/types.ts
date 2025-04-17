@@ -7,6 +7,7 @@ export type Message = {
 
 export type Conversation = {
   id: string;
+  title: string;
   createdAt: number;
   messages: Map<string, Message>;
   sentFirstMessage: boolean; // Flag to check if the first message has been sent

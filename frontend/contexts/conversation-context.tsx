@@ -1,13 +1,41 @@
+"use client";
+
+import useConversations from "@/hooks/use-conversations";
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   getConversationFromLocalStorage,
   setConversationToLocalStorage,
 } from "@/lib/utils";
 import { Conversation } from "@/lib/types";
-import { useCallback, useEffect, useState } from "react";
 
 const KEY = "conversations";
 
-export default function useConversations() {
+type ConversationContextProviderProps = {
+  children: React.ReactNode;
+};
+
+type ConversationContext = {
+  conversations: Conversation[];
+  addConversation: (conversation: Conversation) => boolean;
+  getConversation: (id: string) => Conversation | null;
+  removeConversation: (id: string) => boolean;
+  renameConversation: (id: string, title: string) => boolean;
+  updateConversation: (updatedConversation: Conversation) => boolean;
+  isLoading: boolean;
+  saveConversations: (conversations: Conversation[]) => boolean;
+};
+
+const ConversationContext = createContext<ConversationContext | null>(null);
+
+export default function ConversationContextProvider({
+  children,
+}: ConversationContextProviderProps) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -101,14 +129,30 @@ export default function useConversations() {
     []
   );
 
-  return {
-    conversations,
-    saveConversations,
-    addConversation,
-    getConversation,
-    updateConversation,
-    removeConversation,
-    renameConversation,
-    isLoading,
-  };
+  return (
+    <ConversationContext.Provider
+      value={{
+        conversations,
+        saveConversations,
+        addConversation,
+        getConversation,
+        updateConversation,
+        removeConversation,
+        renameConversation,
+        isLoading,
+      }}
+    >
+      {children}
+    </ConversationContext.Provider>
+  );
+}
+
+export function useConversationContext() {
+  const context = useContext(ConversationContext);
+  if (!context) {
+    throw new Error(
+      "useConversationContext must be used within a ConversationContextProvider"
+    );
+  }
+  return context;
 }

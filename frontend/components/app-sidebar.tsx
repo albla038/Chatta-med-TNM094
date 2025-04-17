@@ -14,7 +14,15 @@ import {
   SidebarMenuItem,
   // SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { CirclePlus, Ellipsis, LogOut, Pen, Trash2, User } from "lucide-react";
+import {
+  CirclePlus,
+  Ellipsis,
+  LoaderCircle,
+  LogOut,
+  Pen,
+  Trash2,
+  User,
+} from "lucide-react";
 // import { Button } from "./ui/button";
 // import { Profile } from "./profile";
 import Image from "next/image";
@@ -34,48 +42,27 @@ import {
 import useLocalStorage from "@/hooks/use-local-storage";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
-
-type ConversationListItem = {
-  id: string;
-  title: string;
-  href: string;
-};
+import useConversations from "@/hooks/use-conversations";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useConversationContext } from "@/contexts/conversation-context";
 
 export function AppSidebar() {
-  const [conversationList, setConversationList] = useLocalStorage<
-    ConversationListItem[]
-  >("conversation-list", []);
+  // const [conversationList, setConversationList] = useLocalStorage<
+  //   ConversationListItem[]
+  // >("conversation-list", []);
+
+  const { conversations, removeConversation, renameConversation, isLoading } =
+  useConversationContext();
 
   const router = useRouter();
+  const pathname = usePathname();
 
-  function newConversation() {
-    // Create unique id
-    const id = crypto.randomUUID();
-
-    // Update conversation list with new chat conversation
-    setConversationList((prevData) => [
-      ...prevData,
-      {
-        id: id,
-        title: "Ny chatt",
-        href: `/chat/${id}`,
-      },
-    ]);
-
-    router.push(`/chat/${id}`);
+  function deleteConversation(id: string) {
+    const deleteCurrentChat = `/chat/${id}` == pathname;
+    removeConversation(id);
+    // Redirect if user deleted current chat
+    if (deleteCurrentChat) router.push("/");
   }
-
-  function deleteConversation(deleteId: string, currentId: string) {
-    const deleteCurrentChat = `/chat/${deleteId}` == currentId;
-
-    setConversationList((prevData) =>
-      prevData.filter((item) => item.id !== deleteId)
-    );
-
-    //Redirect if user deleted current chat
-    if (deleteCurrentChat) router.push("http://localhost:3000/");
-  }
-  const currentURL = usePathname();
 
   return (
     <Sidebar className="px-10 py-10">
@@ -88,23 +75,21 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup className="">
           <SidebarGroupLabel className="text-base">HISTORIK</SidebarGroupLabel>
-          <SidebarGroupAction title="Ny chatt" onClick={newConversation}>
+          <SidebarGroupAction title="Ny chatt" onClick={() => router.push("/")}>
             <CirclePlus className="text-liu-primary cursor-pointer" />
           </SidebarGroupAction>
           <SidebarGroupContent>
             <SidebarMenu>
-              {conversationList.map((item) => (
+              {conversations.map((item) => (
                 <SidebarMenuItem key={item.id} className="flex">
                   <SidebarMenuButton
                     asChild
                     className={clsx(
                       "hover:bg-liu-primary/10",
-                      `/chat/${item.id}` === currentURL
-                        ? "bg-liu-primary/15"
-                        : ""
+                      `/chat/${item.id}` === pathname ? "bg-liu-primary/15" : ""
                     )}
                   >
-                    <Link href={item.href}>{item.title}</Link>
+                    <Link href={`/chat/${item.id}`}>{item.title}</Link>
                   </SidebarMenuButton>
                   <SidebarMenuAction
                     className="hover:bg-liu-primary/0"
@@ -115,14 +100,16 @@ export function AppSidebar() {
                         <Ellipsis className="cursor-pointer" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            renameConversation(item.id, "Ny chatt")
+                          }
+                        >
                           <Pen className="stroke-black" />
                           <p>Byt namn</p>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() =>
-                            deleteConversation(item.id, currentURL)
-                          }
+                          onClick={() => deleteConversation(item.id)}
                         >
                           <Trash2 className="stroke-destructive" />
                           <p className="text-destructive">Radera chatt</p>

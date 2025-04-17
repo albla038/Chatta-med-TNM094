@@ -35,6 +35,7 @@ export default function ChatLauncher() {
 
     const newConversation: Conversation = {
       id: conversationId,
+      title: conversationId,
       createdAt: Date.now(),
       messages: new Map<string, Message>([
         [
