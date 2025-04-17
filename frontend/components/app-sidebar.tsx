@@ -43,16 +43,14 @@ import useLocalStorage from "@/hooks/use-local-storage";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import useConversations from "@/hooks/use-conversations";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useConversationContext } from "@/contexts/conversation-context";
 
 export function AppSidebar() {
   // const [conversationList, setConversationList] = useLocalStorage<
   //   ConversationListItem[]
   // >("conversation-list", []);
 
-  const { conversations, removeConversation, renameConversation, isLoading } =
-  useConversationContext();
+  const { conversations, removeConversation, renameConversation } =
+    useConversations();
 
   const router = useRouter();
   const pathname = usePathname();
