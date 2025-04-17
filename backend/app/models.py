@@ -9,3 +9,7 @@ class ConversationData(BaseModel):
   message_id: str = Field(alias="messageId")
   role: str
   content: str
+
+class AssesmentParagraph(BaseModel):
+  text: str
+  title_key: str

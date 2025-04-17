@@ -1,7 +1,6 @@
 import os, re
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from headings_variable import headings_for_splittning
 
 def filter_document_metadata(documents: list[Document], allowed_keys: dict) -> list[Document]:
   """
@@ -31,26 +30,3 @@ def clean_text(filename: str):
     # Replace space with _
     filename = filename.replace(" ", "_")  
     return filename
-
-async def extract_paragraphs(text):
-  headings = headings_for_splittning
-  pattern = '|'.join([re.escape(h) for h in headings])
-  parts = re.split(f'(?=\\b({pattern})\\b)', text)
-
-  sections = []
-  current_heading = None
-  current_text = ""
-
-  for part in parts:
-      if part.strip() in headings:
-          if current_heading:
-              sections.append({"heading": current_heading, "text": current_text.strip()})
-          current_heading = part.strip()
-          current_text = ""
-      else:
-          current_text += part
-
-  if current_heading and current_text:
-      sections.append({"heading": current_heading, "text": current_text.strip()})
-
-  return sections

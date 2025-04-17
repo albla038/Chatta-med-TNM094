@@ -13,7 +13,7 @@ from .services import (
     delete_document_by_prefix, 
     fetch_all_ids
 )
-from .models import QuestionReqBody, ConversationData
+from .models import QuestionReqBody, ConversationData, AssesmentParagraph
 from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
@@ -182,21 +182,22 @@ async def ws_llm_conversation(ws: WebSocket):
     pass
 
 @app.post("/assement/llm/paragraph")
-async def llm_assesment_paragraph(student_paragraph: str):
-  response = await handle_assesment_paragraph(student_paragraph)
-  return response
+async def llm_assesment_paragraph(assesment_body: AssesmentParagraph):
+  try:
+    response = await handle_assesment_paragraph(assesment_body)
+    return response
+  except Exception as e:
+    print(f"[make_prompt_template] Error: {e}")
+
 
 @app.post("/assesment/upload/pdf")
-async def assesment_upload_pdf(pdf: UploadFile):
+async def upload_pdf_for_assesment(file: UploadFile):
   try:
-    paragraphs = handle_assesment_pdf(pdf)
-    return{
-      "status": "ok",
-      "All paragraphs": paragraphs
-    }
+    paragraphs = await handle_assesment_pdf(file)
   except Exception as e:
       raise HTTPException(
       status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
       detail={"error": type(e).__name__, "message": str(e)}
     )
+  return paragraphs
   

@@ -11,12 +11,14 @@ from langchain_community.document_loaders import (
     UnstructuredExcelLoader, 
     UnstructuredPDFLoader
 )
-from .utils import filter_document_metadata, split_text, clean_text, extract_paragraphs
-from .models import ConversationData
+from .utils import filter_document_metadata, split_text, clean_text
+from .models import ConversationData, AssesmentParagraph
 from typing import List
 from .logger import logger
 from pathlib import Path
-from prompt_templates import T3_prompt_template
+from .prompt_templates import make_prompt_template
+from unstructured.partition.pdf import partition_pdf
+from .headings_variable import headings_for_splittning
 
 async def handle_question(question: str): 
   # Retrive relevant text/inputs from vector database...
@@ -100,13 +102,6 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
       "id": chunk.id,
       "response_metadata": chunk.response_metadata,
     }
-
-async def handle_assesment_paragraph(student_text: str):
-  # fixa if statement
-  prompt = T3_prompt_template.format(student_paragraph=student_text.replace('"', "'").strip())
-  model_response = await call_model_for_assesment(prompt)
-
-  return {"Assesment": model_response.content}
 
 async def handle_upload_pdf(file: UploadFile):
   if not file.filename.endswith(".pdf"):
@@ -221,24 +216,75 @@ async def handle_upload_file(file: UploadFile):
     # Return error
     raise
 
-async def handle_assesment_pdf(file: UploadFile):
-  if file.content_type != "application/pdf":
-    raise HTTPException(status_code=400, detail={"error": "Bad Request", "message": "Only pdf files are allowed"}, file_name=file.filename)
-  
-  try:  
-    content = await file.read()
-    with pdfplumber.open(io.BytesIO(content)) as pdf_file:
-        text = ""
-        for page in pdf_file.pages:
-            page_text = page.extract_text()
-            if page_text:
-                text += page_text + "\n"
-    paragraphs = extract_paragraphs(text)
-    return {"status": "ok", "message": "File uploaded successfully", "Paragraphs": paragraphs}
-    
+async def handle_assesment_paragraph(paragraph: AssesmentParagraph):
+  # fixa if statement
+  try:
+    prompt = make_prompt_template(paragraph)
+    model_response = await call_model_for_assesment(prompt)
   except Exception as e:
     # Return error
     raise
+  return {"Assesment": model_response.content}
+
+async def handle_assesment_pdf(file: UploadFile):
+  if file.content_type != "application/pdf":
+    raise HTTPException(
+        status_code=400,
+        detail={"error": "Bad Request", "message": "Only PDF files are allowed"},
+    )
+
+  try:
+    # Read to buffer
+    content = await file.read()
+    file_stream = io.BytesIO(content)
+
+    # Unstructured to extract parts of pdfs
+    elements = partition_pdf(
+      file=file_stream, 
+      languages=["eng", "swe"],
+      strategy="auto",
+      include_page_breaks=False)
+
+    paragraphs = []
+    current_heading = None
+    current_text = []
+    in_references = False
+
+    for element in elements:
+      # strip() deletes whitespaces in the beginning and end of element
+      text = element.text.strip()
+      
+      if element.category == "Title":
+        # The partitioner handels the references wrong
+        if "litteraturförteckning" in text.lower():
+          in_references = True
+
+        if current_heading and current_text:
+          paragraphs.append({
+            "heading": current_heading,
+            "text": " ".join(current_text).strip()
+          })
+
+        current_heading = text
+        current_text = []
+        continue
+
+      if element.category == "NarrativeText" or in_references:
+        current_text.append(text)
+
+    if current_heading and current_text:
+      paragraphs.append({
+        "heading": current_heading,
+        "text": " ".join(current_text).strip()
+      })
+
+    return {"status": "ok", "Paragraphs": paragraphs}
+
+  except Exception as e:
+      raise HTTPException(
+          status_code=500,
+          detail={"error": type(e).__name__, "message": str(e)},
+      )
 
 
 async def delete_document_by_prefix(filename_or_url:str):
