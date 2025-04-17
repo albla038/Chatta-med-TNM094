@@ -1,5 +1,5 @@
 from .models import AssesmentParagraph
-def make_prompt_template(paragraph: AssesmentParagraph):
+def make_prompt_template(assesment_body: AssesmentParagraph):
   try:
     templates = {
       "t2": """ 
@@ -83,10 +83,10 @@ def make_prompt_template(paragraph: AssesmentParagraph):
         Ge en kommentar och välj ett betyg: -, (x), eller x
         """
     }
-    if paragraph.title_key in templates:
-      return templates[paragraph.title_key].format(student_paragraph=paragraph.text)
+    if assesment_body.title_key in templates:
+      return templates[assesment_body.title_key].format(student_paragraph=assesment_body.text)
     else:
-      raise ValueError(detail = {"No template for": paragraph.title_key})
+      raise ValueError(detail = {"No template for": assesment_body.title_key})
   except Exception as e:
     # Return error
     raise

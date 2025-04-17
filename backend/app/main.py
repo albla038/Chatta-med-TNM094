@@ -187,7 +187,7 @@ async def llm_assesment_paragraph(assesment_body: AssesmentParagraph):
     response = await handle_assesment_paragraph(assesment_body)
     return response
   except Exception as e:
-    print(f"[make_prompt_template] Error: {e}")
+    print(f"Error: {e}")
 
 
 @app.post("/assesment/upload/pdf")
