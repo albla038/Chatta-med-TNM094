@@ -40,14 +40,20 @@ export default function RootLayout({
             <div className="h-full flex flex-col w-full">
               <header className="bg-white flex flex-row justify-between items-center drop-shadow-[0_0px_2px_rgba(0,0,0,0.05)] px-3 border-b border-gray-100">
                 <SidebarTrigger />
-                <DialogTrigger asChild>
-                  <Button
-                    className="hover:bg-white cursor-pointer"
-                    variant={"ghost"}
-                  >
-                    <CircleHelp className="stroke-gray-400 size-6" />
-                  </Button>
-                </DialogTrigger>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      className="hover:bg-white cursor-pointer"
+                      variant={"ghost"}
+                    >
+                      <CircleHelp className="stroke-gray-400 size-6" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogTitle>[Insert title]</DialogTitle>
+                    <DialogDescription>[Insert text]</DialogDescription>
+                  </DialogContent>
+                </Dialog>
               </header>
               <div className="grow overflow-y-auto">{children}</div>
             </div>
