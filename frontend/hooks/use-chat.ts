@@ -3,7 +3,6 @@ import { Conversation, Message, WebSocketMessage } from "@/lib/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import useConversations from "./use-conversations";
-import { throttle } from "lodash";
 
 export function useChat(chatId: string) {
   // STATE
@@ -15,11 +14,6 @@ export function useChat(chatId: string) {
   // HOOKS
   const { getConversation, updateConversation, isLoading } = useConversations();
 
-  // Throttled function to update conversation
-  // This is used to prevent saving the conversation to local storage too often
-  // const updateConversationThrottled = useRef(
-  //   throttle(updateConversation, 1000, { leading: true, trailing: false })
-  // );
 
   // Websocket hook
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
@@ -126,11 +120,6 @@ export function useChat(chatId: string) {
         content,
         isStreaming: true,
       });
-      // Get conversation id and data
-      // const conversation = conversationRef.current;
-      // if (conversation) {
-      //   updateConversationThrottled.current({ ...conversation, messages });
-      // }
       return newMessages;
     });
   }, []);
