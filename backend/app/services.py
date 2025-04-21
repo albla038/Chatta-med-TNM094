@@ -207,7 +207,7 @@ async def handle_upload_file(file: UploadFile):
       allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
       all_chunks = filter_document_metadata(all_chunks, allowed_keys)
       
-      # await ingest_documents(all_chunks, filename_clean)
+      await ingest_documents(all_chunks, filename_clean)
 
       return {"status": "ok", "message": "File uploaded successfully", "file": filename_clean, "all chunks": all_chunks}
     
