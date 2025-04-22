@@ -15,6 +15,7 @@ import {
 import { auth } from "@/auth";
 import LoginDialog from "@/components/login-dialog";
 import Link from "next/link";
+import PrivacyPolicy from "@/components/privacy-policy";
 
 export const metadata: Metadata = {
   title: "Chatta med TNM094",
@@ -46,8 +47,13 @@ export default async function RootLayout({
                     <CircleHelp className="stroke-gray-400 size-6" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="p-12 w-4xl sm:max-w-1/2">
-                  <div className="overflow-auto h-96">
+                <DialogContent className="p-12 md:p-12 md:max-w-1/2 w-full max-h-full overflow-auto rounded-none md:rounded-md">
+                  <div
+                    className="overflow-auto md:max-h-96 h-full"
+                    style={{
+                      scrollbarColor: "#cbd5e1 #ffffff",
+                    }}
+                  >
                     <DialogTitle className="text-2xl mb-3">
                       Integritetspolicy för CHATTA MED TNM094
                     </DialogTitle>
@@ -56,77 +62,7 @@ export default async function RootLayout({
                       Medietekniskt Kandidatprojekt (TNM094) vid Linköpings
                       universitet.
                     </DialogDescription>
-                    <h3 className="text-xl font-semibold mt-6 mb-2">
-                      Vilka uppgifter samlas in och varför?
-                    </h3>
-                    <ul className="list-disc list-inside text-gray-700 space-y-2">
-                      <li>
-                        <strong>För- och efternamn, e-postadress:</strong> För
-                        att skapa en personlig upplevelse.
-                      </li>
-                      <li>
-                        <strong>Konversationshistorik:</strong> För att ge
-                        anpassade svar baserat på tidigare frågor.
-                      </li>
-                    </ul>
-                    <h3 className="text-xl font-semibold mt-6 mb-2">
-                      Delning av data
-                    </h3>
-                    <p className="text-gray-700 mb-4">
-                      Din konversation delas med OpenAI för att besvara dina
-                      frågor. OpenAI:s integritetspolicy finns{" "}
-                      <Link
-                        className="text-blue-600 underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href={
-                          "https://openai.com/sv-SE/policies/row-privacy-policy/"
-                        }
-                      >
-                        här
-                      </Link>
-                      .
-                    </p>
-                    <h3 className="text-xl font-semibold mt-6 mb-2">
-                      Dina rättigheter enligt GDPR
-                    </h3>
-                    <ul className="list-disc list-inside text-gray-700 space-y-2">
-                      <li>Begära en kopia av dina personuppgifter.</li>
-                      <li>Korrigera felaktiga uppgifter.</li>
-                      <li>Begära radering av dina uppgifter.</li>
-                      <li>Begränsa hur dina uppgifter används.</li>
-                    </ul>
-                    <p className="text-gray-700 mt-4">
-                      Kontakta oss via{" "}
-                      <Link
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline"
-                        href={"mailto:[chatta.med.tnm094@gmail.com ]"}
-                      >
-                        mejl
-                      </Link>{" "}
-                      vid frågor eller för att utöva dina rättigheter. Om dina
-                      rättigheter inte efterföljs kan du kontakta{" "}
-                      <Link
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline"
-                        href={
-                          "https://www.imy.se/verksamhet/utfora-arenden/anmal-personuppgiftsincident/"
-                        }
-                      >
-                        Datainspektionen
-                      </Link>
-                      .
-                    </p>
-                    <h3 className="text-xl font-semibold mt-6 mb-2">
-                      Policyuppdateringar
-                    </h3>
-                    <p className="text-gray-700">
-                      Denna policy kan uppdateras. Ändringar meddelas via
-                      applikationen.
-                    </p>
+                    <PrivacyPolicy />
                   </div>
                 </DialogContent>
               </Dialog>
