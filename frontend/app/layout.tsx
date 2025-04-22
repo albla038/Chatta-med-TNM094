@@ -56,7 +56,6 @@ export default async function RootLayout({
                       Medietekniskt Kandidatprojekt (TNM094) vid Linköpings
                       universitet.
                     </DialogDescription>
-
                     <h3 className="text-xl font-semibold mt-6 mb-2">
                       Vilka uppgifter samlas in och varför?
                     </h3>
@@ -78,6 +77,8 @@ export default async function RootLayout({
                       frågor. OpenAI:s integritetspolicy finns{" "}
                       <Link
                         className="text-blue-600 underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         href={
                           "https://openai.com/sv-SE/policies/row-privacy-policy/"
                         }
@@ -96,15 +97,28 @@ export default async function RootLayout({
                       <li>Begränsa hur dina uppgifter används.</li>
                     </ul>
                     <p className="text-gray-700 mt-4">
-                      Kontakta oss på{" "}
-                      <a
-                        href="mailto:[e-postadress]"
+                      Kontakta oss via{" "}
+                      <Link
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-blue-600 underline"
+                        href={"mailto:[chatta.med.tnm094@gmail.com ]"}
                       >
-                        [e-postadress]
-                      </a>{" "}
-                      för att utöva dina rättigheter eller vid frågor. Vid
-                      klagomål kan du kontakta Datainspektionen.
+                        mejl
+                      </Link>{" "}
+                      vid frågor eller för att utöva dina rättigheter. Om dina
+                      rättigheter inte efterföljs kan du kontakta{" "}
+                      <Link
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                        href={
+                          "https://www.imy.se/verksamhet/utfora-arenden/anmal-personuppgiftsincident/"
+                        }
+                      >
+                        Datainspektionen
+                      </Link>
+                      .
                     </p>
                     <h3 className="text-xl font-semibold mt-6 mb-2">
                       Policyuppdateringar
