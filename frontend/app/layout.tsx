@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { auth } from "@/auth";
 import LoginDialog from "@/components/login-dialog";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Chatta med TNM094",
@@ -31,40 +32,95 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased h-svh">
-        <Dialog>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>[Titel]</DialogTitle>
-              <DialogDescription>
-                [Infoga information till användare]
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-          <SidebarProvider className="h-full flex">
-            <AppSidebar />
-            <div className="h-full flex flex-col w-full">
-              <header className="bg-white flex flex-row justify-between items-center drop-shadow-[0_0px_2px_rgba(0,0,0,0.05)] px-3 border-b border-gray-100">
-                <SidebarTrigger />
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      className="hover:bg-white cursor-pointer"
-                      variant={"ghost"}
-                    >
-                      <CircleHelp className="stroke-gray-400 size-6" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogTitle>[Insert title]</DialogTitle>
-                    <DialogDescription>[Insert text]</DialogDescription>
-                  </DialogContent>
-                </Dialog>
-              </header>
-              <div className="grow overflow-y-auto">{children}</div>
-              {!user && <LoginDialog />}
-            </div>
-          </SidebarProvider>
-        </Dialog>
+        <SidebarProvider className="h-full flex">
+          <AppSidebar />
+          <div className="h-full flex flex-col w-full">
+            <header className="bg-white flex flex-row justify-between items-center drop-shadow-[0_0px_2px_rgba(0,0,0,0.05)] px-3 border-b border-gray-100">
+              <SidebarTrigger />
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    className="hover:bg-white cursor-pointer"
+                    variant={"ghost"}
+                  >
+                    <CircleHelp className="stroke-gray-400 size-6" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="p-12 w-4xl sm:max-w-1/2">
+                  <div className="overflow-auto h-96">
+                    <DialogTitle className="text-2xl mb-3">
+                      Integritetspolicy för CHATTA MED TNM094
+                    </DialogTitle>
+                    <DialogDescription className="mb-4 text-gray-700">
+                      Denna tjänst hjälper dig att besvara frågor om kursen
+                      Medietekniskt Kandidatprojekt (TNM094) vid Linköpings
+                      universitet.
+                    </DialogDescription>
+
+                    <h3 className="text-xl font-semibold mt-6 mb-2">
+                      Vilka uppgifter samlas in och varför?
+                    </h3>
+                    <ul className="list-disc list-inside text-gray-700 space-y-2">
+                      <li>
+                        <strong>För- och efternamn, e-postadress:</strong> För
+                        att skapa en personlig upplevelse.
+                      </li>
+                      <li>
+                        <strong>Konversationshistorik:</strong> För att ge
+                        anpassade svar baserat på tidigare frågor.
+                      </li>
+                    </ul>
+                    <h3 className="text-xl font-semibold mt-6 mb-2">
+                      Delning av data
+                    </h3>
+                    <p className="text-gray-700 mb-4">
+                      Din konversation delas med OpenAI för att besvara dina
+                      frågor. OpenAI:s integritetspolicy finns{" "}
+                      <Link
+                        className="text-blue-600 underline"
+                        href={
+                          "https://openai.com/sv-SE/policies/row-privacy-policy/"
+                        }
+                      >
+                        här
+                      </Link>
+                      .
+                    </p>
+                    <h3 className="text-xl font-semibold mt-6 mb-2">
+                      Dina rättigheter enligt GDPR
+                    </h3>
+                    <ul className="list-disc list-inside text-gray-700 space-y-2">
+                      <li>Begära en kopia av dina personuppgifter.</li>
+                      <li>Korrigera felaktiga uppgifter.</li>
+                      <li>Begära radering av dina uppgifter.</li>
+                      <li>Begränsa hur dina uppgifter används.</li>
+                    </ul>
+                    <p className="text-gray-700 mt-4">
+                      Kontakta oss på{" "}
+                      <a
+                        href="mailto:[e-postadress]"
+                        className="text-blue-600 underline"
+                      >
+                        [e-postadress]
+                      </a>{" "}
+                      för att utöva dina rättigheter eller vid frågor. Vid
+                      klagomål kan du kontakta Datainspektionen.
+                    </p>
+                    <h3 className="text-xl font-semibold mt-6 mb-2">
+                      Policyuppdateringar
+                    </h3>
+                    <p className="text-gray-700">
+                      Denna policy kan uppdateras. Ändringar meddelas via
+                      applikationen.
+                    </p>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </header>
+            <div className="grow overflow-y-auto">{children}</div>
+            {!user && <LoginDialog />}
+          </div>
+        </SidebarProvider>
       </body>
     </html>
   );
