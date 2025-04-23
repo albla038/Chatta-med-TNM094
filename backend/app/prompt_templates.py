@@ -8,7 +8,8 @@ def make_prompt_template(assesment_body: AssesmentParagraph):
   return BASE_TEMPLATE.format(
     title=template_data["title"],
     description=template_data["description"],
-    examples=template_data["examples"]
+    examples=template_data["examples"], 
+    student_paragraph=assesment_body.text
   )
 
 BASE_TEMPLATE = """

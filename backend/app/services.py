@@ -1,7 +1,7 @@
 from .llm import llm, call_model, call_model_with_conversation, call_model_for_assesment
 from .vector_db import vector_db, ingest_documents, index
 from fastapi import HTTPException, UploadFile
-import os, re, io, logging, tempfile, pdfplumber
+import os, re, io, logging, tempfile, pdfplumber, base64
 from langchain_community.document_loaders import (
     PyPDFLoader, 
     WebBaseLoader, 
@@ -219,12 +219,13 @@ async def handle_upload_file(file: UploadFile):
 async def handle_assesment_paragraph(paragraph: AssesmentParagraph):
   # fixa if statement
   try:
+    paragraph.text = base64.b64decode(paragraph.text).decode("utf-8")
     prompt = make_prompt_template(paragraph)
     model_response = await call_model_for_assesment(prompt)
+    return {"Assesment": model_response.content}
   except Exception as e:
-    # Return error
-    raise
-  return {"Assesment": model_response.content}
+    raise HTTPException(status_code=400, detail=f"Error processing request: {str(e)}")
+
 
 async def handle_assesment_pdf(file: UploadFile):
   if file.content_type != "application/pdf":
