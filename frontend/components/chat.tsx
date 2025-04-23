@@ -1,143 +1,70 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatInput } from "./chat-input";
 import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
-import useLocalStorage from "@/hooks/use-local-storage";
 import clsx from "clsx";
-import useWebSocket, { ReadyState } from "react-use-websocket";
+import { useChat } from "@/hooks/use-chat";
 
-type ResponseMessage = {
-  status: string;
-  id: string;
-  role: string;
-  content: string;
-  responseMetadata: null | {
-    [key: string]: string;
-  };
+type ChatProps = {
+  chatId: string;
 };
 
-type ConversationItem = {
-  messageId: string;
-  role: string;
-  content: string;
-  metadata?: {
-    [key: string]: string;
-  };
-};
-
-export default function Chat() {
+export default function Chat({ chatId }: ChatProps) {
   // STATE
   const [input, setInput] = useState("");
-  const [conversationHistory, setConversationHistory] = useLocalStorage<
-    ConversationItem[]
-  >("conversation-history", []);
-
-  // TODO State to manage the error state of the chat input
-  // const [isError, setIsError] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // HOOKS
+  const { messageList, sendMessage, isOpen } = useChat(chatId);
 
   // DERIVED STATE
   // Check if the last message in the conversation history is from the user
-  const pending = conversationHistory.slice(-1)[0]?.role === "user";
+  const lastMessage = messageList.slice(-1)[0];
+  const pending = lastMessage?.role === "user";
 
-  // WebSocket connection
-  const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
-    "ws://127.0.0.1:8000/ws/llm/conversation",
-    {
-      share: true,
-      // Will attempt to reconnect on all close events, such as server shutting down
-      shouldReconnect: () => true,
-      // Log messages to console
-      onOpen: () => console.log("WebSocket opened"),
-      onClose: () => console.log("WebSocket closed"),
-    }
-  );
-
-  // Update conversation history when a new message is received from the server
+  // EFFECTS
   useEffect(() => {
-    // Check if the last message is a valid JSON object
-    if (lastJsonMessage) {
-      // Cast the incoming message to the expected type and destructure it
-      const { status, id, role, content, responseMetadata } =
-        lastJsonMessage as ResponseMessage;
+    if (!pending || !lastMessage) return;
 
-      if (status === "ok") {
-        setConversationHistory((prev) => {
-          // console.log(prev);
-
-          // Check if the message ID already exists in the conversation history
-          const existingMessage = prev.find((msg) => msg.messageId === id);
-          if (existingMessage) {
-            // If it exists, update the content of the existing message
-            if (responseMetadata !== null) {
-              // If the message has metadata, then the streaming has ended
-              return prev.map((msg) =>
-                msg.messageId === id
-                  ? {
-                      ...msg,
-                      content: msg.content + content,
-                      metadata: responseMetadata,
-                    }
-                  : msg
-              );
-            }
-
-            // If the message doesn't have metadata, then it's still streaming
-            return prev.map((msg) =>
-              msg.messageId === id
-                ? { ...msg, content: msg.content + content }
-                : msg
-            );
-          }
-
-          // If the message doesn't exist already, add the new message to the conversation history
-          return [...prev, { messageId: id, role, content }];
+    // Scroll to the bottom of the chat when a new message is sent
+    if (pending) {
+      // Get reference to the last user message element
+      const userMessageElement = document.querySelector(
+        `#message-${lastMessage.id}`
+      ) as HTMLLIElement;
+      if (userMessageElement) {
+        userMessageElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
         });
-      } else {
-        // TODO Handle error messages from the server by rendering them in the UI
-        console.error("Error in response:", lastJsonMessage);
       }
     }
+  }, [lastMessage, pending]);
 
-    // TODO Handle other error cases, such as connection errors or timeouts
-    // maybe use function onError() or form useWebSocket()
-    // or shouldReconnect() function event
-  }, [lastJsonMessage, setConversationHistory]);
-
-  // Send message to the backend and update the conversation history
-  function sendMessage() {
-    // Trim the input to remove leading and trailing whitespace
-    // and set the input state to an empty string
+  function handleSendMessageClick() {
+    // Clean the user-input and clear the chat-input component
     const trimmedInput = input.trim();
-    setInput("");
     if (trimmedInput.length === 0) {
       return;
     }
-
-    // Add the user message to the conversation history
-    const newConversationHistory = [
-      ...conversationHistory,
-      { messageId: crypto.randomUUID(), role: "user", content: trimmedInput },
-    ];
-    setConversationHistory(newConversationHistory);
-
-    // Send the message to the server via WebSocket
-    // TODO Remove or handle the messageId in the backend
-    sendJsonMessage(newConversationHistory);
+    setInput("");
+    sendMessage(trimmedInput);
   }
 
   return (
-    <main className="w-full h-full flex items-center flex-col pb-12">
+    <main className="w-full h-full flex items-center flex-col pb-0 min-[24rem]:pb-12">
       <div
         className="w-full h-full overflow-y-auto flex flex-col items-center pl-[14px]"
         style={{ scrollbarGutter: "stable" }}
+        ref={scrollContainerRef}
       >
-        <ul className="flex flex-col w-full h-full items-end gap-4 max-w-4xl">
-          {conversationHistory.map((message) => (
+        <ul className="flex flex-col w-full h-full items-end max-w-4xl">
+          {messageList.map((message) => (
             <li
-              key={message.messageId}
+              key={message.id}
+              id={`message-${message.id}`}
               className={clsx(
-                "first:pt-12 last:pb-12",
+                "first:pt-12 px-4 pt-4",
                 message.role === "assistant" ? "self-start" : ""
               )}
             >
@@ -152,14 +79,20 @@ export default function Chat() {
           {pending && (
             <li className="animate-pulse w-4 h-1.5 rounded-full bg-gray-400 self-start" />
           )}
+          <li className="h-[calc(100svh_-_216px)] flex-shrink-0 invisible">
+            test
+          </li>
         </ul>
       </div>
       <ChatInput
         input={input}
         setInput={setInput}
-        handleClick={sendMessage}
-        disabled={readyState !== ReadyState.OPEN}
+        handleClick={handleSendMessageClick}
+        disabled={!isOpen}
       />
+      <div className="bottom-4 absolute text-muted-foreground text-sm">
+        Språkmodellen kan göra misstag. Kontrollera viktig information.
+      </div>
     </main>
   );
 }

@@ -18,6 +18,8 @@ from uuid import uuid4
 from typing import List
 from pydantic import ValidationError
 
+import asyncio
+
 app = FastAPI()
 
 origins = [
@@ -161,21 +163,70 @@ async def ws_llm_conversation(ws: WebSocket):
         data = [ConversationData(**item) for item in json_data]
 
         # Stream result back to the client
+        content = ""
+        # chunk_id: str
         async for chunk in handle_conversation_stream(data):
+          chunk_id = chunk["id"]
+          content += chunk["content"]
           # Send the chunk of data back to the client
-          await ws.send_json({"status": "ok", "id": chunk["id"], "role": "assistant", "content": chunk["content"], "responseMetadata": chunk["response_metadata"]})
+          await ws.send_json({
+            "type": "messageChunk",
+            "id": chunk["id"],
+            "content": content
+          })
+          # await asyncio.sleep(0.010) # 25ms between chunks
+        
+        # Send final type "done"
+        await ws.send_json({
+          "type": "done",
+          "id": chunk_id,
+          "content": content
+        })
       
       except ValidationError as e:
         # Send an error message back to the client if validation fails
-        await ws.send_json({"status": "error", "error": "Invalid data", "details": e.errors()})
+        await ws.send_json({"type": "error", "error": "Invalid data", "details": e.errors()})
         continue
 
       except Exception as e:
         # Handle any other exceptions that may occur during processing
-        await ws.send_json({"status": "error", "error": str(e)})
+        await ws.send_json({"type": "error", "error": "Unknown error", "details": str(e)})
         continue
 
   # Handle WebSocket disconnection
   except WebSocketDisconnect:
     # Remove saved state like client ids or perform any cleanup if necessary
     pass
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+  await websocket.accept()
+  print("Client connected")
+
+  try:
+    while True:
+      data = await websocket.receive_json()
+      message_id = str(uuid4())
+      await stream_assistant_message(websocket, message_id)
+  except WebSocketDisconnect:
+    print("Client disconnected")
+
+async def stream_assistant_message(websocket: WebSocket, message_id: str):
+  full_text = ["Lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit.", "Sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua."] * 20
+  current = ""
+
+  for word in full_text:
+    current += word + " "
+    await websocket.send_json({
+      "type": "messageChunk",
+      "id": message_id,
+      "content": current
+    })
+    await asyncio.sleep(0.005)  # 50ms between chunks
+
+  # Send final "done" flag
+  await websocket.send_json({
+    "type": "done",
+    "id": message_id,
+    "content": current
+  })
