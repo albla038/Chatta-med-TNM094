@@ -55,7 +55,10 @@ export default function Chat({ chatId }: ChatProps) {
     <main className="w-full h-full flex items-center flex-col pb-0 min-[24rem]:pb-12">
       <div
         className="w-full h-full overflow-y-auto flex flex-col items-center pl-[14px]"
-        style={{ scrollbarGutter: "stable" }}
+        style={{
+          scrollbarGutter: "stable",
+          scrollbarColor: "#cbd5e1 #ffffff",
+        }}
         ref={scrollContainerRef}
       >
         <ul className="flex flex-col w-full h-full items-end max-w-4xl">
