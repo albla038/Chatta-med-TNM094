@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatInput } from "./chat-input";
 import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
@@ -13,12 +13,33 @@ type ChatProps = {
 export default function Chat({ chatId }: ChatProps) {
   // STATE
   const [input, setInput] = useState("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   // HOOKS
   const { messageList, sendMessage, isOpen } = useChat(chatId);
 
   // DERIVED STATE
   // Check if the last message in the conversation history is from the user
-  const pending = messageList.slice(-1)[0]?.role === "user";
+  const lastMessage = messageList.slice(-1)[0];
+  const pending = lastMessage?.role === "user";
+
+  // EFFECTS
+  useEffect(() => {
+    if (!pending || !lastMessage) return;
+
+    // Scroll to the bottom of the chat when a new message is sent
+    if (pending) {
+      // Get reference to the last user message element
+      const userMessageElement = document.querySelector(
+        `#message-${lastMessage.id}`
+      ) as HTMLLIElement;
+      if (userMessageElement) {
+        userMessageElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }
+  }, [lastMessage, pending]);
 
   function handleSendMessageClick() {
     // Clean the user-input and clear the chat-input component
@@ -38,13 +59,15 @@ export default function Chat({ chatId }: ChatProps) {
           scrollbarGutter: "stable",
           scrollbarColor: "#cbd5e1 #ffffff",
         }}
+        ref={scrollContainerRef}
       >
-        <ul className="flex flex-col w-full h-full items-end gap-4 max-w-4xl">
+        <ul className="flex flex-col w-full h-full items-end max-w-4xl">
           {messageList.map((message) => (
             <li
               key={message.id}
+              id={`message-${message.id}`}
               className={clsx(
-                "first:pt-12 last:pb-12 px-4",
+                "first:pt-12 px-4 pt-4",
                 message.role === "assistant" ? "self-start" : ""
               )}
             >
@@ -59,6 +82,9 @@ export default function Chat({ chatId }: ChatProps) {
           {pending && (
             <li className="animate-pulse w-4 h-1.5 rounded-full bg-gray-400 self-start" />
           )}
+          <li className="h-[calc(100svh_-_216px)] flex-shrink-0 invisible">
+            test
+          </li>
         </ul>
       </div>
       <ChatInput

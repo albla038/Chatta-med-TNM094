@@ -33,9 +33,14 @@ export default function ChatLauncher() {
     const conversationId = crypto.randomUUID();
     const messageId = crypto.randomUUID();
 
+    let title = message;
+    if (message.length >= 35) {
+      title = message.slice(0, 35) + "...";
+    }
+
     const newConversation: Conversation = {
       id: conversationId,
-      title: conversationId,
+      title,
       createdAt: Date.now(),
       messages: new Map<string, Message>([
         [

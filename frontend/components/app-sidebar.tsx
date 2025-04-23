@@ -69,7 +69,7 @@ function ProfileOptions({ name, email }: ProfileOptionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Profile initials={initials}></Profile>
+        <Profile initials={initials} className="cursor-pointer"></Profile>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="border border-gray-200 p-3 rounded-xl drop-shadow-xs w-64 bg-white flex flex-col justify-between h-50"
