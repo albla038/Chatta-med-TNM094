@@ -9,3 +9,6 @@ class ConversationData(BaseModel):
   id: str
   role: str
   content: str
+
+class UploadFileData(BaseModel):
+  relative_path: str

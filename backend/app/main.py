@@ -1,5 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect, Form
 from fastapi.middleware.cors import CORSMiddleware
 from .services import (
     handle_question, 
@@ -11,11 +10,11 @@ from .services import (
     delete_document_by_prefix, 
     fetch_all_ids
 )
-from .models import QuestionReqBody, ConversationData
+from .models import QuestionReqBody, ConversationData, UploadFileData
 from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
 from uuid import uuid4
-from typing import List
+from typing import List, Annotated
 from pydantic import ValidationError
 
 import asyncio
@@ -102,6 +101,24 @@ async def upload_url(page_url: str):
 
   return result
 
+@app.post("/upload/file")
+async def upload_file(file: UploadFile, relative_path: Annotated[str, Form()]):
+  
+  try:
+    result = await handle_upload_file(file, relative_path)
+    return result
+
+  except Exception as e:
+    # Return 400 Bad Request
+    raise HTTPException(
+      status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+      detail={
+        "status": "error",
+        "error": type(e).__name__,
+        "message": str(e)
+      }
+    )
+
 @app.post("/upload/files")
 async def upload_files(files: list[UploadFile]):
   try:
@@ -109,13 +126,20 @@ async def upload_files(files: list[UploadFile]):
     for file in files:
       result = await handle_upload_file(file)
       results.append(result)
+      
+    return results
+
   except Exception as e:
     # Return 400 Bad Request
     raise HTTPException(
       status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-      detail={"error": type(e).__name__, "message": str(e)}
+      detail={
+        "status": "error",
+        "error": type(e).__name__,
+        "message": str(e)
+      }
     )
-  return results
+  
 
 @app.delete("/delete/document")
 async def delete_document(filename_or_url: str):

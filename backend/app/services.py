@@ -1,7 +1,7 @@
 from .llm import llm, call_model, call_model_with_conversation
 from .vector_db import vector_db, ingest_documents, index
 from fastapi import HTTPException, UploadFile
-import os, re, logging
+import os, re
 from langchain_community.document_loaders import (
     PyPDFLoader, 
     WebBaseLoader, 
@@ -156,13 +156,21 @@ async def handle_upload_webpage(page_url: str):
     # Return error
     raise
 
-async def handle_upload_file(file: UploadFile):
+async def handle_upload_file(file: UploadFile, relative_path: str = None):
   
   suffix = Path(file.filename).suffix.lower()
   allowed_suffixes = {".pdf", ".txt", ".docx", ".xlsx", ".html"}
 
   if suffix not in allowed_suffixes:
-    raise HTTPException(status_code=400, detail={"error": "Bad Request", "message": "Only pdf, txt, docx, xlsx and html files are allowed"}, file_name=file.filename)
+    raise HTTPException(
+            status_code=400,
+            detail={
+              "status": "error",
+              "error": "Bad Request",
+              "message": "Only .pdf, .txt, .docx, .xlsx and .html files are allowed",
+              "file_name": file.filename
+            }
+          )
   
   try:  
     filename_clean = clean_text(file.filename)
@@ -209,8 +217,15 @@ async def handle_upload_file(file: UploadFile):
       
       # await ingest_documents(all_chunks, filename_clean)
 
-      return {"status": "ok", "message": "File uploaded successfully", "file": filename_clean, "all chunks": all_chunks}
+      return {
+        "status": "ok",
+        "message": "File uploaded successfully",
+        "relative_path": relative_path,
+        "file": filename_clean,
+        "all chunks": all_chunks
+      }
     
+  # TODO Remove this to see error in server 
   except Exception as e:
     # Return error
     raise
