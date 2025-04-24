@@ -6,6 +6,7 @@ import AssistantMessage from "./assistant-message";
 import useLocalStorage from "@/hooks/use-local-storage";
 import clsx from "clsx";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import AccordionForm from "./assessment";
 
 type ResponseMessage = {
   status: string;
@@ -132,6 +133,7 @@ export default function Chat() {
         className="w-full h-full overflow-y-auto flex flex-col items-center pl-[14px]"
         style={{ scrollbarGutter: "stable" }}
       >
+        <AccordionForm></AccordionForm>
         <ul className="flex flex-col w-full h-full items-end gap-4 max-w-4xl">
           {conversationHistory.map((message) => (
             <li
