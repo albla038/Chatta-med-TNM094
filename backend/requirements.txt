@@ -6,7 +6,8 @@ langchain[openai]
 langchain-pinecone
 langchain-community
 python-multipart
-unstructured #unstructured==0.10.25
+unstructured
+unstructured[docx,pdf,xlsx]
 python-docx 
 openpyxl 
 pdfminer.six 
@@ -14,4 +15,3 @@ beautifulsoup4
 lxml
 pdf2image
 websockets
-pdfplumber
