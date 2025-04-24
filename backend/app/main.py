@@ -181,7 +181,7 @@ async def ws_llm_conversation(ws: WebSocket):
     # Remove saved state like client ids or perform any cleanup if necessary
     pass
 
-@app.post("/assement/llm/paragraph")
+@app.post("/assesment/llm/paragraph")
 async def llm_assesment_paragraph(assesment_body: AssesmentParagraph):
   try:
     response = await handle_assesment_paragraph(assesment_body)
