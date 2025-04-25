@@ -225,7 +225,6 @@ async def handle_upload_file(file: UploadFile, relative_path: str = None):
         "all chunks": all_chunks
       }
     
-  # TODO Remove this to see error in server 
   except Exception as e:
     # Return error
     raise
@@ -238,7 +237,7 @@ async def delete_document_by_prefix(filename_or_url:str):
     vector_db.delete(ids=ids)
   return ids
 
-async def fetch_all_ids():
+async def fetch_all_ids(namespace: str | None = None):
   # Initialize the variables
   all_ids = []
   pagination_token = None
@@ -250,7 +249,8 @@ async def fetch_all_ids():
       # Number of records to fetch per call (100 is max value)
       limit=100,
       # Use the token to paginate
-      pagination_token=pagination_token
+      pagination_token=pagination_token,
+      namespace=namespace,
     )
     # Collect the vector IDs
     all_ids.extend([v.id for v in results.vectors])

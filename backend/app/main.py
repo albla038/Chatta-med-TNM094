@@ -158,9 +158,9 @@ async def delete_document(filename_or_url: str):
     )
 
 @app.get("/vector/ids")
-async def get_uploaded_ids():
+async def get_uploaded_ids(namespace: str | None = None):
   try:
-    ids = await fetch_all_ids()
+    ids = await fetch_all_ids(namespace)
     return {
     "status": "ok",
     "All uploaded document id:s": ids
