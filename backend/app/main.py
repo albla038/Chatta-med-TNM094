@@ -102,10 +102,16 @@ async def upload_url(page_url: str):
   return result
 
 @app.post("/upload/file")
-async def upload_file(file: UploadFile, relative_path: Annotated[str, Form()]):
+async def upload_file(
+  file: UploadFile,
+  relative_path: Annotated[str | None, Form()] = None,
+  namespace: str | None = None,
+  chunk_size: int = 1000,
+  chunk_overlap: int = 200,
+  ):
   
   try:
-    result = await handle_upload_file(file, relative_path)
+    result = await handle_upload_file(file, relative_path, namespace, chunk_size, chunk_overlap)
     return result
 
   except Exception as e:
@@ -142,13 +148,39 @@ async def upload_files(files: list[UploadFile]):
   
 
 @app.delete("/delete/document")
-async def delete_document(filename_or_url: str):
+async def delete_document(filename_or_url: str, namespace: str | None = None):
   try:
-      ids = await delete_document_by_prefix(filename_or_url)
+      ids = await delete_document_by_prefix(filename_or_url, namespace)
+
+      if namespace is None:
+        namespace = "( default )"
+
       return {
       "status": "ok",
       "message": "Document deleted",
+      "namespace": namespace,
       "Document id:s deleted": ids
+    }
+  except Exception as e:
+    # Return 400 Bad Request
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail={"error": type(e).__name__, "message": str(e)}
+    )
+
+@app.delete("/delete/namespace")
+async def delete_namespace(namespace: str | None = None):
+  try:
+    # TODO NOTE: If namespace = None, you may need to set it to "" (default)
+    # Delete the namespace
+    await vector_db.adelete(delete_all=True, namespace=namespace)
+
+    if namespace is None:
+      namespace = "( default )"
+
+    return {
+      "status": "ok",
+      "message": f"Namespace '{namespace}' deleted successfully"
     }
   except Exception as e:
     # Return 400 Bad Request
@@ -161,9 +193,14 @@ async def delete_document(filename_or_url: str):
 async def get_uploaded_ids(namespace: str | None = None):
   try:
     ids = await fetch_all_ids(namespace)
+    if namespace is None:
+      namespace = "( default )"
+    num_of_ids = len(ids)
     return {
-    "status": "ok",
-    "All uploaded document id:s": ids
+      "status": "ok",
+      "namnespace": namespace,
+      "num_of_ids": num_of_ids,
+      "ids": ids
     }
   except Exception as e:
   # Return 500 Internal server error

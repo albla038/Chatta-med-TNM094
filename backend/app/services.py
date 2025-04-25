@@ -156,7 +156,13 @@ async def handle_upload_webpage(page_url: str):
     # Return error
     raise
 
-async def handle_upload_file(file: UploadFile, relative_path: str = None):
+async def handle_upload_file(
+    file: UploadFile,
+    relative_path: str | None = None,
+    namespace: str | None = None,
+    chunk_size: int = 1000,
+    chunk_overlap: int = 200,
+    ):
   
   suffix = Path(file.filename).suffix.lower()
   allowed_suffixes = {".pdf", ".txt", ".docx", ".xlsx", ".html"}
@@ -210,31 +216,38 @@ async def handle_upload_file(file: UploadFile, relative_path: str = None):
         pages.append(doc)
 
       # Split the text into chunks
-      all_chunks = split_text(pages, chunk_size=1000, chunk_overlap=200)
+      all_chunks = split_text(pages, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
       
       allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
       all_chunks = filter_document_metadata(all_chunks, allowed_keys)
       
-      # await ingest_documents(all_chunks, filename_clean)
+      # TODO Add relative_path to metadata
+      await ingest_documents(all_chunks, filename_clean, namespace=namespace)
+
+      if namespace is None:
+        namespace = "( default )"
 
       return {
         "status": "ok",
         "message": "File uploaded successfully",
+        "namespace": namespace,
         "relative_path": relative_path,
         "file": filename_clean,
-        "all chunks": all_chunks
+        "chunk_size": chunk_size,
+        "chunk_overlap": chunk_overlap,
+        "all_chunks": all_chunks
       }
     
   except Exception as e:
     # Return error
     raise
 
-async def delete_document_by_prefix(filename_or_url:str):
+async def delete_document_by_prefix(filename_or_url: str, namespace: str | None = None):
    # Clean "filename_or_url" from spaces
   id_prefix = clean_text(filename_or_url)
   # Delete all ids in the database that starts with "id_prefix"
-  for ids in index.list(prefix=id_prefix):
-    vector_db.delete(ids=ids)
+  for ids in index.list(prefix=id_prefix, namespace=namespace):
+    vector_db.delete(ids=ids, namespace=namespace)
   return ids
 
 async def fetch_all_ids(namespace: str | None = None):
