@@ -1,7 +1,7 @@
 from .llm import llm, call_model, call_model_with_conversation, call_model_for_assesment
 from .vector_db import vector_db, ingest_documents, index
 from fastapi import HTTPException, UploadFile
-import os, re, io, logging, tempfile, pdfplumber, base64
+import os, re, io, logging, tempfile, base64
 from langchain_community.document_loaders import (
     PyPDFLoader, 
     WebBaseLoader, 
