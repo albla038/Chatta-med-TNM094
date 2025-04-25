@@ -185,9 +185,14 @@ async def ws_llm_conversation(ws: WebSocket):
 async def llm_assesment_paragraph(assesment_body: AssesmentParagraph):
   try:
     response = await handle_assesment_paragraph(assesment_body)
+    # print("Svar som skickas till frontend":, response)
     return response
   except Exception as e:
     print(f"Error: {e}")
+    # raise HTTPException(
+    #   status_code=500,
+    #   detail={"error": type(e).__name__, "message": str(e)}
+    #)
 
 
 @app.post("/assesment/upload/pdf")
