@@ -222,6 +222,11 @@ async def handle_upload_file(
       all_chunks = filter_document_metadata(all_chunks, allowed_keys)
       
       # TODO Add relative_path to metadata
+
+      if relative_path is not None:
+        for chunk in all_chunks:
+          chunk.metadata["relative_path"] = relative_path
+
       await ingest_documents(all_chunks, filename_clean, namespace=namespace)
 
       if namespace is None:
