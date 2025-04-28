@@ -220,8 +220,6 @@ async def handle_upload_file(
       
       allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
       all_chunks = filter_document_metadata(all_chunks, allowed_keys)
-      
-      # TODO Add relative_path to metadata
 
       if relative_path is not None:
         for chunk in all_chunks:
@@ -242,6 +240,10 @@ async def handle_upload_file(
         "chunk_overlap": chunk_overlap,
         "all_chunks": all_chunks
       }
+
+      await ingest_documents(all_chunks, filename_clean)
+      
+      return {"status": "ok", "message": "File uploaded successfully", "file": filename_clean, "all chunks": all_chunks}
     
   except Exception as e:
     # Return error
