@@ -59,7 +59,7 @@ fastapi dev
 
 Stäng av servern med `Ctrl + C`.
 
-Avvaktiera den virtuella miljön med
+Avaktivera den virtuella miljön med
 ```bash
 deactivate
 ```

@@ -23,7 +23,7 @@ pip install -r requirements.txt
 python file-upload.py
 ```
 
-Avvaktiera den virtuella miljön med
+Avaktivera den virtuella miljön med
 ```bash
 deactivate
 ```

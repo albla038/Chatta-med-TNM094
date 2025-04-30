@@ -241,10 +241,6 @@ async def handle_upload_file(
         "all_chunks": all_chunks
       }
 
-      await ingest_documents(all_chunks, filename_clean)
-      
-      return {"status": "ok", "message": "File uploaded successfully", "file": filename_clean, "all chunks": all_chunks}
-    
   except Exception as e:
     # Return error
     raise
