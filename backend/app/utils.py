@@ -1,6 +1,7 @@
 import os, re
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+import urllib.parse
 
 def filter_document_metadata(documents: list[Document], allowed_keys: dict) -> list[Document]:
   """
@@ -30,3 +31,7 @@ def clean_text(filename: str):
     # Replace space with _
     filename = filename.replace(" ", "_")  
     return filename
+
+def win_rel_path_to_url(path: str) -> str:
+  path = path.replace("\\", "/")     # Replace backslashes with forward slashes
+  return urllib.parse.quote(path, safe="/") # Encode the path

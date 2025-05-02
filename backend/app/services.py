@@ -11,13 +11,14 @@ from langchain_community.document_loaders import (
     UnstructuredExcelLoader, 
     UnstructuredPDFLoader
 )
-from .utils import filter_document_metadata, split_text, clean_text
+from .utils import filter_document_metadata, split_text, clean_text, win_rel_path_to_url
 from .models import ConversationData
 from typing import List
 from .logger import logger
 import re
 import tempfile
 from pathlib import Path
+from .config import env
 
 async def handle_question(question: str): 
   # Retrive relevant text/inputs from vector database...
@@ -77,16 +78,43 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
   last_question = conversation[-1].content
 
   # Retrive relevant text/inputs from vector database...
-  found_documents = await vector_db.asimilarity_search_with_relevance_scores(last_question, k=10, score_threshold=0.75)
-  docs_content = "\n".join(doc.page_content for doc, score in found_documents)
+  found_documents = await vector_db.asimilarity_search_with_relevance_scores(
+    last_question,
+    k=10,
+    score_threshold=0.75,
+    namespace="test_28"
+    )
+  
+  docs_content = "\n"
+
+  for doc, score in found_documents:
+    raw_relative_path = doc.metadata.get("relative_path", None)
+    relative_path = ""
+    if raw_relative_path:
+      relative_path = win_rel_path_to_url(raw_relative_path)
+      source = raw_relative_path
+      if not (relative_path.startswith("http://") or relative_path.startswith("https://")):
+        source = f"{env.LISAM_COURSE_DOCS_PATH}/{relative_path}"
+      docs_content += f"{doc.page_content} | Källa: {source} \n"
+    else:
+      docs_content += f"{doc.page_content}\n"
+    
+  print(docs_content)
+
+  # docs_content = "\n".join(doc.page_content for doc, score in found_documents)
 
   promt_template = """
   Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt.
+
+  Varje rad i kontexten kan ha en länk till en källa. Om du refererar till en eller flera källor, skriv ut referensenerna som en klickbara länkar och hänvisa till den i slutet av stycket. Länkens namn ska vara baserad på källans filnamn eller URL.
+
   Kontext:
   {context}
 
 
   """
+
+  # Varje rad i kontexten kan ha en länk till en källa. Om du refererar till en källa, ange den som en numrerad länk (t.ex. [1], [2], [3] osv.) efter stycket som det referar till. Formatera länken som Markdown. Exempel: [länktext](länk). 
 
   context = promt_template.format(context=docs_content)
 
@@ -96,7 +124,6 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
   # TODO Log the results
 
   async for chunk in llm.astream(openai_message):
-    # If metadata with "finish_reason" exists, send stop message
     yield {
       "id": chunk.id,
       "content": chunk.content,
