@@ -198,7 +198,7 @@ def main():
       if len(content) > max_length:
         content = content[:max_length-3] + "..."
       formatted_message = f"{content:<{max_length}}"
-      f.write(f"{formatted_message} {counter_str} | {upload["status"]}: {upload["message"]}\n")
+      f.write(f"{formatted_message} {counter_str} | {upload['status']}: {upload['message']}\n")
 
 if __name__ == "__main__":
   main()
