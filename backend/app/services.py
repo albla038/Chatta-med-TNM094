@@ -77,13 +77,10 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
   last_question = conversation[-1].content
 
   # Retrive relevant text/inputs from vector database...
-  found_documents = await vector_db.asimilarity_search_with_relevance_scores(last_question, k=10, score_threshold=0.75, namespace='large_1500_750')
+  found_documents = await vector_db.asimilarity_search_with_relevance_scores(last_question, k=10, score_threshold=0.75, namespace='deafult_1000_200')
   docs_content = "\n".join(doc.page_content for doc, score in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. 
-  Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. 
-  Svara pedagogiskt och kortfattat.
   Kontext:
   {context}
 
