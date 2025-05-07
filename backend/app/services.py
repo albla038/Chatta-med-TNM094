@@ -77,11 +77,13 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
   last_question = conversation[-1].content
 
   # Retrive relevant text/inputs from vector database...
-  found_documents = await vector_db.asimilarity_search_with_relevance_scores(last_question, k=10, score_threshold=0.75)
+  found_documents = await vector_db.asimilarity_search_with_relevance_scores(last_question, k=10, score_threshold=0.75, namespace='large_1500_750')
   docs_content = "\n".join(doc.page_content for doc, score in found_documents)
 
   promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt.
+  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. 
+  Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. 
+  Svara pedagogiskt och kortfattat.
   Kontext:
   {context}
 
@@ -93,14 +95,19 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
   openai_message = [msg.model_dump() for msg in conversation]
   openai_message.insert(0, {"role": "system", "content": context})
 
-  # TODO Log the results
-
   async for chunk in llm.astream(openai_message):
     # If metadata with "finish_reason" exists, send stop message
     yield {
       "id": chunk.id,
       "content": chunk.content,
     }
+    # TODO Log the results
+  # Log the results
+  logger.info(f"Last Question: {last_question}")
+  logger.info(f"Conversation: {conversation}")
+  logger.info(f"Number of Found Documents: {len(found_documents)}")
+  logger.info(f"Found Documents: {found_documents}")
+  logger.info(f"-----------------------------")
 
 async def handle_upload_pdf(file: UploadFile):
   if not file.filename.endswith(".pdf"):
