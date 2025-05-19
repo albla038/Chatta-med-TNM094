@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect, Form
+from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect, Form, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from .services import (
     handle_question, 
@@ -16,6 +16,7 @@ from langchain_core.documents import Document
 from uuid import uuid4
 from typing import List, Annotated
 from pydantic import ValidationError
+from .config import env
 
 import asyncio
 
@@ -33,6 +34,21 @@ app.add_middleware(
   allow_methods=["*"],
   allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def check_api_key(request: Request, call_next):
+  # Skip the API key check for docs and openapi.json
+  if request.url.path in ["/docs", "/openapi.json"]:
+    return await call_next(request)
+  
+  api_key = request.headers.get("x-api-key")
+  if api_key != env.AUTH_API_KEY:
+    return Response(
+      content="Unathorized. Invalid API key",
+      status_code=status.HTTP_401_UNAUTHORIZED
+    )
+
+  return await call_next(request)
 
 @app.get("/")
 async def root():
@@ -193,7 +209,7 @@ async def delete_namespace(namespace: str | None = None):
 async def get_uploaded_ids(namespace: str | None = None):
   try:
     ids = await fetch_all_ids(namespace)
-    if namespace is None:
+    if namespace is None or namespace == "":
       namespace = "( default )"
     num_of_ids = len(ids)
     return {
