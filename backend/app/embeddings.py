@@ -9,6 +9,3 @@ embedding = OpenAIEmbeddings(
   api_key=env.OPENAI_API_KEY
   # dimensions=1536
 )
-
-async def create_embedding(input: str):
-  return await embedding.aembed_query(input)

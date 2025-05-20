@@ -1,9 +1,8 @@
-from .llm import llm, call_model, call_model_with_conversation
+from .llm import llm
 from .vector_db import vector_db, ingest_documents, index
 from fastapi import HTTPException, UploadFile
 import os, re
 from langchain_community.document_loaders import (
-    PyPDFLoader, 
     WebBaseLoader, 
     TextLoader, 
     UnstructuredHTMLLoader, 
@@ -18,60 +17,6 @@ from .logger import logger
 import re
 import tempfile
 from pathlib import Path
-
-async def handle_question(question: str): 
-  # Retrive relevant text/inputs from vector database...
-  found_documents = await vector_db.asimilarity_search_with_relevance_scores(question, k=10, score_threshold=0.65)
-  docs_content = "\n".join(doc.page_content for doc in found_documents)
-
-  promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt.
-  Kontext:
-  {context}
-
-
-  """
-
-  context = promt_template.format(context=docs_content)
-
-  model_reponse = await call_model(question, context)
-  return {
-    "query": question,
-    "content": model_reponse.content,
-    "metadata": model_reponse.response_metadata
-  }
-
-async def handle_conversation(conversation: List[ConversationData]): 
-  last_question = conversation[-1].content
-
-  # Retrive relevant text/inputs from vector database...
-  found_documents = await vector_db.asimilarity_search_with_relevance_scores(last_question, k=10, score_threshold=0.75)
-  docs_content = "\n".join(doc.page_content for doc, score in found_documents)
-
-  promt_template = """
-  Du är en assistent för frågebesvarande uppgifter i kursen TNM094 och ska representera Linköpings universitet. Använd följande delar av hämtad kontext för att svara på frågan. Om du inte vet svaret, säg bara att du inte vet. Svara pedagogiskt och tydligt.
-
-  Kontext:
-  {context}
-
-
-  """
-
-  context = promt_template.format(context=docs_content)
-
-  model_response = await call_model_with_conversation(conversation, context)
-
-  # Log the results
-  logger.info(f"Last Question: {last_question}")
-  logger.info(f"Conversation: {conversation}")
-  logger.info(f"Number of Found Documents: {len(found_documents)}")
-  logger.info(f"Found Documents: {found_documents}")
-  logger.info(f"Model Response Object: {model_response}")
-  logger.info(f"-----------------------------")
-
-
-  return {"content": model_response.content}
-
 
 async def handle_conversation_stream(conversation: List[ConversationData]): 
   last_question = conversation[-1].content
@@ -101,37 +46,7 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
       "id": chunk.id,
       "content": chunk.content,
     }
-
-async def handle_upload_pdf(file: UploadFile):
-  if not file.filename.endswith(".pdf"):
-    raise HTTPException(status_code=400, detail={"error": "Bad Request", "message": "Only PDF files are allowed"})
-
-  filename_clean = clean_text(file.filename)
-
-  # Create a temporary directory
-  with tempfile.TemporaryDirectory() as temp_dir:
-    temp_file_path = os.path.join(temp_dir, file.filename)
-  
-    # Save the file to the temporary directory
-    with open(temp_file_path, "wb") as temp_file:
-      content = await file.read()
-      temp_file.write(content)
-      temp_file.flush()
-
-    # Load and extract text using PyPDFLoader
-    loader = PyPDFLoader(temp_file_path)
-    pages = await loader.aload()
-
-    # Split the text into chunks
-    all_chunks = split_text(pages, chunk_size=1000, chunk_overlap=200)
-    
-    allowed_keys = {"title", "source", "total_pages", "page", "page_label", "start_index"}
-    all_chunks = filter_document_metadata(all_chunks, allowed_keys)
-    
-    await ingest_documents(all_chunks, filename_clean)
-
-    return all_chunks
-  
+ 
 async def handle_upload_webpage(page_url: str):
   try:
     loader = WebBaseLoader(web_paths=[page_url])
