@@ -1,20 +1,16 @@
 from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect, Form
 from fastapi.middleware.cors import CORSMiddleware
 from .services import (
-    handle_question, 
-    handle_conversation,
     handle_conversation_stream,
-    handle_upload_pdf, 
     handle_upload_webpage, 
     handle_upload_file,
     delete_document_by_prefix, 
     fetch_all_ids
 )
-from .models import QuestionReqBody, ConversationData, UploadFileData
+from .models import ConversationData
 from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
-from uuid import uuid4
-from typing import List, Annotated
+from typing import Annotated
 from pydantic import ValidationError
 
 import asyncio
@@ -37,55 +33,6 @@ app.add_middleware(
 @app.get("/")
 async def root():
   return {"status": "ok", "message": "All systems up and running"}
-
-@app.post("/llm/query")
-async def llm_query(req_body: QuestionReqBody):
-  response = await handle_question(req_body.query)
-  return response
-
-@app.post("/llm/conversation")
-async def llm_conversation(req_body: List[ConversationData]):
-  return await handle_conversation(req_body)
-   
-@app.post("/vector", status_code=status.HTTP_201_CREATED)
-async def create_vector(query: str):
-  document = Document(
-    page_content=query,
-    metadata={"source": "test"}
-    )
-  
-  result = await vector_db.aadd_documents([document], ids=[str(uuid4())])
-  return {"status": "ok", "message": "Vector created successfully", "data": result}
-
-@app.get("/vector")
-async def find_similar_vectors(query: str):
-  result = await find_vectors_with_query(query, k=5, threshold=0.5)
-  return {"status": "ok", "message": "Search successful", "data": result}
-
-@app.post("/upload/pdf")
-async def upload_pdf(file: UploadFile):
-  chunks = await handle_upload_pdf(file)
-
-  return {
-    "status": "ok",
-    "message": "File uploaded successfully",
-    "filename": file.filename,
-    "content_type": file.content_type,
-    "chunks": chunks
-  }
-
-@app.post("/upload/pdfs")
-async def upload_pdfs(files: list[UploadFile]):
-  results = []
-  for file in files:
-    chunks = await handle_upload_pdf(file)
-    results.append({"filename": file.filename, "chunks": chunks})
-
-  return {
-    "status": "ok",
-    "message": "File uploaded successfully",
-    "file_chunks": results,
-  }
 
 @app.post("/upload/url")
 async def upload_url(page_url: str):
@@ -124,28 +71,6 @@ async def upload_file(
         "message": str(e)
       }
     )
-
-@app.post("/upload/files")
-async def upload_files(files: list[UploadFile]):
-  try:
-    results = []
-    for file in files:
-      result = await handle_upload_file(file)
-      results.append(result)
-      
-    return results
-
-  except Exception as e:
-    # Return 400 Bad Request
-    raise HTTPException(
-      status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-      detail={
-        "status": "error",
-        "error": type(e).__name__,
-        "message": str(e)
-      }
-    )
-  
 
 @app.delete("/delete/document")
 async def delete_document(filename_or_url: str, namespace: str | None = None):
@@ -258,36 +183,3 @@ async def ws_llm_conversation(ws: WebSocket):
   except WebSocketDisconnect:
     # Remove saved state like client ids or perform any cleanup if necessary
     pass
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-  await websocket.accept()
-  print("Client connected")
-
-  try:
-    while True:
-      data = await websocket.receive_json()
-      message_id = str(uuid4())
-      await stream_assistant_message(websocket, message_id)
-  except WebSocketDisconnect:
-    print("Client disconnected")
-
-async def stream_assistant_message(websocket: WebSocket, message_id: str):
-  full_text = ["Lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit.", "Sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua."] * 20
-  current = ""
-
-  for word in full_text:
-    current += word + " "
-    await websocket.send_json({
-      "type": "messageChunk",
-      "id": message_id,
-      "content": current
-    })
-    await asyncio.sleep(0.005)  # 50ms between chunks
-
-  # Send final "done" flag
-  await websocket.send_json({
-    "type": "done",
-    "id": message_id,
-    "content": current
-  })

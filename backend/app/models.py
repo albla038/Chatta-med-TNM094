@@ -1,5 +1,5 @@
 # Pydantic models
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class QuestionReqBody(BaseModel):
   query: str
@@ -9,6 +9,3 @@ class ConversationData(BaseModel):
   id: str
   role: str
   content: str
-
-class UploadFileData(BaseModel):
-  relative_path: str
