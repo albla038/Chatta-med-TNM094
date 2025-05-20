@@ -12,6 +12,7 @@ def choose_folder():
 
 def upload_file(
     url: str,
+    api_key: str,
     file_path: Path,
     namespace: str,
     relative_path: Path,
@@ -24,6 +25,7 @@ def upload_file(
     try:
       res = requests.post(
         f"{url}/upload/file",
+        headers={"x-api-key": api_key},
         files=files,
         params={
           "namespace": namespace,
@@ -33,9 +35,9 @@ def upload_file(
         data={"relative_path": str(relative_path)}
       )
 
+      # Check if the response status code is 200 (OK)
       if res.status_code != 200:
-        # TODO: Handle non-200 status codes
-        return "error", f"Upload failed (Status: {res.status_code})"
+        return "error", f"Upload failed (Status: {res.status_code}, {res.reason})"
 
       try:
         res_data = res.json()
@@ -73,6 +75,18 @@ def main():
     print("No API URL provided. Terminating...")
     return
   
+  api_key = input("Enter the API key: ")
+  print(f"Selected API key: {api_key}\n")
+  if not api_key:
+    print("No API key provided. Terminating...")
+    return
+  
+  # Check if the API URL is reachable, and if the API key is valid
+  res = requests.get(api_url, headers={"x-api-key": api_key})
+  if res.status_code != 200:
+    print(f"Failed to connect to the API. Status: {res.status_code}, {res.reason}")
+    return
+
   # Ask the user if they want to delete the existing database
   delete_db_answer = input("Do you want to delete the existing database before uploading? WARNING. This will delete all current data and cannot be undone. (y/n): ")
   if delete_db_answer.lower() == "y":
@@ -140,6 +154,7 @@ def main():
       relative_path = file_path.relative_to(folder_path)
       status, msg = upload_file(
         url=api_url,
+        api_key=api_key,
         file_path=file_path,
         namespace=chosen_namespace,
         relative_path=relative_path,
@@ -163,6 +178,9 @@ def main():
       file_counter += 1
 
   print("\n\nFile upload completed.")
+
+  if chosen_namespace is None:
+    chosen_namespace = "( default )"
 
   # Get the current date and time
   now = datetime.now()
