@@ -233,6 +233,17 @@ async def ws_llm_conversation(ws: WebSocket):
   await ws.accept()
 
   try:
+    # Authentication check. First message must be of type "authenticate"
+    json_data = await ws.receive_json()
+    if json_data["type"] != "authenticate":
+      await ws.close(code=1008, reason="Unathorized. Expected first message to be of type 'authenticate'")
+      return
+    
+    # Check if the API key is valid
+    if json_data["token"] != env.AUTH_API_KEY:
+      await ws.close(code=1008, reason="Unathorized. Invalid API key")
+      return
+
     # Receive the incoming JSON data continuously
     while True:
       json_data = await ws.receive_json()
@@ -253,7 +264,6 @@ async def ws_llm_conversation(ws: WebSocket):
             "id": chunk["id"],
             "content": content
           })
-          # await asyncio.sleep(0.010) # 25ms between chunks
         
         # Send final type "done"
         await ws.send_json({
