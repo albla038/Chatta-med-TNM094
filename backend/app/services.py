@@ -13,7 +13,6 @@ from langchain_community.document_loaders import (
 from .utils import filter_document_metadata, split_text, clean_text
 from .models import ConversationData
 from typing import List
-from .logger import logger
 import re
 import tempfile
 from pathlib import Path
@@ -37,8 +36,6 @@ async def handle_conversation_stream(conversation: List[ConversationData]):
 
   openai_message = [msg.model_dump() for msg in conversation]
   openai_message.insert(0, {"role": "system", "content": context})
-
-  # TODO Log the results
 
   async for chunk in llm.astream(openai_message):
     # If metadata with "finish_reason" exists, send stop message

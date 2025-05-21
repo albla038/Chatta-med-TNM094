@@ -6,12 +6,7 @@ langchain[openai]
 langchain-pinecone
 langchain-community
 python-multipart
-unstructured
 unstructured[docx,pdf,xlsx]
-python-docx 
-openpyxl 
-pdfminer.six 
-beautifulsoup4 
-lxml
-pdf2image
+beautifulsoup4                # for WebBaseLoader
+lxml                          # for WebBaseLoader    
 websockets
