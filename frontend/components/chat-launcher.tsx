@@ -3,10 +3,10 @@ import { useState } from "react";
 import { ChatInput } from "./chat-input";
 import TopicSuggestionCards from "./topic-suggestion-cards";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { SOCKET_URL } from "@/lib/constants";
 import { Conversation, Message } from "@/lib/types";
 import useConversations from "@/hooks/use-conversations";
 import { useRouter } from "next/navigation";
+import { onWSClose, onWSOpen } from "@/lib/utils";
 
 const topicSuggestionsList = [
   "Vad är syftet med kursen TNM094?",
@@ -23,11 +23,16 @@ export default function ChatLauncher() {
   const { addConversation } = useConversations();
 
   // WebSocket connection
-  const { readyState } = useWebSocket(SOCKET_URL, {
-    share: true,
-    // Will attempt to reconnect on all close events, such as server shutting down
-    shouldReconnect: () => true,
-  });
+  const { readyState, sendJsonMessage } = useWebSocket(
+    process.env.NEXT_PUBLIC_BACKEND_API_URL!,
+    {
+      share: true,
+      // Will attempt to reconnect on all close events, such as server shutting down
+      shouldReconnect: () => true,
+      onOpen: () => onWSOpen(sendJsonMessage),
+      onClose: onWSClose,
+    }
+  );
 
   function sendMessage(message: string) {
     const conversationId = crypto.randomUUID();

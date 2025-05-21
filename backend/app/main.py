@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect, Form
+from fastapi import FastAPI, HTTPException, status, UploadFile, WebSocket, WebSocketDisconnect, Form, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from .services import (
     handle_conversation_stream,
@@ -12,6 +12,7 @@ from .vector_db import vector_db, find_vectors_with_query
 from langchain_core.documents import Document
 from typing import Annotated
 from pydantic import ValidationError
+from .config import env
 
 import asyncio
 
@@ -29,6 +30,23 @@ app.add_middleware(
   allow_methods=["*"],
   allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def check_api_key(request: Request, call_next):
+  # Skip the API key check for docs and openapi.json
+  if request.url.path in ["/docs", "/openapi.json"]:
+    return await call_next(request)
+  
+  # Check and validate the API key  
+  api_key = request.headers.get("x-api-key")
+  if api_key != env.AUTH_API_KEY:
+    return Response(
+      content="Unathorized. Invalid API key",
+      status_code=status.HTTP_401_UNAUTHORIZED
+    )
+
+  # Proceed with the request if the API key is valid
+  return await call_next(request)
 
 @app.get("/")
 async def root():
@@ -118,7 +136,7 @@ async def delete_namespace(namespace: str | None = None):
 async def get_uploaded_ids(namespace: str | None = None):
   try:
     ids = await fetch_all_ids(namespace)
-    if namespace is None:
+    if namespace is None or namespace == "":
       namespace = "( default )"
     num_of_ids = len(ids)
     return {
@@ -140,6 +158,17 @@ async def ws_llm_conversation(ws: WebSocket):
   await ws.accept()
 
   try:
+    # Authentication check. First message must be of type "authenticate"
+    json_data = await ws.receive_json()
+    if json_data["type"] != "authenticate":
+      await ws.close(code=1008, reason="Unathorized. Expected first message to be of type 'authenticate'")
+      return
+    
+    # Check if the API key is valid
+    if json_data["token"] != env.AUTH_API_KEY:
+      await ws.close(code=1008, reason="Unathorized. Invalid API key")
+      return
+
     # Receive the incoming JSON data continuously
     while True:
       json_data = await ws.receive_json()
@@ -160,7 +189,6 @@ async def ws_llm_conversation(ws: WebSocket):
             "id": chunk["id"],
             "content": content
           })
-          # await asyncio.sleep(0.010) # 25ms between chunks
         
         # Send final type "done"
         await ws.send_json({

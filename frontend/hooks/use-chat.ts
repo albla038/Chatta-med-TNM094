@@ -1,8 +1,13 @@
-import { SOCKET_URL } from "@/lib/constants";
-import { Conversation, Message, WebSocketMessage } from "@/lib/types";
+import {
+  Conversation,
+  Message,
+  WebSocketIncomingMessage,
+  WebSocketOutgoingMessage,
+} from "@/lib/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import useConversations from "./use-conversations";
+import { onWSClose, onWSOpen } from "@/lib/utils";
 
 export function useChat(chatId: string) {
   // STATE
@@ -14,18 +19,16 @@ export function useChat(chatId: string) {
   // HOOKS
   const { getConversation, updateConversation, isLoading } = useConversations();
 
-
   // Websocket hook
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
-    // "ws://127.0.0.1:8000/ws",
-    SOCKET_URL,
+    process.env.NEXT_PUBLIC_BACKEND_API_URL!,
     {
       share: true,
+
       // Attempts to reconnect on all close events (such as server shutting down)
       shouldReconnect: () => true,
-      // Log messages to console
-      onOpen: () => console.log("WebSocket opened"),
-      onClose: () => console.log("WebSocket closed"),
+      onOpen: () => onWSOpen(sendJsonMessage),
+      onClose: onWSClose,
     }
   );
 
@@ -87,12 +90,14 @@ export function useChat(chatId: string) {
         const conversation = conversationRef.current;
         if (!conversation) {
           console.error("Cannot send message: Conversation Ref not set!");
-          // setMessages(messages); // Revert optimistic update
+          // Revert optimistic update
           return prevMessages;
         }
 
         // Send messages to backend
-        const messagesArray = [...newMessages.values()];
+        const messagesArray: WebSocketOutgoingMessage[] = [
+          ...newMessages.values(),
+        ];
         sendJsonMessage(messagesArray);
 
         const updatedConversation = { ...conversation, messages: newMessages };
@@ -159,7 +164,7 @@ export function useChat(chatId: string) {
       return;
     }
 
-    const responseMessage = lastJsonMessage as WebSocketMessage;
+    const responseMessage = lastJsonMessage as WebSocketIncomingMessage;
 
     switch (responseMessage.type) {
       case "messageChunk": {
