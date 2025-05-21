@@ -6,5 +6,6 @@ class QuestionReqBody(BaseModel):
   context: str = ""
 
 class ConversationData(BaseModel):
+  id: str
   role: str
   content: str

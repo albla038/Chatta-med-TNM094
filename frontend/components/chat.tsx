@@ -1,96 +1,101 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatInput } from "./chat-input";
 import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
-import useLocalStorage from "@/hooks/use-local-storage";
 import clsx from "clsx";
+import { useChat } from "@/hooks/use-chat";
 
-type ResponseData = {
-  content: string;
+type ChatProps = {
+  chatId: string;
 };
 
-type ConversationItem = {
-  role: string;
-  content: string;
-};
-
-export default function Chat() {
-  // State
+export default function Chat({ chatId }: ChatProps) {
+  // STATE
   const [input, setInput] = useState("");
-  const [conversationHistory, setConversationHistory] = useLocalStorage<
-    ConversationItem[]
-  >("conversation-history", []);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // HOOKS
+  const { messageList, sendMessage, isOpen } = useChat(chatId);
 
-  // Send message to the backend and update the conversation history
-  async function sendMessage() {
+  // DERIVED STATE
+  // Check if the last message in the conversation history is from the user
+  const lastMessage = messageList.slice(-1)[0];
+  const pending = lastMessage?.role === "user";
+
+  // EFFECTS
+  useEffect(() => {
+    if (!pending || !lastMessage) return;
+
+    // Scroll to the bottom of the chat when a new message is sent
+    if (pending) {
+      // Get reference to the last user message element
+      const userMessageElement = document.querySelector(
+        `#message-${lastMessage.id}`
+      ) as HTMLLIElement;
+      if (userMessageElement) {
+        userMessageElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }
+  }, [lastMessage, pending]);
+
+  function handleSendMessageClick() {
+    // Clean the user-input and clear the chat-input component
     const trimmedInput = input.trim();
-    setInput("");
     if (trimmedInput.length === 0) {
       return;
     }
-
-    const newConversationHistory = [
-      ...conversationHistory,
-      { role: "user", content: input },
-    ];
-    setConversationHistory(newConversationHistory);
-
-    const url = "http://127.0.0.1:8000"; // TODO Change in production
-
-    try {
-      const response = await fetch(`${url}/llm/conversation`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newConversationHistory),
-      });
-
-      if (!response.ok) {
-        console.error(response.statusText);
-        const errorData = await response.json();
-        console.error(errorData);
-        throw new Error(`Response status: ${response.status}`);
-      }
-
-      const data = (await response.json()) as ResponseData;
-      setConversationHistory((prev) => [
-        ...prev,
-        { role: "assistant", content: data.content },
-      ]);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Unknown error!");
-      }
-    }
+    setInput("");
+    sendMessage(trimmedInput);
   }
 
   return (
-    <main className="w-full h-full flex items-center flex-col pb-12">
+    <main className="w-full h-full flex items-center flex-col pb-0 min-[24rem]:pb-12">
       <div
         className="w-full h-full overflow-y-auto flex flex-col items-center pl-[14px]"
-        style={{ scrollbarGutter: "stable" }}
+        style={{
+          scrollbarGutter: "stable",
+          scrollbarColor: "#cbd5e1 #ffffff",
+        }}
+        ref={scrollContainerRef}
       >
-        <ul className="flex flex-col w-full h-full items-end gap-4 max-w-4xl">
-          {conversationHistory.map((message, id) => (
+        <ul className="flex flex-col w-full h-full items-end max-w-4xl">
+          {messageList.map((message) => (
             <li
-              key={id}
+              key={message.id}
+              id={`message-${message.id}`}
               className={clsx(
-                "first:pt-12 last:pb-12",
+                "first:pt-12 px-4 pt-4",
                 message.role === "assistant" ? "self-start" : ""
               )}
             >
               {message.role === "user" ? (
                 <UserMessage>{message.content}</UserMessage>
               ) : (
-                <AssistantMessage>{message.content}</AssistantMessage>
+                <AssistantMessage message={message.content}></AssistantMessage>
               )}
             </li>
           ))}
+          {/* Pending/thinking indicator */}
+          {pending && (
+            <li className="animate-pulse w-4 h-1.5 rounded-full bg-gray-400 self-start" />
+          )}
+          <li className="h-[calc(100svh_-_216px)] flex-shrink-0 invisible">
+            test
+          </li>
         </ul>
       </div>
-      <ChatInput input={input} setInput={setInput} handleClick={sendMessage} />
+      <ChatInput
+        input={input}
+        setInput={setInput}
+        handleClick={handleSendMessageClick}
+        disabled={!isOpen}
+      />
+      <div className="bottom-4 absolute text-muted-foreground text-sm">
+        Språkmodellen kan göra misstag. Kontrollera viktig information.
+      </div>
     </main>
   );
 }

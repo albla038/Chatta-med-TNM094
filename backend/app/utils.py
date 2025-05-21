@@ -1,4 +1,3 @@
-import os, re
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -24,9 +23,9 @@ def split_text(documents: list[Document], chunk_size: int, chunk_overlap: int):
   return all_chunks
 
 def clean_text(filename: str):
-    # Replace swedish 
-    filename = filename.replace("å", "a").replace("ä", "a").replace("ö", "o")
-    filename = filename.replace("Å", "A").replace("Ä", "A").replace("Ö", "O")
-    # Replace space with _
-    filename = filename.replace(" ", "_")  
-    return filename
+  # Replace swedish 
+  filename = filename.replace("å", "a").replace("ä", "a").replace("ö", "o")
+  filename = filename.replace("Å", "A").replace("Ä", "A").replace("Ö", "O")
+  # Replace space with _
+  filename = filename.replace(" ", "_")  
+  return filename

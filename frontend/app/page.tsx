@@ -1,10 +1,10 @@
-import Chat from "@/components/chat";
+import ChatLauncher from "@/components/chat-launcher";
 
 export default function Home() {
   return (
     <>
       <div className="h-full w-full">
-        <Chat />
+        <ChatLauncher />
       </div>
     </>
   );

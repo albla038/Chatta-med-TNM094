@@ -17,6 +17,7 @@ backend/
 │   ├── config.py       # Konfigurationsinställningar (för miljövariabler)
 │   ├── embeddings.py   # Embeddingmodell-anslutning
 │   ├── llm.py          # Språkmodell-anslutning
+│   ├── logger.py       # Konfiguration av loggning
 │   ├── main.py         # Huvudfil
 │   ├── models.py       # Pydantic models
 │   ├── services.py     # Tjänster / Route handlers / Business logic
@@ -58,7 +59,7 @@ fastapi dev
 
 Stäng av servern med `Ctrl + C`.
 
-Avvaktiera den virtuella miljön med
+Avaktivera den virtuella miljön med
 ```bash
 deactivate
 ```
