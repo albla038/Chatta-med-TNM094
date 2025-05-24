@@ -1,20 +1,39 @@
 import { SOCKET_URL } from "@/lib/constants";
-import { Conversation, Message, WebSocketMessage } from "@/lib/types";
+import { Message, WebSocketMessage } from "@/lib/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import useConversations from "./use-conversations";
+import { createId } from "@paralleldrive/cuid2";
+import {
+  addAIMessageToConversation,
+  addUserMessageToConversation,
+} from "@/actions/conversations";
 
-export function useChat(chatId: string) {
+export function useChat(
+  conversationId: string,
+  sentFirstMessage: boolean,
+  initialMessages: Message[]
+) {
   // STATE
-  const [messages, setMessages] = useState<Map<string, Message>>(new Map());
-  const conversationRef = useRef<Conversation>(null);
+  // Map to store messages by their ID
+  const [messages, setMessages] = useState<Map<string, Message>>(
+    () => new Map(initialMessages.map((msg) => [msg.id, msg]))
+  );
+  // TODO Pending state
 
-  const messageList = useMemo(() => [...messages.values()], [messages]);
+  // Keep track of whether the initial messages have been sent
+  const hasSentInitial = useRef(sentFirstMessage);
+  const hasReceivedInitial = useRef(false);
+  const isFirstRender = useRef(true);
+
+  const messageList = useMemo(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return initialMessages;
+    }
+    return [...messages.values()];
+  }, [messages, initialMessages]);
 
   // HOOKS
-  const { getConversation, updateConversation, isLoading } = useConversations();
-
-
   // Websocket hook
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
     // "ws://127.0.0.1:8000/ws",
@@ -29,161 +48,144 @@ export function useChat(chatId: string) {
     }
   );
 
-  // EFFECTS
-  // Keep refs updated with the latest functions
-  useEffect(() => {
-    conversationRef.current = getConversation(chatId);
-  }, [getConversation, chatId]);
-
-  // Read messages from local storage
-  // and send first message in conversation to the server if the chat is new
-  useEffect(() => {
-    if (isLoading || !chatId) return;
-
-    if (!conversationRef.current) {
-      console.error(`Conversation with id ${chatId} doesn't exist.`);
-      return;
-    }
-
-    // Store the current conversation in the ref
-    const conversation = conversationRef.current;
-    // Set the initial messages for the chat UI
-    setMessages(conversation.messages);
-
-    // Check if the first message needs to be sent
-    const firstMessage = conversation.messages.values().next().value;
-    if (!conversation.sentFirstMessage && firstMessage?.role === "user") {
-      const messages = [...conversation.messages.values()];
-      sendJsonMessage(messages);
-      // Mark as sent and update the conversation state immediately
-      const updatedConversation = { ...conversation, sentFirstMessage: true };
-      updateConversation(updatedConversation);
-      // Update the ref as well
-      conversationRef.current = updatedConversation;
-    }
-
-    // Cleanup function to clear the ref when chatId changes or component unmounts
-    return () => {
-      conversationRef.current = null;
-    };
-  }, [chatId, isLoading, sendJsonMessage, updateConversation]);
-
-  // Send message to the server
+  // Send message
   const sendMessage = useCallback(
-    (content: string) => {
-      const messageId = crypto.randomUUID();
-      const userMessage: Message = {
+    async function (content: string) {
+      const messageId = createId();
+
+      // Create a new message object
+      const newMessage: Message = {
         id: messageId,
         role: "user",
         content,
       };
 
-      // Update local state immediately for responsiveness
-
+      // Send messages and optimistically update the messages state
       setMessages((prevMessages) => {
         const newMessages = new Map(prevMessages);
-        newMessages.set(messageId, userMessage);
-        // Get the current conversation state
-        const conversation = conversationRef.current;
-        if (!conversation) {
-          console.error("Cannot send message: Conversation Ref not set!");
-          // setMessages(messages); // Revert optimistic update
-          return prevMessages;
-        }
+        newMessages.set(messageId, newMessage);
 
-        // Send messages to backend
+        // Send messages to backend via WS
         const messagesArray = [...newMessages.values()];
         sendJsonMessage(messagesArray);
 
-        const updatedConversation = { ...conversation, messages: newMessages };
-        // Update the persistent conversation state
-        updateConversation(updatedConversation);
-
-        // Update the ref
-        // conversationRef.current = updatedConversation;
-
         return newMessages;
       });
+
+      // TODO Following code might not make sense
+      // Store the new message in db
+      const res = await addUserMessageToConversation({
+        conversationId,
+        messageId,
+        content,
+      });
+
+      // Rollback optimistic update if db operation fails
+      if (!res) {
+        console.error("Failed to save user message to database");
+        setMessages((prevMessages) => {
+          const newMessages = new Map(prevMessages);
+          newMessages.delete(messageId);
+          return newMessages;
+        });
+      }
     },
-    [sendJsonMessage, updateConversation]
+    [conversationId, sendJsonMessage]
   );
 
-  const handleStreamChunk = useCallback((id: string, content: string) => {
+  // Handle stream chunk updates
+  const handleStreamChunk = useCallback(async function (
+    id: string,
+    content: string
+  ) {
+    // Create a new message object
+    const messageChunk: Message = {
+      id,
+      role: "assistant",
+      content,
+      isStreaming: true,
+    };
+
+    // Update state
     setMessages((prevMessages) => {
-      // Copy previous messages to a new Map
       const newMessages = new Map(prevMessages);
-      // Update the message with the new content
-      // If the message doesn't exist, create a new one
-      newMessages.set(id, {
+      return newMessages.set(id, messageChunk);
+    });
+
+    // TODO Persist the message chunk in the database every 500ms
+  }, []);
+
+  // Handle stream completion
+  const handleStreamDone = useCallback(
+    async function (id: string, content: string) {
+      // Check if is initial message recieved from LLM
+      const isInitialMessage = !hasReceivedInitial.current;
+      if (isInitialMessage) hasReceivedInitial.current = true;
+
+      // Create a new message object
+      const completeMessage: Message = {
         id,
         role: "assistant",
         content,
-        isStreaming: true,
-      });
-      return newMessages;
-    });
-  }, []);
+        isStreaming: false,
+      };
 
-  const handleStreamDone = useCallback(
-    (id: string, content: string) => {
+      // Update state
       setMessages((prevMessages) => {
-        // Get conversation id and data
-        const conversation = conversationRef.current;
-        if (conversation) {
-          // Copy previous messages to a new Map
-          // Update the message with the new content
-          const newMessages = new Map(prevMessages);
-          newMessages.set(id, {
-            id,
-            role: "assistant",
-            content,
-            isStreaming: false,
-          });
-          updateConversation({ ...conversation, messages: newMessages });
-          return newMessages;
-        }
-        return prevMessages;
+        const newMessages = new Map(prevMessages);
+        return newMessages.set(id, completeMessage);
       });
+
+      // Store the new message in db
+      const res = await addAIMessageToConversation({
+        conversationId,
+        messageId: id,
+        content,
+        isComplete: true,
+        isInitial: isInitialMessage,
+      });
+
+      if (!res) {
+        console.error("Failed to save AI message to database");
+        return;
+      }
     },
-    [updateConversation]
+    [conversationId]
   );
 
-  // Handle incoming WebSocket messages
+  // SIDE EFFECTS
+  // Send initial messages when the WebSocket is open
+  useEffect(() => {
+    if (!hasSentInitial.current && readyState === ReadyState.OPEN) {
+      sendJsonMessage(initialMessages);
+      hasSentInitial.current = true;
+    }
+  }, [readyState, initialMessages, sendJsonMessage]);
+
+  // Handle incoming messages from backend via WebSocket
   useEffect(() => {
     if (!lastJsonMessage) return;
 
-    // Get conversation id and data
-    const conversation = conversationRef.current;
-    if (!conversation) {
-      console.error("Conversation Ref not set!");
-      return;
-    }
+    const message = lastJsonMessage as WebSocketMessage;
 
-    const responseMessage = lastJsonMessage as WebSocketMessage;
-
-    switch (responseMessage.type) {
+    switch (message.type) {
       case "messageChunk": {
-        const { id, content } = responseMessage;
+        const { id, content } = message;
         handleStreamChunk(id, content);
         break;
       }
       case "done": {
-        const { id, content } = responseMessage;
+        const { id, content } = message;
         handleStreamDone(id, content);
         break;
       }
       case "error": {
-        console.error(
-          "Error: ",
-          responseMessage.error,
-          "Details: ",
-          responseMessage.details
-        );
+        console.error("Error: ", message.error, "Details: ", message.details);
         // Potentially update UI to show error state
         break;
       }
       default: {
-        console.error("Unknown WebSocket message type:", responseMessage);
+        console.error("Unknown WebSocket message type:", message);
       }
     }
   }, [lastJsonMessage, handleStreamChunk, handleStreamDone]);

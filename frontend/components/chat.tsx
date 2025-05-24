@@ -5,17 +5,28 @@ import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
 import clsx from "clsx";
 import { useChat } from "@/hooks/use-chat";
+import { Message } from "@/lib/types";
 
 type ChatProps = {
-  chatId: string;
+  conversationId: string;
+  sentFirstMessage: boolean;
+  initialMessages: Message[];
 };
 
-export default function Chat({ chatId }: ChatProps) {
+export default function Chat({
+  conversationId,
+  sentFirstMessage,
+  initialMessages,
+}: ChatProps) {
   // STATE
   const [input, setInput] = useState("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   // HOOKS
-  const { messageList, sendMessage, isOpen } = useChat(chatId);
+  const { messageList, sendMessage, isOpen } = useChat(
+    conversationId,
+    sentFirstMessage,
+    initialMessages
+  );
 
   // DERIVED STATE
   // Check if the last message in the conversation history is from the user
