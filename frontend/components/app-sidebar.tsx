@@ -1,4 +1,9 @@
-import { Sidebar, SidebarFooter, SidebarHeader } from "@/components/ui/sidebar";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+} from "@/components/ui/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,10 +23,24 @@ import { ChevronRight, LogOut, User } from "lucide-react";
 import { auth, signOut } from "@/auth";
 import { Button } from "@/components/ui/button";
 import clsx from "clsx";
+import prisma from "@/lib/prisma";
 
 export async function AppSidebar() {
   const session = await auth();
   const user = session?.user;
+  const userId = user?.id;
+
+  if (!userId) {
+    // TODO render unauthenticated state
+  }
+
+  const conversations = await prisma.conversation.findMany({
+    where: {
+      userId,
+    },
+    select: { id: true, title: true },
+    orderBy: { updatedAt: "desc" },
+  });
 
   return (
     <Sidebar className="px-10 py-10">
@@ -30,7 +49,9 @@ export async function AppSidebar() {
         <div className="bg-liu-primary h-0.5 w-20" />
       </SidebarHeader>
 
-      <ConversationMenu />
+      <SidebarContent>
+        <ConversationMenu conversations={conversations} />
+      </SidebarContent>
 
       <SidebarFooter className="flex flex-row items-center p-3 justify-between">
         <Link
