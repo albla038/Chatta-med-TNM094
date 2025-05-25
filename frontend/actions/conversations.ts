@@ -4,6 +4,8 @@ import { auth } from "@/auth";
 import { unauthorized } from "next/navigation";
 import prisma from "@/lib/prisma";
 
+// TODO Validate inputs with Zod
+
 export async function createConversation(
   firstMessage: string
 ): Promise<string | null> {
@@ -123,7 +125,7 @@ export async function addAIMessageToConversation({
     });
 
     // 3. Update sentFirstMessage if needed
-    if (isInitial && isComplete)
+    if (isInitial)
       await prisma.conversation.update({
         where: { id: conversationId, userId },
         data: { sentFirstMessage: true },

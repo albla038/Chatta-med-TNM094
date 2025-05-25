@@ -7,6 +7,10 @@ import {
   addAIMessageToConversation,
   addUserMessageToConversation,
 } from "@/actions/conversations";
+import throttle from "lodash.throttle";
+
+// TODO Add error recovery logic
+// TODO Implement stop streaming functionality
 
 export function useChat(
   conversationId: string,
@@ -18,13 +22,15 @@ export function useChat(
   const [messages, setMessages] = useState<Map<string, Message>>(
     () => new Map(initialMessages.map((msg) => [msg.id, msg]))
   );
-  // TODO Pending state
-
+  const [isPending, setIsPending] = useState(false);
   // Keep track of whether the initial messages have been sent
   const hasSentInitial = useRef(sentFirstMessage);
   const hasReceivedInitial = useRef(false);
+  // Store completed message IDs
+  const completedMessageIds = useRef<Set<string>>(new Set());
   const isFirstRender = useRef(true);
 
+  // Memoized list of messages for rendering
   const messageList = useMemo(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -33,7 +39,6 @@ export function useChat(
     return [...messages.values()];
   }, [messages, initialMessages]);
 
-  // HOOKS
   // Websocket hook
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
     // "ws://127.0.0.1:8000/ws",
@@ -47,6 +52,13 @@ export function useChat(
       onClose: () => console.log("WebSocket closed"),
     }
   );
+
+  // Determine the connection status
+  const status: "connected" | "connecting" | "disconnected" = useMemo(() => {
+    if (readyState === ReadyState.OPEN) return "connected";
+    if (readyState === ReadyState.CONNECTING) return "connecting";
+    return "disconnected";
+  }, [readyState]);
 
   // Send message
   const sendMessage = useCallback(
@@ -72,6 +84,9 @@ export function useChat(
         return newMessages;
       });
 
+      // Set pending state to true
+      setIsPending(true);
+
       // TODO Following code might not make sense
       // Store the new message in db
       const res = await addUserMessageToConversation({
@@ -93,35 +108,64 @@ export function useChat(
     [conversationId, sendJsonMessage]
   );
 
+  // Throttled save for database persistence
+  // This is used to prevent excessive writes to the database while streaming
+  const throttledSaveToDB = useMemo(
+    () =>
+      throttle(
+        async function (id: string, content: string) {
+          // Skip if message is stale
+          if (completedMessageIds.current.has(id)) return;
+
+          // Check if is initial message recieved from LLM
+          const isInitialMessage = !hasReceivedInitial.current;
+          if (isInitialMessage) hasReceivedInitial.current = true;
+
+          // Store the new message in db
+          const res = await addAIMessageToConversation({
+            conversationId,
+            messageId: id,
+            content,
+            isInitial: isInitialMessage,
+          });
+
+          if (!res) console.error("Failed to save AI message to database");
+        },
+        500,
+        { leading: false, trailing: true }
+      ),
+    [conversationId]
+  );
+
   // Handle stream chunk updates
-  const handleStreamChunk = useCallback(async function (
-    id: string,
-    content: string
-  ) {
-    // Create a new message object
-    const messageChunk: Message = {
-      id,
-      role: "assistant",
-      content,
-      isStreaming: true,
-    };
+  const handleStreamChunk = useCallback(
+    async function (id: string, content: string) {
+      // Set pending state to false
+      setIsPending(false);
 
-    // Update state
-    setMessages((prevMessages) => {
-      const newMessages = new Map(prevMessages);
-      return newMessages.set(id, messageChunk);
-    });
+      // Create a new message object
+      const messageChunk: Message = {
+        id,
+        role: "assistant",
+        content,
+        isStreaming: true,
+      };
 
-    // TODO Persist the message chunk in the database every 500ms
-  }, []);
+      // Update state
+      setMessages((prevMessages) => {
+        const newMessages = new Map(prevMessages);
+        return newMessages.set(id, messageChunk);
+      });
+
+      // Schedule throttled save to database
+      throttledSaveToDB(id, content);
+    },
+    [throttledSaveToDB]
+  );
 
   // Handle stream completion
   const handleStreamDone = useCallback(
     async function (id: string, content: string) {
-      // Check if is initial message recieved from LLM
-      const isInitialMessage = !hasReceivedInitial.current;
-      if (isInitialMessage) hasReceivedInitial.current = true;
-
       // Create a new message object
       const completeMessage: Message = {
         id,
@@ -142,15 +186,20 @@ export function useChat(
         messageId: id,
         content,
         isComplete: true,
-        isInitial: isInitialMessage,
       });
 
       if (!res) {
         console.error("Failed to save AI message to database");
         return;
       }
+
+      // Add message id to completed message IDs
+      completedMessageIds.current.add(id);
+
+      // Cancel any pending throttled saves for this ID
+      throttledSaveToDB.cancel();
     },
-    [conversationId]
+    [conversationId, throttledSaveToDB]
   );
 
   // SIDE EFFECTS
@@ -163,6 +212,7 @@ export function useChat(
   }, [readyState, initialMessages, sendJsonMessage]);
 
   // Handle incoming messages from backend via WebSocket
+  // TODO Validate with Zod?
   useEffect(() => {
     if (!lastJsonMessage) return;
 
@@ -181,6 +231,7 @@ export function useChat(
       }
       case "error": {
         console.error("Error: ", message.error, "Details: ", message.details);
+        setIsPending(false);
         // Potentially update UI to show error state
         break;
       }
@@ -190,10 +241,20 @@ export function useChat(
     }
   }, [lastJsonMessage, handleStreamChunk, handleStreamDone]);
 
+  // Clean up on unmount - forces final save
+  useEffect(() => {
+    return () => {
+      // Force any pending saves to execute immediatly
+      throttledSaveToDB.flush();
+    };
+  }, [throttledSaveToDB]);
+
   return {
     messages,
     messageList,
     sendMessage,
     isOpen: readyState === ReadyState.OPEN,
+    status,
+    isPending,
   };
 }
