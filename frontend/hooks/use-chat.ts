@@ -72,7 +72,7 @@ export function useChat(
         content,
       };
 
-      // Send messages and optimistically update the messages state
+      // Send messages and update the messages state
       setMessages((prevMessages) => {
         const newMessages = new Map(prevMessages);
         newMessages.set(messageId, newMessage);
@@ -87,23 +87,12 @@ export function useChat(
       // Set pending state to true
       setIsPending(true);
 
-      // TODO Following code might not make sense
       // Store the new message in db
-      const res = await addUserMessageToConversation({
+      await addUserMessageToConversation({
         conversationId,
         messageId,
         content,
       });
-
-      // Rollback optimistic update if db operation fails
-      if (!res) {
-        console.error("Failed to save user message to database");
-        setMessages((prevMessages) => {
-          const newMessages = new Map(prevMessages);
-          newMessages.delete(messageId);
-          return newMessages;
-        });
-      }
     },
     [conversationId, sendJsonMessage]
   );

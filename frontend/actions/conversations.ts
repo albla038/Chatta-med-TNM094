@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { unauthorized } from "next/navigation";
 import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 // TODO Validate inputs with Zod
 
@@ -83,8 +84,6 @@ export async function addUserMessageToConversation({
   }
 }
 
-// TODO Use a transaction for atomicity
-//https://www.prisma.io/docs/orm/prisma-client/queries/crud#deleting-all-data-with-deletemany
 export async function addAIMessageToConversation({
   conversationId,
   messageId,
@@ -149,6 +148,7 @@ export async function removeConversation(id: string): Promise<boolean> {
 
   try {
     await prisma.conversation.delete({ where: { id, userId } });
+    revalidatePath(`/chat/${id}`);
     return true;
   } catch (error) {
     console.error("Could not delete conversation from database: ", error);
@@ -178,23 +178,3 @@ export async function renameConversation(
     return false;
   }
 }
-
-// export async function setSentFirstMessage(id: string) {
-//   const session = await auth();
-//   const userId = session?.user?.id;
-
-//   if (!userId) return unauthorized();
-
-//   try {
-//     await prisma.conversation.update({
-//       where: { id, userId },
-//       data: { sentFirstMessage: true },
-//     });
-//     return true;
-//   } catch (error) {
-//     console.error("Could not set sentFirstMessage in database: ", error);
-//     return false;
-//   }
-// }
-
-//TODO And more

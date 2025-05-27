@@ -1,6 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   SidebarGroup,
   SidebarGroupAction,
@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "./ui/sidebar";
-import { CirclePlus, Ellipsis, Pen, Trash2 } from "lucide-react";
+import { CirclePlus, Ellipsis, Pencil, Trash2 } from "lucide-react";
 import clsx from "clsx";
 import Link from "next/link";
 import {
@@ -21,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-import { Button } from "./ui/button";
 import {
   removeConversation,
   renameConversation,
@@ -41,15 +40,11 @@ export default function ConversationMenu({
   const pathname = usePathname();
 
   function deleteConversation(id: string) {
-    const deleteCurrentChat = `/chat/${id}` == pathname;
+    const deletedCurrentChat = `/chat/${id}` == pathname;
     removeConversation(id);
 
     // Redirect if user deleted current chat
-    if (deleteCurrentChat) {
-      router.push("/");
-    } else {
-      // TODO Revalidate current path
-    }
+    if (deletedCurrentChat) router.push("/");
   }
 
   return (
@@ -64,7 +59,7 @@ export default function ConversationMenu({
             <ConversationMenuItem
               key={item.id}
               id={item.id}
-              title={item.title}
+              initialTitle={item.title}
               pathname={pathname}
               handleRename={renameConversation}
               handleDelete={deleteConversation}
@@ -79,18 +74,73 @@ export default function ConversationMenu({
 type ConversationMenuItemProps = {
   id: string;
   pathname: string;
-  title: string;
+  initialTitle: string;
   handleRename: (id: string, newTitle: string) => void;
   handleDelete: (id: string) => void;
 };
 
 function ConversationMenuItem({
   id,
-  title,
+  initialTitle,
   pathname,
   handleRename,
   handleDelete,
 }: ConversationMenuItemProps) {
+  const [title, setTitle] = useState(initialTitle);
+  const prevTitle = useRef(initialTitle);
+  const [isEditable, setIsEditable] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditable && inputRef.current) {
+      inputRef.current.select();
+    }
+  }, [isEditable]);
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const newTitle = title.trim();
+      if (newTitle) {
+        prevTitle.current = newTitle;
+        handleRename(id, newTitle);
+      }
+      // Reset to initial title if empty
+      else setTitle(prevTitle.current);
+      setIsEditable(false);
+    }
+    if (e.key === "Escape") {
+      setTitle(prevTitle.current);
+      // Make input non-editable
+      setIsEditable(false);
+    }
+  }
+
+  const content = isEditable ? (
+    <input
+      type="text"
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
+      onKeyDown={handleKeyDown}
+      onBlur={() => {
+        const newTitle = title.trim();
+        if (newTitle) {
+          prevTitle.current = newTitle;
+          handleRename(id, newTitle);
+        }
+        // Reset to initial title if empty
+        else setTitle(prevTitle.current);
+        setIsEditable(false);
+      }}
+      ref={inputRef}
+      autoFocus
+      className="w-full appearance-none"
+    />
+  ) : (
+    <Link href={`/chat/${id}`}>{title}</Link>
+  );
+
   return (
     <SidebarMenuItem className="flex">
       <SidebarMenuButton
@@ -100,23 +150,26 @@ function ConversationMenuItem({
           `/chat/${id}` === pathname ? "bg-liu-primary/15" : ""
         )}
       >
-        <Link href={`/chat/${id}`}>{title}</Link>
+        {content}
       </SidebarMenuButton>
       <SidebarMenuAction className="hover:bg-liu-primary/0">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Ellipsis className="cursor-pointer" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>
-              <p>Byt namn</p>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDelete(id)}>
-              <Trash2 className="stroke-destructive" />
-              <p className="text-destructive">Radera chatt</p>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {!isEditable ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Ellipsis className="cursor-pointer" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setIsEditable(true)}>
+                <Pencil className="text-foreground" />
+                <p>Byt namn</p>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDelete(id)}>
+                <Trash2 className="text-destructive" />
+                <p className="text-destructive">Radera chatt</p>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </SidebarMenuAction>
     </SidebarMenuItem>
   );
