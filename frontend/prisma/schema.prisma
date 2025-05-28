@@ -15,13 +15,14 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid(2))
   name          String?
-  email         String    @unique
+  email         String         @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+  conversations Conversation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -70,4 +71,42 @@ model VerificationToken {
 
   @@id([identifier, token])
   @@map("verification_tokens")
+}
+
+enum MessageRole {
+  user
+  assistant
+
+  @@map("message_roles")
+}
+
+// User or AI assistant message
+model Message {
+  id             String       @id @default(cuid(2))
+  role           MessageRole
+  content        String
+  isStreaming    Boolean      @default(false)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([conversationId])
+  @@map("messages")
+}
+
+model Conversation {
+  id               String    @id @default(cuid(2))
+  title            String
+  sentFirstMessage Boolean   @default(false) // keeps track of whether the first message has been sent
+  messages         Message[]
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("conversations")
 }

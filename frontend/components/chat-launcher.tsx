@@ -4,9 +4,8 @@ import { ChatInput } from "./chat-input";
 import TopicSuggestionCards from "./topic-suggestion-cards";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { SOCKET_URL } from "@/lib/constants";
-import { Conversation, Message } from "@/lib/types";
-import useConversations from "@/hooks/use-conversations";
 import { useRouter } from "next/navigation";
+import { createConversation } from "@/actions/conversations";
 
 const topicSuggestionsList = [
   "Vad är syftet med kursen TNM094?",
@@ -20,7 +19,6 @@ export default function ChatLauncher() {
 
   // STATE
   const [input, setInput] = useState("");
-  const { addConversation } = useConversations();
 
   // WebSocket connection
   const { readyState } = useWebSocket(SOCKET_URL, {
@@ -29,36 +27,10 @@ export default function ChatLauncher() {
     shouldReconnect: () => true,
   });
 
-  function sendMessage(message: string) {
-    const conversationId = crypto.randomUUID();
-    const messageId = crypto.randomUUID();
-
-    let title = message;
-    if (message.length >= 35) {
-      title = message.slice(0, 35) + "...";
-    }
-
-    const newConversation: Conversation = {
-      id: conversationId,
-      title,
-      createdAt: Date.now(),
-      messages: new Map<string, Message>([
-        [
-          messageId,
-          {
-            id: messageId,
-            role: "user",
-            content: message,
-          },
-        ],
-      ]),
-      sentFirstMessage: false,
-    };
-
-    addConversation(newConversation);
-
+  async function sendMessage(message: string) {
+    const id = await createConversation(message);
     // Redirect user to new chat
-    router.push(`/chat/${conversationId}`);
+    router.push(`/chat/${id}`);
   }
 
   return (
