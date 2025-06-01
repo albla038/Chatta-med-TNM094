@@ -90,7 +90,11 @@ export default function Chat({
           ))}
           {/* Pending/thinking indicator */}
           {isPending && (
-            <li className="animate-pulse w-4 h-1.5 rounded-full bg-gray-400 self-start" />
+            <li className="px-4 pt-4 flex gap-2 self-start">
+              <div className="animate-pulse size-4 rounded-full bg-gray-400 duration-1000"></div>
+              <div className="animate-pulse size-4 rounded-full bg-gray-400 delay-250 duration-1000"></div>
+              <div className="animate-pulse size-4 rounded-full bg-gray-400 delay-500 duration-1000"></div>
+            </li>
           )}
           <li className="h-[calc(100svh_-_216px)] flex-shrink-0 invisible">
             test
