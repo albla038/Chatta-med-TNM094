@@ -58,15 +58,24 @@ function PrivacyPolicy() {
       </ul>
       <h3 className="text-xl font-semibold mt-6 mb-2">Delning av data</h3>
       <p className="text-gray-700 mb-4">
-        Din konversation delas med OpenAI för att besvara dina frågor. OpenAI:s
-        integritetspolicy finns{" "}
+        Din konversation delas med OpenAI och Pinecone för att besvara dina
+        frågor. Läs mer i{" "}
         <Link
           className="text-blue-600 underline"
           target="_blank"
           rel="noopener noreferrer"
-          href={"https://openai.com/sv-SE/policies/row-privacy-policy/"}
+          href="https://openai.com/sv-SE/policies/row-privacy-policy/"
         >
-          här
+          OpenAI:s integritetspolicy
+        </Link>{" "}
+        och{" "}
+        <Link
+          className="text-blue-600 underline"
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.pinecone.io/privacy/"
+        >
+          Pinecone:s integritetspolicy
         </Link>
         .
       </p>

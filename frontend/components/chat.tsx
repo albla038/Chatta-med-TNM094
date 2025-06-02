@@ -5,29 +5,39 @@ import UserMessage from "./user-message";
 import AssistantMessage from "./assistant-message";
 import clsx from "clsx";
 import { useChat } from "@/hooks/use-chat";
+import { Message } from "@/lib/types";
 
 type ChatProps = {
-  chatId: string;
+  conversationId: string;
+  sentFirstMessage: boolean;
+  initialMessages: Message[];
 };
 
-export default function Chat({ chatId }: ChatProps) {
+export default function Chat({
+  conversationId,
+  sentFirstMessage,
+  initialMessages,
+}: ChatProps) {
   // STATE
   const [input, setInput] = useState("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   // HOOKS
-  const { messageList, sendMessage, isOpen } = useChat(chatId);
+  const { messageList, sendMessage, isOpen, isPending } = useChat(
+    conversationId,
+    sentFirstMessage,
+    initialMessages
+  );
 
   // DERIVED STATE
-  // Check if the last message in the conversation history is from the user
+  // Get last message from the message list
   const lastMessage = messageList.slice(-1)[0];
-  const pending = lastMessage?.role === "user";
 
   // EFFECTS
   useEffect(() => {
-    if (!pending || !lastMessage) return;
+    if (!isPending || !lastMessage) return;
 
     // Scroll to the bottom of the chat when a new message is sent
-    if (pending) {
+    if (isPending) {
       // Get reference to the last user message element
       const userMessageElement = document.querySelector(
         `#message-${lastMessage.id}`
@@ -39,7 +49,7 @@ export default function Chat({ chatId }: ChatProps) {
         });
       }
     }
-  }, [lastMessage, pending]);
+  }, [lastMessage, isPending]);
 
   function handleSendMessageClick() {
     // Clean the user-input and clear the chat-input component
@@ -79,8 +89,12 @@ export default function Chat({ chatId }: ChatProps) {
             </li>
           ))}
           {/* Pending/thinking indicator */}
-          {pending && (
-            <li className="animate-pulse w-4 h-1.5 rounded-full bg-gray-400 self-start" />
+          {isPending && (
+            <li className="px-4 pt-4 flex gap-2 self-start">
+              <div className="animate-pulse size-4 rounded-full bg-gray-400 duration-1000"></div>
+              <div className="animate-pulse size-4 rounded-full bg-gray-400 delay-250 duration-1000"></div>
+              <div className="animate-pulse size-4 rounded-full bg-gray-400 delay-500 duration-1000"></div>
+            </li>
           )}
           <li className="h-[calc(100svh_-_216px)] flex-shrink-0 invisible">
             test
