@@ -1,5 +1,4 @@
 import {
-  Conversation,
   Message,
   WebSocketIncomingMessage,
   WebSocketOutgoingMessage,
@@ -212,7 +211,7 @@ export function useChat(
   useEffect(() => {
     if (!lastJsonMessage) return;
     
-    const responseMessage = lastJsonMessage as WebSocketIncomingMessage;
+    const message = lastJsonMessage as WebSocketIncomingMessage;
 
     switch (message.type) {
       case "messageChunk": {
