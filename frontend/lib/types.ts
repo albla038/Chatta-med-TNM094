@@ -13,7 +13,14 @@ export type Conversation = {
   sentFirstMessage: boolean; // Flag to check if the first message has been sent
 };
 
-export type WebSocketMessage =
+export type WebSocketOutgoingMessage = Omit<Message, "isStreaming">;
+
+export type WebSocketOutgoingAuthMessage = {
+  type: "authenticate";
+  token: string;
+};
+
+export type WebSocketIncomingMessage =
   | { type: "messageChunk"; id: string; content: string }
   | { type: "done"; id: string; content: string }
-  | { type: "error"; error: string; details: string }
+  | { type: "error"; error: string; details: string };

@@ -1,5 +1,9 @@
-import { SOCKET_URL } from "@/lib/constants";
-import { Message, WebSocketMessage } from "@/lib/types";
+import {
+  Conversation,
+  Message,
+  WebSocketIncomingMessage,
+  WebSocketOutgoingMessage,
+} from "@/lib/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { createId } from "@paralleldrive/cuid2";
@@ -7,6 +11,7 @@ import {
   addAIMessageToConversation,
   addUserMessageToConversation,
 } from "@/actions/conversations";
+import { onWSClose, onWSOpen } from "@/lib/utils";
 import throttle from "lodash.throttle";
 
 // TODO Add error recovery logic
@@ -41,15 +46,14 @@ export function useChat(
 
   // Websocket hook
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
-    // "ws://127.0.0.1:8000/ws",
-    SOCKET_URL,
+    process.env.NEXT_PUBLIC_BACKEND_API_URL!,
     {
       share: true,
+
       // Attempts to reconnect on all close events (such as server shutting down)
       shouldReconnect: () => true,
-      // Log messages to console
-      onOpen: () => console.log("WebSocket opened"),
-      onClose: () => console.log("WebSocket closed"),
+      onOpen: () => onWSOpen(sendJsonMessage),
+      onClose: onWSClose,
     }
   );
 
@@ -77,8 +81,11 @@ export function useChat(
         const newMessages = new Map(prevMessages);
         newMessages.set(messageId, newMessage);
 
-        // Send messages to backend via WS
-        const messagesArray = [...newMessages.values()];
+        // Send messages to backend
+        const messagesArray: WebSocketOutgoingMessage[] = [
+          ...newMessages.values(),
+        ];
+        
         sendJsonMessage(messagesArray);
 
         return newMessages;
@@ -204,8 +211,8 @@ export function useChat(
   // TODO Validate with Zod?
   useEffect(() => {
     if (!lastJsonMessage) return;
-
-    const message = lastJsonMessage as WebSocketMessage;
+    
+    const responseMessage = lastJsonMessage as WebSocketIncomingMessage;
 
     switch (message.type) {
       case "messageChunk": {
