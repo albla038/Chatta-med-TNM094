@@ -84,7 +84,7 @@ export function useChat(
         const messagesArray: WebSocketOutgoingMessage[] = [
           ...newMessages.values(),
         ];
-        
+
         sendJsonMessage(messagesArray);
 
         return newMessages;
@@ -201,6 +201,7 @@ export function useChat(
   // Send initial messages when the WebSocket is open
   useEffect(() => {
     if (!hasSentInitial.current && readyState === ReadyState.OPEN) {
+      setIsPending(true);
       sendJsonMessage(initialMessages);
       hasSentInitial.current = true;
     }
@@ -210,7 +211,7 @@ export function useChat(
   // TODO Validate with Zod?
   useEffect(() => {
     if (!lastJsonMessage) return;
-    
+
     const message = lastJsonMessage as WebSocketIncomingMessage;
 
     switch (message.type) {
