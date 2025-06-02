@@ -25,6 +25,7 @@ export default async function Page({
       sentFirstMessage: true,
       messages: {
         select: { id: true, role: true, content: true, isStreaming: true },
+        orderBy: { createdAt: "asc" },
       },
     },
   });
