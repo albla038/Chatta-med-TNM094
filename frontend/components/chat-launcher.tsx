@@ -3,7 +3,6 @@ import { useState } from "react";
 import { ChatInput } from "./chat-input";
 import TopicSuggestionCards from "./topic-suggestion-cards";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { Conversation, Message } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { onWSClose, onWSOpen } from "@/lib/utils";
 import { createConversation } from "@/actions/conversations";
