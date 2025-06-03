@@ -47,8 +47,6 @@ export function useChat(
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket(
     process.env.NEXT_PUBLIC_BACKEND_API_URL!,
     {
-      share: true,
-
       // Attempts to reconnect on all close events (such as server shutting down)
       shouldReconnect: () => true,
       onOpen: () => onWSOpen(sendJsonMessage),
