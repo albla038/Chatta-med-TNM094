@@ -124,11 +124,15 @@ export async function addAIMessageToConversation({
     });
 
     // 3. Update sentFirstMessage if needed
-    if (isInitial)
+    if (isInitial) {
       await prisma.conversation.update({
         where: { id: conversationId, userId },
         data: { sentFirstMessage: true },
       });
+    }
+    
+    // 4. Revalidate the path to update the chat page
+    revalidatePath(`/chat/${conversationId}`);
 
     return true;
   } catch (error) {
